@@ -1,0 +1,8 @@
+{
+    global:
+        __custom_init;
+        __custom_fini;
+        _ZN8botwsavs2ui20GetMessageStringHookEPvRN4sead14SafeStringBaseIcEEPNS0_10WideStringE;
+        
+    local: *;
+};  

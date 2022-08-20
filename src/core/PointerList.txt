@@ -1,0 +1,115 @@
+Pointer List
+
+Health/Stam:
+	Health:						[[main+2CA1A78]+80]+848
+	Stamina:					[[main+2c9fd70]+38]+2ac
+	Max Stam Amount (unused):	[[main+2c9fd70]+38]+2b0
+		# Max Stam found by accident. Not needed for practice code
+
+Runes:
+	Round Bomb Cooldown:	[[main+2CA3AD8]+30]+80
+	Square Bomb Cooldown:	[[main+2CA3AD8]+30]+98
+	Stasis Cooldown:		[[main+2CA3AD8]+30]+144
+		# Set Bomb cool down to 360 in float (43350000)
+		# Set Stasis cool down to 1 in float (3F800000)
+
+Link's Havok Coordinates:
+	X:	[[[main+2D37AF0]+F0]+D28]+5E0
+	Y:	[[[main+2D37AF0]+F0]+D28]+5E4
+	Z:	[[[main+2D37AF0]+F0]+D28]+5E8
+
+Link's MainBody Position Matrix (Facing Angle):
+	1:	[[main+2CA1140]+60]+398
+	2:	[[main+2CA1140]+60]+39C
+	3:	[[main+2CA1140]+60]+3A0
+	4:	[[main+2CA1140]+60]+3A4
+	5:	[[main+2CA1140]+60]+3A8
+	6:	[[main+2CA1140]+60]+3AC
+	7:	[[main+2CA1140]+60]+3B0
+	8:	[[main+2CA1140]+60]+3B4
+	9:	[[main+2CA1140]+60]+3B8
+	10:	[[main+2CA1140]+60]+3BC
+	11:	[[main+2CA1140]+60]+3C0
+	12:	[[main+2CA1140]+60]+3C4
+	
+Link's Location Coordinates:
+	X: [[[main+2D399B0]+260]+C4B8]+1C0
+	Y: [[[main+2D399B0]+260]+C4B8]+1C4
+	Z: [[[main+2D399B0]+260]+C4B8]+1C8
+	
+Fall Damage:
+	Y coordinate used to calculate fall damage:	[[main+2CA1140]+60]+20D0
+	Determines if Link is grounded or airborne:	[[main+2CC4768]+C0]+C4
+		# Set to Integer 1 for grounded state. Don't use grounded flag if necessary. Makes restoring to midair annoying.
+
+Camera Pan Matrix:
+	1:	[[main+2CE1090]+60]+20
+	2:	[[main+2CE1090]+60]+24
+	3:	[[main+2CE1090]+60]+28
+	4:	[[main+2CE1090]+60]+2C
+	5:	[[main+2CE1090]+60]+30
+	6:	[[main+2CE1090]+60]+34
+	7:	[[main+2CE1090]+60]+38
+	8:	[[main+2CE1090]+60]+3C
+	9:	[[main+2CE1090]+60]+40
+	10:	[[main+2CE1090]+60]+44
+	
+Camera Zoom/Tilt/XYZ:
+	Zoom:	[[[main+2CA5520]+20]+558]+D48
+	Tilt:	[[[main+2CA5520]+20]+558]+D14
+	X:		[[[main+2CA5520]+20]+558]+CA4
+	Y:		[[[main+2CA5520]+20]+558]+CA8
+	Z:		[[[main+2CA5520]+20]+558]+CAC
+		# Don't use XYZ if possible. Causes camera to "jump" when restoring pretty often.
+
+Durability:
+	Inventory Weapon: 			[[main+2CA6D48]+447D8]+20
+	Inventory Bow: 				[[main+2ca6d48]+447E0]+20
+	Inventory Shield:			[[main+2ca6d48]+447F0]+20
+	Equipped Arrow Amount:		[[main+2CA6D48]+447E8]+20
+		# Don't use Inventory equipment. Requires restoring in menu + unequip and re-equip to work. Just use overworld instance.
+	
+	Overworld Weapon Pointer:	[[[[main+2CC4768]+c0]-A0]+48]+D4C
+	Overworld Bow Pointer:		[[[[main+2CC4768]+c0]-70]+48]+D4C
+	Overworld Shield:			[[[[main+2CC4768]+c0]-88]+48]+D4C
+		# Use if statement so that code will not restore a value of zero. If possible, make it so durability does not restore if weapon ID does not match.
+	
+Time of Day/Blood Moon
+	Time of Day (Paused):	[[[[main+2CC5FE0]+BE0]+30]+F8]+18
+	Time of Day (Unpaused):	[[main+2CD18C8]+17630]+468
+	Blood Moon Timer:		[[[main+2CD18D0]+30]+398]+2D0
+	
+Climate Damage Timers:
+	Heat/Cold:	[[main+2CA1140]+60]+268C
+	Flame:		[[[main+2CA3A68]+1438]+B0]+258
+	
+Champion Abilities:
+	Gale Timer:			[[main+2CA1140]+60]+1DF4
+	Fury Timer: 		[[main+2CA1140]+60]+1E00
+	Protection Timer:	[[main+2CA1140]+60]+1E0C
+	Grace Timer:		[[main+2CA1140]+60]+1E18
+	Gale Uses:			[[main+2ca1a78]+80]+1CC8
+	Fury Uses:			[[main+2ca1a78]+80]+1CCC
+	Protection Uses:	[[main+2ca1a78]+80]+1CD0
+	
+Master Sword:
+	Cooldown Timer:		[[main+2CA1140]+60]+1E24
+	
+Potion Timers:
+	Speed 1:		[[main+2CC4768]+C0]+12A0
+	Speed 2:		[[main+2CC4768]+C0]+12AC
+	Speed 3:		[[main+2CC4768]+C0]+12B8
+	Attack:			[[main+2CC4768]+C0]+12DC
+	Defense:		[[main+2CC4768]+C0]+12E8
+	Shock Resist:	[[main+2CC4768]+C0]+1324
+	Cold resist:	[[main+2CC4768]+C0]+1300
+	Heat resist:	[[main+2CC4768]+C0]+12F4
+	Stealth up:		[[main+2CC4768]+C0]+133C
+	Flame resist:	[[main+2CC4768]+C0]+130C
+	
+***Old
+Link's Havok Coordinates:
+	X:	[[[main+2D3E8E8]+370]+C0]+5E0
+	Y:	[[[main+2D3E8E8]+370]+C0]+5E4
+	Z:	[[[main+2D3E8E8]+370]+C0]+5E8
+		# Only works 75%~ of the time
