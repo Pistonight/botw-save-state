@@ -47,35 +47,6 @@ jobs:
           - "-DDEBUG"
           - "-DGOLD_RUSH"
     runs-on: ubuntu-latest
-    steps:
-    - name: Install devkitPro
-      run: |
-        wget https://apt.devkitpro.org/install-devkitpro-pacman
-        chmod +x ./install-devkitpro-pacman
-        sudo ./install-devkitpro-pacman
-    - name: Install Switch Toolchain
-      run: |
-        sudo dkp-pacman -Syyu --noconfirm switch-dev
-        sudo dkp-pacman -Scc --noconfirm
-    - name: Checkout
-      uses: actions/checkout@v2
-    - name: Setup | just
-      uses: extractions/setup-just@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - name: Setup | Python 3.10
-      uses: actions/setup-python@v3.0.0
-      with:
-        python-version: '3.10'
-    - name: Setup | Pip Install
-      run: python3 -m pip install toml keystone
-    - name: Build
-      env:
-        DEVKITPRO: /opt/devkitpro
-      run: just make ${{ matrix.makeflag }}
-  release:
-    name: "Release"
-    runs-on: ubuntu-latest
     container:
       image: 'devkitpro/devkita64'
     steps:
@@ -90,20 +61,40 @@ jobs:
       with:
         python-version: '3.10'
     - name: Setup | Pip Install
-      uses: BSFishy/pip-action@v1
-      with:
-        packages: |
-          toml
-          keystone
-    - name: Package
-      run: |
-        just release
-        just draft-release > RELEASE_NOTES.txt
-    - name: Draft Release
-      if: github.event_name != 'pull_request' && startsWith(github.ref, 'refs/tags/v')
-      uses: softprops/action-gh-release@v1
-      with:
-        draft: true
-        body_path: RELEASE_NOTES.txt
-        files: |
-          save-state-*.zip
+      run: python3 -m pip install toml keystone
+    - name: Build
+      run: just make ${{ matrix.makeflag }}
+  # release:
+  #   name: "Release"
+  #   runs-on: ubuntu-latest
+  #   container:
+  #     image: 'devkitpro/devkita64'
+  #   steps:
+  #   - name: Checkout
+  #     uses: actions/checkout@v2
+  #   - name: Setup | just
+  #     uses: extractions/setup-just@v1
+  #     env:
+  #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #   - name: Setup | Python 3.10
+  #     uses: actions/setup-python@v3.0.0
+  #     with:
+  #       python-version: '3.10'
+  #   - name: Setup | Pip Install
+  #     uses: BSFishy/pip-action@v1
+  #     with:
+  #       packages: |
+  #         toml
+  #         keystone
+  #   - name: Package
+  #     run: |
+  #       just release
+  #       just draft-release > RELEASE_NOTES.txt
+  #   - name: Draft Release
+  #     if: github.event_name != 'pull_request' && startsWith(github.ref, 'refs/tags/v')
+  #     uses: softprops/action-gh-release@v1
+  #     with:
+  #       draft: true
+  #       body_path: RELEASE_NOTES.txt
+  #       files: |
+  #         save-state-*.zip
