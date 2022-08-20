@@ -27,7 +27,7 @@ format VERBOSE="":
 make EXTRA_DEFINES="":
     mkdir -p build{{EXTRA_DEFINES}}
     make -C build{{EXTRA_DEFINES}} -f ../build.mk EXTRA_DEFINES={{EXTRA_DEFINES}}
-    python3 tools/ips.py
+    python3 tools/ips.py build{{EXTRA_DEFINES}}
 
 build: (make "-DDEBUG")
 
@@ -45,9 +45,8 @@ release EXTRA_DEFINES="":
     cp CHANGELOG.md release
     echo "" > release/botwsavs/main.log
     echo "" > release/botwsavs/latest.txt
-    if {{EXTRA_DEFINES}} == "-DGOLD_RUSH" { export GR_SYMBOL="-GR" } else { export GR_SYMBOL="" }
-    echo {{VERSION_TEXT}}$GR_SYMBOL > release/atmosphere/contents/01007EF00011E000/romfs/System/Version.txt
-    zip -r save-state-{{VERSION_TEXT}}$GR_SYMBOL.zip release
+    echo {{VERSION_TEXT}}{{EXTRA_DEFINES}} > release/atmosphere/contents/01007EF00011E000/romfs/System/Version.txt
+    zip -r save-state-{{VERSION_TEXT}}{{EXTRA_DEFINES}}.zip release
 
 release-gold-rush: (release "-DGOLD_RUSH")
 
@@ -55,7 +54,7 @@ publish:
     @echo
     @echo "Latest Version: v{{VERSION_TEXT}}"
     @echo
-    @read -p "Press Enter to publish this version to github release " output
+    @read -p "Press Enter to tag this commit " output
     git tag v{{VERSION_TEXT}}
     git push origin v{{VERSION_TEXT}}
 
@@ -63,7 +62,7 @@ draft-release:
     sed -n $(grep -n "LATEST" CHANGELOG.md | cut -d ":" -f 1)',{{CHANGELOG_LATEST_LAST}}p;{{CHANGELOG_LATEST_LAST}}q' CHANGELOG.md | head -n -1
 
 clean:
-    rm -rf build build-DDEBUG build-DGOLD_RUSH release
+    rm -rf build build-DDEBUG build-DGOLD_RUSH release save-state-*.zip
 
 ftp COMMAND="install":
     echo "" > temp.txt

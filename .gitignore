@@ -1,4 +1,5 @@
 build
+build-D*
 release
 crash_reports
 runtime

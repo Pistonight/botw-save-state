@@ -22,14 +22,22 @@ IPS_HEADER_MAGIC = bytes("IPS32", 'ASCII')
 IPS_EOF_MAGIC = bytes("EEOF", 'ASCII')
 
 WORKSPACE_TOML = "config/workspace.toml"
+
+BUILD_DIR = "build"
 def read_config():
+    # pylint: disable-next=global-statement
+    global BUILD_DIR
     """Read config from workspace.toml"""
+    if len(sys.argv) > 1:
+        BUILD_DIR = sys.argv[1]
+
     if isfile(WORKSPACE_TOML):
         with open(WORKSPACE_TOML, "r", encoding="utf-8") as config_file:
             return toml.load(config_file)["ips"]
     print("Cannot read config")
     sys.exit(-1)
 
+    
 class Patch:
     """Data for patch. offset and byte array content"""
     def __init__(self, offset, content):
@@ -66,7 +74,7 @@ def run():
 
     for build_id, patch_list in id_to_patchlist.items():
         #print(id)
-        ips_path = join("build", build_id + IPS_FORMAT)
+        ips_path = join(BUILD_DIR, build_id + IPS_FORMAT)
         with open(ips_path, 'wb') as ips_file:
             ips_file.write(IPS_HEADER_MAGIC)
             for patch in patch_list:
@@ -315,7 +323,7 @@ def search_mod_symbol_addr(symbol):
         return BOTW_IGD_SYMBOL_CACHE[symbol]
     # Lazy load symbol map
     if BOTW_IGD_SYMBOL_MAP is None:
-        with open(join("build", f"{MOD_NAME}.map"), 'r', encoding="utf-8") as map_file:
+        with open(join(BUILD_DIR, f"{MOD_NAME}.map"), 'r', encoding="utf-8") as map_file:
             BOTW_IGD_SYMBOL_MAP = map_file.read()
 
     func_search_regex = symbol + r'\('

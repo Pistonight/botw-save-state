@@ -5,15 +5,15 @@ runtime = "botwsavs"
 
 # Mod files
 [[ftp.file]]
-local = "build/botwsavs.nso"
+local = "build-DDEBUG/botwsavs.nso"
 target = "atmosphere/contents/01007EF00011E000/exefs/subsdk9"
 
 [[ftp.file]]
-local = "build/app.npdm"
+local = "build-DDEBUG/app.npdm"
 target = "atmosphere/contents/01007EF00011E000/exefs/main.npdm"
 
 [[ftp.file]]
-local = "build/8E9978D50BDD20B4C8395A106C27FFDE.ips"
+local = "build-DDEBUG/8E9978D50BDD20B4C8395A106C27FFDE.ips"
 target = "atmosphere/exefs_patches/botwsavs/8E9978D50BDD20B4C8395A106C27FFDE.ips"
 
 [ips]
@@ -22,62 +22,6 @@ mod_offset = "0x3483000" # this is used for address conversion for branching
 [ips.main160]
 id = "8E9978D50BDD20B4C8395A106C27FFDE"
 offset = "0"
-
-# [[ftp.file]]
-# local = "resource/Bootup_USen.pack"
-# target = "atmosphere/contents/01007EF00011E000/romfs/Pack/Bootup_CNzh.pack"
-
-# [[ftp.file]]
-# local = "resource/Bootup_USen.pack"
-# target = "atmosphere/contents/01007EF00011E000/romfs/Pack/Bootup_EUde.pack"
-
-# [[ftp.file]]
-# local = "resource/Bootup_USen.pack"
-# target = "atmosphere/contents/01007EF00011E000/romfs/Pack/Bootup_EUen.pack"
-
-# [[ftp.file]]
-# local = "resource/Bootup_USen.pack"
-# target = "atmosphere/contents/01007EF00011E000/romfs/Pack/Bootup_EUes.pack"
-
-# [[ftp.file]]
-# local = "resource/Bootup_USen.pack"
-# target = "atmosphere/contents/01007EF00011E000/romfs/Pack/Bootup_EUfr.pack"
-
-# [[ftp.file]]
-# local = "resource/Bootup_USen.pack"
-# target = "atmosphere/contents/01007EF00011E000/romfs/Pack/Bootup_EUit.pack"
-
-# [[ftp.file]]
-# local = "resource/Bootup_USen.pack"
-# target = "atmosphere/contents/01007EF00011E000/romfs/Pack/Bootup_EUnl.pack"
-
-# [[ftp.file]]
-# local = "resource/Bootup_USen.pack"
-# target = "atmosphere/contents/01007EF00011E000/romfs/Pack/Bootup_EUru.pack"
-
-# [[ftp.file]]
-# local = "resource/Bootup_USen.pack"
-# target = "atmosphere/contents/01007EF00011E000/romfs/Pack/Bootup_JPja.pack"
-
-# [[ftp.file]]
-# local = "resource/Bootup_USen.pack"
-# target = "atmosphere/contents/01007EF00011E000/romfs/Pack/Bootup_KRko.pack"
-
-# [[ftp.file]]
-# local = "resource/Bootup_USen.pack"
-# target = "atmosphere/contents/01007EF00011E000/romfs/Pack/Bootup_TWzh.pack"
-
-# [[ftp.file]]
-# local = "resource/Bootup_USen.pack"
-# target = "atmosphere/contents/01007EF00011E000/romfs/Pack/Bootup_USen.pack"
-
-# [[ftp.file]]
-# local = "resource/Bootup_USen.pack"
-# target = "atmosphere/contents/01007EF00011E000/romfs/Pack/Bootup_USes.pack"
-
-# [[ftp.file]]
-# local = "resource/Bootup_USen.pack"
-# target = "atmosphere/contents/01007EF00011E000/romfs/Pack/Bootup_USfr.pack"
 
 # Runtime placeholder files
 [[ftp.file]]
