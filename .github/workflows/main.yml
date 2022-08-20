@@ -47,9 +47,16 @@ jobs:
           - "-DDEBUG"
           - "-DGOLD_RUSH"
     runs-on: ubuntu-latest
-    container:
-      image: 'devkitpro/devkita64'
     steps:
+    - name: Install devkitPro
+      run: |
+        wget https://apt.devkitpro.org/install-devkitpro-pacman
+        chmod +x ./install-devkitpro-pacman
+        sudo ./install-devkitpro-pacman
+    - name: Install Switch Toolchain
+      run: |
+        sudo dkp-pacman -Syyu --noconfirm switch-dev
+        sudo dkp-pacman -Scc --noconfirm
     - name: Checkout
       uses: actions/checkout@v2
     - name: Setup | just
@@ -63,6 +70,8 @@ jobs:
     - name: Setup | Pip Install
       run: python3 -m pip install toml keystone
     - name: Build
+      env:
+        DEVKITPRO: /opt/devkitpro
       run: just make ${{ matrix.makeflag }}
   release:
     name: "Release"
