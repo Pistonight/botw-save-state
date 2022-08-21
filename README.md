@@ -3,7 +3,7 @@ A BOTW 1.6.0 Switch save state mod for speedrun practices
 
 ## Install and Uninstall
 ### Install
-1. Download and extract the zip. There should be 2 folders `atmosphere` and `botwsavs`
+1. Download and extract the zip from [latest release](https://github.com/iTNTPiston/botw-save-state/releases/latest). There should be 2 folders `atmosphere` and `botwsavs`
 2. Copy both folders to the root of your SD card. It's safe to overwrite existing files if the only mod you have is the save state. There's no guarantee that other mods work with this
 
 ### Uninstall
