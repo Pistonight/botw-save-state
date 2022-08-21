@@ -1,41 +1,166 @@
 # botw-save-state
 A BOTW 1.6.0 Switch save state mod for speedrun practices
 
-## Install
+## Install and Uninstall
+### Install
 1. Download and extract the zip. There should be 2 folders `atmosphere` and `botwsavs`
 2. Copy both folders to the root of your SD card. It's safe to overwrite existing files if the only mod you have is the save state. There's no guarantee that other mods work with this
 
-## Uninstall
-1. Remove these folders from the SD card if they exist
-    - `/atmosphere/contents/01007EF00011E000/exefs`
-    - `/atmosphere/contents/01007EF00011E000/romfs`
-    - `/atmosphere/exefs_patches/botwsavs`
-    - `/botwsavs`
+### Uninstall
+Remove these folders from the SD card if they exist
+  - `/atmosphere/contents/01007EF00011E000/exefs`
+  - `/atmosphere/contents/01007EF00011E000/romfs`
+  - `/atmosphere/exefs_patches/botwsavs`
+  - `/botwsavs`
 
-# Key Combo
+## Usage (Key Combos)
 
+**Make sure you are only activating the key combos while having control of Link. The game may bahave weirdly or even crash if you press them in loading screen or title screen**
+
+### Active and Setting Mode
 There are 2 modes in the save state mod, the Active Mode and the Setting Mode.
 - Active Mode: Can save and restore state
-- Setting Mode: Can change the level of save state:
-  - Level 0: Disabled (Cannot save or restore)
-  - Level 1: Basic (Position, Health, Stamina, Camera angle, Rune recharge)
-  - Level 2: Basic + Durability
-  - Level 3: All
+- Setting Mode: Can change the level of save state
 
-Hold Dpad Down + All 4 triggers (ZL L R ZR) for 4 seconds to switch between modes.
+To switch between the 2 modes. Hold `Dpad Down` (whistle) and all 4 triggers for 3 seconds. You will see a message displayed like this when the mode is switched
+```
+Save state: Active Mode
+```
 
-You will see "Save state: Active Mode" or "Save state: Setting Mode" when the mode switches
+### Active Mode Combos
+You can use these key combos in the Active Mode.
 
-### Save/Restore
-You can use these key combos in the Active Mode
-- PLUS + Dpad Left: Save state to memory
-- PLUS + Dpad Left + R3: Save state to botwsavs/latest.txt on sd card
-- PLUS + Dpad Right: Restore state from memory
-- PLUS + Dpad Right + R3: Restore state from botwsavsrestore.txt on sd card
+- `PLUS + Dpad Left`: Save state to memory
+- `PLUS + R3 + Dpad Left`: Save state to `/botwsavs/latest.txt` on sd card
+- `PLUS + Dpad Right`: Restore state from memory
+- `PLUS + R3 + Dpad Right`: Restore state from `/botwsavs/restore.txt` on sd card
 
-You can only restore if the current setting level is less than or equal to the save state level. For example, if the setting level is 2 (Basic + Durability), and you restore a save state with level 3, only Basic + Durability would be restored. However, if the setting is level 2 and you try to restore a save state with level 1, the mod will show "You can't do that"
+Note that for save to/restore from file, you need to hold `PLUS + R3` before pressing the D pad. Otherwise it would trigger save to/restore from memory instead
 
-### Setting
-You can use these key combos in the Setting Mode
-- Hold R for 1 second: Increase level
-- Hold L for 1 second: Decrease level
+If you try to restore without saving, or without the right file on sd card. You will see a message like this
+```
+You can't do that right now
+```
+
+If you see a message like this:
+```
+Save state error!
+```
+This means one or more of the values cannot be accessed. Mostly likely due to invalid memory pointer. Currently it's known that there's a small chance that Link's havok coordinates point to invalid memory. When this happens, restart the game and try again.
+
+### Setting Mode Combos
+
+In setting mode. You can switch between levels of save state. 
+
+- Hold `L` for 1 second: Decrease level
+- Hold `R` for 1 second: Increase level
+
+There are currently 4 levels:
+
+#### Level 0: Disabled 
+The key combos in Active Mode will be disabled in this level
+
+#### Level 1: Basic
+Level 1 save state includes:
+- Health
+- Stamina
+- Position: Coordinate, Facing Angle, Camera Angle
+- Runes (finishes cooldown on restore)
+#### Level 2: Basic + Durability
+Level 2 save state includes everything in Level 1 and:
+- Equipped arrow count
+  - Only save if + menu is opened
+  - Only restore if + menu is opened and is previously saved
+- Equipped Weapon/Bow/Shield Durability
+#### Level 3: All
+Level 3 save state includes everything available, which includes all from Level 1 and 2, plus:
+- Time of day values:
+  - Including the current time of day and blood moon timer
+- Climate damage timers:
+  - Time until next heat/cold damage
+  - Time until Link starts burning
+- Champion abilities:
+  - Cool down for all abilities
+  - Uses left for gale, fury, and protection
+  - Master sword cool down
+- Potion timer:
+  - Speed
+  - Attack
+  - Defense
+  - Heat Resist
+  - Cold Resist
+  - Flame Resist
+  - Shock Resist
+  - Stealth
+
+### Save/Restore with Different Levels
+If you save a state with a high level (for example, level 3), then switch to a lower level (for example, level 1) and restore, only the lower level values will be restored. However, the state still contains the higher level data. You can switch back to the higher level and be able to restore all the values
+
+If you save a state with a low level (for example, level 1), then switch to a higher level (for example, level 3) and restore, you will see an error message like:
+```
+You need to lower the setting level to restore!
+```
+
+## Developer
+**This section is intented for developers**
+
+### Environment
+#### OS
+You need a linux or WSL environment. Mac probably work as well.
+#### DevkitPro
+For Debian based systems (linux)
+```
+wget https://apt.devkitpro.org/install-devkitpro-pacman
+chmod +x ./install-devkitpro-pacman
+sudo ./install-devkitpro-pacman
+sudo dkp-pacman -S switch-dev
+```
+For other systems follow https://devkitpro.org/wiki/Getting_Started (need `switch-dev` package)
+#### Just
+Just is used to run command shortcuts. https://github.com/casey/just
+
+Cargo install is recommended:
+```
+cargo install just
+```
+If you don't have rust installed: https://rustup.rs/
+#### Python 
+Need Python 3. (3.10 is preferred but other version probably works as well).
+
+Install these packages
+```
+python3 -m pip install toml pylint pylint-quotes keystone
+```
+#### clang-format
+clang-format-12 is required. Run this on linux or the mac-equivalent on mac
+```
+sudo apt install clang-format-12
+```
+
+### Commands
+
+Run `just --list` for a full list of commands.
+
+Command workflows:
+- `just build` to build the (debug) mod files
+- `just ftp` to send the debug build to your switch over FTP
+  - One time setup: Run `just set-ip <IP>` to set your console IP
+- `just lint` before PR/push
+
+Release workflow:
+- Make sure `CHANGELOG.md` is up to date
+- `just release` to build for release configuration and produce the release zip
+  - `just release-gold-rush` to build for gold rush configuration
+- `just publish` to tag the current commit with latest version
+- `just draft-release` to generate release notes
+- `just clean`
+
+### Linking BOTW
+Follow these steps to statically link a botw symbol
+- Declare the symbol (data or function) in `ksys/Ksys.hpp`. Put the address in a comment
+- Use the symbol as normal (i.e. call the function or access the data)
+- Build with `just build`
+- Find the mangled symbol with `just find-symbol <symbol>`
+- Copy the mangled symbol and put it in a comment in `ksys/Ksys.hpp`
+- Add the symbol `just add-symbol <symbol> <address>`
+- Verify that `just find-symbol <symbol>` cannot find the symbol

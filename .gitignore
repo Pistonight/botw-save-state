@@ -1,4 +1,5 @@
 build
+build-D*
 release
 crash_reports
 runtime
@@ -7,3 +8,4 @@ runtime
 *.zip
 temp.txt
 *.pack
+.env
