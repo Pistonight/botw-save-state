@@ -1,5 +1,4 @@
 [ftp]
-ip = "192.168.0.161" # Your switch ip
 crash_reports = "atmosphere/crash_reports"
 runtime = "botwsavs"
 
@@ -23,11 +22,15 @@ mod_offset = "0x3483000" # this is used for address conversion for branching
 id = "8E9978D50BDD20B4C8395A106C27FFDE"
 offset = "0"
 
-# Runtime placeholder files
+# Runtime placeholder/version files
 [[ftp.file]]
-local = "temp.txt"
+local = "build-DDEBUG/DebugVersion.txt"
 target = "botwsavs/main.log"
 
 [[ftp.file]]
-local = "temp.txt"
+local = "build-DDEBUG/DebugVersion.txt"
 target = "botwsavs/latest.txt"
+
+[[ftp.file]]
+local = "build-DDEBUG/DebugVersion.txt"
+target = "atmosphere/contents/01007EF00011E000/romfs/System/Version.txt"

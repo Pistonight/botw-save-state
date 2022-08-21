@@ -13,7 +13,7 @@ bool Worker::Work() {
         return false;
     }
     if (mController.ShouldSwitchMode()) {
-        if (DidHoldFor(Hold::ModeSwitch, 4)) {
+        if (DidHoldFor(Hold::ModeSwitch, 3)) {
             info("Switching mode");
             if (mMode == Mode::Active) {
                 mMode = Mode::Setting;
@@ -132,7 +132,7 @@ void Worker::ExecuteRestore() {
         return;
     }
 
-    if (!mState.WriteToGame()) {
+    if (!mState.WriteToGame(mLevel)) {
         ui::ShowError();
         error("State write failed");
         return;
@@ -171,7 +171,7 @@ void Worker::ExecuteRestoreFromFile() {
         return;
     }
 
-    if (!tempState.WriteToGame()) {
+    if (!tempState.WriteToGame(mLevel)) {
         ui::ShowError();
         error("State write failed");
         return;

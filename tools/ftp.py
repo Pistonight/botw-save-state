@@ -1,5 +1,5 @@
 """Performs file actions on console via FTP"""
-# Usage: ftpUtil.py command
+# Usage: ftpUtil.py command ip
 from ftplib import FTP, all_errors
 from os import makedirs
 from os.path import join, isfile
@@ -15,11 +15,20 @@ def read_config():
     print("Cannot read config")
     sys.exit(-1)
 
+def read_ip():
+    """Read ip from command ling"""
+    if len(sys.argv) < 3:
+        print("Please set your console ip:")
+        print()
+        print("    just set-ip 123.456.789.0")
+        print()
+        sys.exit(-1)
+    return sys.argv[2]
 
 def run(command):
     """Main"""
     ftp_config = read_config()
-    console_ip = ftp_config["ip"]
+    console_ip = read_ip()
 
     if '.' not in console_ip:
         print("Invalid IP:", console_ip)
@@ -200,7 +209,7 @@ def add_slash_if_need(path):
     return path if path.startswith("/") else "/"+path
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print(f"Usage: {sys.argv[0]} <install|delete|report>")
+    if len(sys.argv) < 2:
+        print(f"Usage: {sys.argv[0]} <install|delete|report> ip")
         sys.exit(-1)
     run(sys.argv[1])

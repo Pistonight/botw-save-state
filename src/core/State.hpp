@@ -8,7 +8,7 @@ public:
     // Read from game memory
     bool ReadFromGame(u32 level);
     // Write to game memory
-    bool WriteToGame();
+    bool WriteToGame(u32 level);
 
 public:
     u32 mLevel = 0;  // 0 = nothing stored

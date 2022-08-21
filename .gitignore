@@ -8,3 +8,4 @@ runtime
 *.zip
 temp.txt
 *.pack
+.env

@@ -20,9 +20,12 @@ bool State::ReadFromGame(u32 level) {
     return !mError;
 }
 
-bool State::WriteToGame() {
+bool State::WriteToGame(u32 level) {
+    if(mLevel < level){
+        return false;
+    }
     mError = false;
-    switch (mLevel) {
+    switch (level) {
     case 3:
         WriteLevel3();
         // fall through
