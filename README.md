@@ -164,4 +164,3 @@ Follow these steps to statically link a botw symbol
 - Copy the mangled symbol and put it in a comment in `ksys/Ksys.hpp`
 - Add the symbol `just add-symbol <symbol> <address>`
 - Verify that `just find-symbol <symbol>` cannot find the symbol
-

@@ -25,9 +25,10 @@ WORKSPACE_TOML = "config/workspace.toml"
 
 BUILD_DIR = "build"
 def read_config():
+    """Read config from workspace.toml"""
     # pylint: disable-next=global-statement
     global BUILD_DIR
-    """Read config from workspace.toml"""
+
     if len(sys.argv) > 1:
         BUILD_DIR = sys.argv[1]
 
@@ -37,7 +38,6 @@ def read_config():
     print("Cannot read config")
     sys.exit(-1)
 
-    
 class Patch:
     """Data for patch. offset and byte array content"""
     def __init__(self, offset, content):

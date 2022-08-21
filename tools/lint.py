@@ -11,6 +11,9 @@ ignore = [
     "__pycache__",
     ".vscode",
     "build",
+    "build-DDEBUG",
+    "build-DGOLD_RUSH",
+    "release",
     "lib",
     "crash_reports",
     "runtime",
@@ -19,7 +22,8 @@ ignore = [
 ignore_exts = [
     ".ips",
     ".syms",
-    ".pack"
+    ".pack",
+    ".zip",
 ]
 
 ROOT = "."
