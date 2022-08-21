@@ -24,5 +24,4 @@ extern void* ShowInfoOverlayWithString(u64 idx, const void* p_sead__SafeString);
 // 0x123DEA0
 // _ZN8botwsavs4ksys16GetMessageStringEPvS1_S1_
 extern u64 GetMessageString(void* file, void* messageId, void* outString);
-extern void* Test;
 }  // namespace botwsavs::ksys

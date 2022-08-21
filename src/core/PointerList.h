@@ -1,7 +1,7 @@
 #pragma once
 #include "MemPtr.hpp"
 
-#define main (MemPtr())
+#define main MemPtr()
 #define DefinePtr(TYPE, NAME, PATH) inline util::SafePtr<TYPE> NAME() { return (PATH).AsPtrTo<TYPE>(); } 
 
 namespace botwsavs::core::ptr {

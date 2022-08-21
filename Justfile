@@ -39,7 +39,7 @@ _make EXTRA_DEFINES="":
 
 # Build debug configuration
 build: (_make "-DDEBUG")
-    echo {{VERSION_TEXT}}-ftpd > build-DDEBUG/DebugVersion.txt
+    echo {{VERSION_TEXT}}-D > build-DDEBUG/DebugVersion.txt
 
 # Build release configuration and package
 release EXTRA_DEFINES="": clean (_make EXTRA_DEFINES)
@@ -54,8 +54,8 @@ release EXTRA_DEFINES="": clean (_make EXTRA_DEFINES)
     cp CHANGELOG.md release
     echo "" > release/botwsavs/main.log
     echo "" > release/botwsavs/latest.txt
-    echo {{VERSION_TEXT}}{{EXTRA_DEFINES}} > release/atmosphere/contents/01007EF00011E000/romfs/System/Version.txt
-    zip -r save-state-{{VERSION_TEXT}}{{EXTRA_DEFINES}}.zip release
+    echo {{VERSION_TEXT}} > release/atmosphere/contents/01007EF00011E000/romfs/System/Version.txt
+    zip -r save-state-{{VERSION_TEXT}}.zip release
 
 # Build gold rush configuration and package
 release-gold-rush: (release "-DGOLD_RUSH")

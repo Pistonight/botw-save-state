@@ -3,8 +3,6 @@
 #include "fs/File.hpp"
 #include "fs/Logger.hpp"
 
-#include "ksys/KSys.hpp"
-
 extern "C" void application_init() {
     nn::fs::MountSdCardForDebug("sd");
     // Create runtime files
@@ -20,8 +18,6 @@ extern "C" void application_init() {
 
     // Start worker
     botwsavs::core::StartWorkerThread();
-
-    botwsavs::fs::Logger::Instance().LogF("test", "ad%p", botwsavs::ksys::Test);
 }
 
 extern "C" void application_clean() {
