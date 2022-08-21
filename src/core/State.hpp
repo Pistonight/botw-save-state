@@ -33,6 +33,7 @@ private:
 
     // Level 2: Durability
 private:
+    u32 mMenuEquippedArrow;
     void ReadLevel2();
     void WriteLevel2();
 
@@ -40,6 +41,9 @@ private:
 private:
     void ReadLevel3();
     void WriteLevel3();
+
+private:
+    static const u32 sInvalid = 0xFFFFFFFF;
 };
 
 }  // namespace botwsavs::core
