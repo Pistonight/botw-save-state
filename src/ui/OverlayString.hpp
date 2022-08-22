@@ -1,5 +1,6 @@
 #pragma once
 #include <prim/seadSafeString.h>
+#include <stdio.h>
 #include "types.h"
 
 namespace botwsavs::ui {
@@ -12,6 +13,13 @@ struct WideString {
 u64 GetMessageStringHook(void* file, sead::SafeString& messageId, WideString* outString);
 
 void ShowOverridenMessage(const char* message);
+
+template <typename T>
+void ShowFormattedMessage(const char* format, T& value) {
+    char result[200];
+    snprintf(result, 200, format, value);
+    ShowOverridenMessage(result);
+}
 
 void ShowOriginalMessage(u64 idx);
 

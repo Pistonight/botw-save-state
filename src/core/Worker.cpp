@@ -7,6 +7,19 @@
 
 namespace botwsavs::core {
 
+bool Worker::Init() {
+    info("Init worker config from file");
+
+    fs::SaveFile workerTxt("sd:/botwsavs/worker.txt");
+    bool result = workerTxt.LoadWorker(*this);
+
+    if (!result) {
+        warn("File operation failed. Cannot init worker");
+        return false;
+    }
+    return true;
+}
+
 bool Worker::Work() {
     bool controllerReady = mController.isInitialized();
     if (!controllerReady) {
@@ -41,6 +54,7 @@ bool Worker::Work() {
                 info("Increase level");
                 if (mLevel < 3) {
                     mLevel++;
+                    SaveWorker();
                 }
                 ui::ShowSetLevel(mLevel);
                 mHold = Hold::None;
@@ -50,6 +64,7 @@ bool Worker::Work() {
                 info("Decrease level");
                 if (mLevel > 0) {
                     mLevel--;
+                    SaveWorker();
                 }
                 ui::ShowSetLevel(mLevel);
                 mHold = Hold::None;
@@ -86,11 +101,11 @@ void Worker::ExecuteSave() {
         return;
     }
     if (!mState.ReadFromGame(mLevel)) {
-        ui::ShowError();
+        DisplayStateError(mState);
         error("State read failed");
         return;
     }
-    ui::ShowOverridenMessage("Saved state to memory");
+    ui::ShowFormattedMessage("Saved state to memory (level %d)", mLevel);
     info("State saved to memory");
 }
 
@@ -102,9 +117,9 @@ void Worker::ExecuteSaveToFile() {
     }
     State tempState;
     if (!tempState.ReadFromGame(mLevel)) {
-        ui::ShowError();
-        error("State read failed");
-        return;
+        DisplayStateError(tempState);
+        warnf("State read gives error 0x%x, but continuing to write file anyway",
+              tempState.GetError());
     }
     fs::SaveFile latestTxt("sd:/botwsavs/latest.txt");
     bool result = latestTxt.Save(tempState);
@@ -115,7 +130,7 @@ void Worker::ExecuteSaveToFile() {
         return;
     }
 
-    ui::ShowOverridenMessage("Saved state to file");
+    ui::ShowFormattedMessage("Saved state to file (level %d)", mLevel);
     info("State saved to file");
 }
 void Worker::ExecuteRestore() {
@@ -133,13 +148,13 @@ void Worker::ExecuteRestore() {
     }
 
     if (!mState.WriteToGame(mLevel)) {
-        ui::ShowError();
+        DisplayStateError(mState);
         error("State write failed");
         return;
     }
 #ifndef GOLD_RUSH
     // Don't show restore message for gold rush
-    ui::ShowOverridenMessage("Restored state from memory");
+    ui::ShowFormattedMessage("Restored state from memory (level %d)", mLevel);
 #endif
     info("State restored from memory");
 }
@@ -172,16 +187,43 @@ void Worker::ExecuteRestoreFromFile() {
     }
 
     if (!tempState.WriteToGame(mLevel)) {
-        ui::ShowError();
+        DisplayStateError(tempState);
         error("State write failed");
         return;
     }
 
 #ifndef GOLD_RUSH
     // Don't show restore message for gold rush
-    ui::ShowOverridenMessage("Restored state from file");
+    ui::ShowFormattedMessage("Restored state from file (level %d)", mLevel);
 #endif
     info("State restored from file");
+}
+
+void Worker::DisplayStateError(State& state) {
+    if (state.HasError(State::Error::DifferentName)) {
+        ui::ShowOverridenMessage("Warning: Some equipped items are different!");
+        return;
+    }
+
+    if (state.HasError(State::Error::NotEquipped)) {
+        ui::ShowOverridenMessage("Warning: Something not equipped?");
+        return;
+    }
+
+    if (state.HasError(State::Error::Pointer)) {
+        ui::ShowOverridenMessage("Pointer error!");
+    }
+}
+
+void Worker::SaveWorker() {
+    info("Saving worker config to file");
+
+    fs::SaveFile workerTxt("sd:/botwsavs/worker.txt");
+    bool result = workerTxt.SaveWorker(*this);
+
+    if (!result) {
+        warn("File operation failed. Cannot save worker");
+    }
 }
 
 }  // namespace botwsavs::core

@@ -17,6 +17,9 @@ void WorkerMain(void* arg) {
     nn::TimeSpan longWait = nn::TimeSpan::FromSeconds(5);
 
     Worker worker;
+    if (!worker.Init()) {
+        error("Worker init failed");
+    }
 
     while (true) {
         bool success = worker.Work();

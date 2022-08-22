@@ -2,7 +2,7 @@
 #include <controller/seadController.h>
 #include <controller/seadControllerMgr.h>
 #include "fs/Logger.hpp"
-#include "ksys/KSys.hpp"
+#include "mem/KingPtr.hpp"
 
 namespace botwsavs::core {
 
@@ -16,7 +16,7 @@ bool Controller::TryGetController() {
     }
     info("Try accessing controller instance");
 
-    auto* pControllerMgr = ksys::sControllerMgrInstance;
+    auto* pControllerMgr = mem::KingPtr::sControllerMgrInstance;
     if (!pControllerMgr) {
         error("Failed to access ControllerMgr: nullptr");
         return false;
