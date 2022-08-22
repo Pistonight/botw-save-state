@@ -1,18 +1,31 @@
 #pragma once
-
+#include "NamedValue.hpp"
 #include "types.h"
 
 namespace botwsavs::core {
 class State {
 public:
+    enum Error : u32 {
+        None = 0,
+        Pointer = 1,
+        NotEquipped = 1 << 1,
+        DifferentName = 1 << 2,
+    };
+
+    Error GetError() { return mError; }
+    bool HasError(Error mask) { return (mError & mask) != 0; }
+
     // Read from game memory
     bool ReadFromGame(u32 level);
     // Write to game memory
     bool WriteToGame(u32 level);
 
+private:
+    Error mError = Error::None;
+    void SetError(Error mask) { mError = static_cast<Error>(mError | mask); }
+
 public:
     u32 mLevel = 0;  // 0 = nothing stored
-    bool mError = false;
 
     // Level 1: Position, Health, Stam, Runes, Camera
 public:
@@ -32,8 +45,14 @@ private:
     void WriteLevel1();
 
     // Level 2: Durability
-private:
-    u32 mMenuEquippedArrow;
+public:
+    NamedValue<u32, 64> mMenuEquippedArrow{sInvalid};
+    NamedValue<u32, 64> mMenuEquippedWeapon{sInvalid};
+    NamedValue<u32, 64> mMenuEquippedBow{sInvalid};
+    NamedValue<u32, 64> mMenuEquippedShield{sInvalid};
+    NamedValue<u32, 64> mOverworldEquippedWeapon{sInvalid};
+    NamedValue<u32, 64> mOverworldEquippedBow{sInvalid};
+    NamedValue<u32, 64> mOverworldEquippedShield{sInvalid};
     void ReadLevel2();
     void WriteLevel2();
 

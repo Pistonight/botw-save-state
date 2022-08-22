@@ -1,10 +1,15 @@
 #pragma once
 
 #include "File.hpp"
+#define SAVE_FILE_VERSION 2
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wstrict-aliasing"
 namespace botwsavs {
 namespace core {
 class State;
-}
+class Worker;
+}  // namespace core
 namespace fs {
 
 class SaveFile {
@@ -14,18 +19,26 @@ public:
 
     bool Save(const core::State& state);
     bool Load(core::State& state);
+    bool SaveWorker(const core::Worker& worker);
+    bool LoadWorker(core::Worker& worker);
     bool Exists() { return mFile.Exists(); }
 
 private:
     File mFile;
 
     bool ReadVersion1(FileBuffer& buffer, core::State& state);
+    bool ReadVersion2(FileBuffer& buffer, core::State& state);
 
     bool ReadLine(FileBuffer& buffer, u32* outLineLength);
 
     bool WriteInteger(FileBuffer& buffer, const char* fieldName, const u64 value);
 
     bool ReadInteger(FileBuffer& buffer, u64* outValue);
+
+    bool WriteString(FileBuffer& buffer, const char* fieldName, const char* string,
+                     const u32 maxLength);
+
+    bool ReadString(FileBuffer& buffer, char* outString, const u32 maxLength);
 
     bool ReadInteger(FileBuffer& buffer, u32* outValue) {
         u64 iValue;
@@ -104,3 +117,4 @@ private:
 }  // namespace fs
 
 }  // namespace botwsavs
+#pragma GCC diagnostic pop

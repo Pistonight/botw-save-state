@@ -39,7 +39,7 @@ _make EXTRA_DEFINES="":
 
 # Build debug configuration
 build: (_make "-DDEBUG")
-    echo {{VERSION_TEXT}}-D > build-DDEBUG/DebugVersion.txt
+    echo -n SS-DEBUG > build-DDEBUG/DebugVersion.txt
 
 # Build release configuration and package
 release EXTRA_DEFINES="": clean (_make EXTRA_DEFINES)
@@ -52,10 +52,10 @@ release EXTRA_DEFINES="": clean (_make EXTRA_DEFINES)
     cp build/8E9978D50BDD20B4C8395A106C27FFDE.ips release/atmosphere/exefs_patches/botwsavs/8E9978D50BDD20B4C8395A106C27FFDE.ips
     cp README.md release
     cp CHANGELOG.md release
-    echo "" > release/botwsavs/main.log
+    cp standalone_ftp.py release/ftp.py
     echo "" > release/botwsavs/latest.txt
-    echo {{VERSION_TEXT}} > release/atmosphere/contents/01007EF00011E000/romfs/System/Version.txt
-    zip -r save-state-{{VERSION_TEXT}}.zip release
+    echo -n {{VERSION_TEXT}} > release/atmosphere/contents/01007EF00011E000/romfs/System/Version.txt
+    cd release && zip -r ../save-state-{{VERSION_TEXT}}.zip *
 
 # Build gold rush configuration and package
 release-gold-rush: (release "-DGOLD_RUSH")
@@ -75,7 +75,10 @@ draft-release:
 
 # Clean output
 clean:
-    rm -rf build build-DDEBUG build-DGOLD_RUSH release save-state-*.zip .env
+    rm -rf build build-DDEBUG build-DGOLD_RUSH release save-state-*.zip
+
+nuke: clean
+    rm -rf .env
 
 # Set console IP
 set-ip IP="":
@@ -87,11 +90,19 @@ set-ip IP="":
 ftp COMMAND="install":
     @if [[ -z ${SWITCH_CONSOLE_IP:+x} ]] ; then python3 tools/ftp.py {{COMMAND}}; else python3 tools/ftp.py {{COMMAND}} $SWITCH_CONSOLE_IP; fi
 
+# Run standalone ftp util wrapper for sending restore state.
+send-restore:
+    @if [[ -z ${SWITCH_CONSOLE_IP:+x} ]] ; then python3 tools/ftp.py install; else python3 standalone_ftp.py $SWITCH_CONSOLE_IP runtime/restore.txt set ; fi
+
+# Run standalone ftp util wrapper for getting latest state.
+get-latest:
+    @if [[ -z ${SWITCH_CONSOLE_IP:+x} ]] ; then python3 tools/ftp.py install; else python3 standalone_ftp.py $SWITCH_CONSOLE_IP runtime/latest.txt get ; fi
+
 # Search for symbol in dumpped (debug) build
 find-symbol SYMBOL:
     @objdump -T build-DDEBUG/botwsavs.elf | grep {{SYMBOL}} | cut -c 49-
 
 # Add symbol to config/symbols.ld and relink
 add-symbol SYMBOL ADDRESS: && build
-    echo "$(just find-symbol {{SYMBOL}}) = {{ADDRESS}} - 0x3483000; // {{SYMBOL}}" >> config/symbols.ld
+    echo "$(just find-symbol {{SYMBOL}}) = {{ADDRESS}} - 0x3483000; /* {{SYMBOL}} */" >> config/symbols.ld
     rm build-DDEBUG/botwsavs.*

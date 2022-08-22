@@ -5,7 +5,8 @@
 #include <basis/seadRawPrint.h>
 #include <basis/seadTypes.h>
 #include <container/seadListImpl.h>
-
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Winvalid-offsetof"
 namespace sead
 {
 class Heap;
@@ -129,4 +130,5 @@ protected:                                                                      
     CLASS* CLASS::sInstance = NULL;                                                                \
     CLASS::SingletonDisposer_* CLASS::SingletonDisposer_::sStaticDisposer = NULL;
 
+#pragma GCC diagnostic pop
 #endif  // SEAD_DISPOSER_H_

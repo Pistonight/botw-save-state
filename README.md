@@ -55,6 +55,8 @@ In setting mode. You can switch between levels of save state.
 - Hold `L` for 1 second: Decrease level
 - Hold `R` for 1 second: Increase level
 
+The level settings are preserved through restarts, meaning that when you close the game on a level, you will be on the same level when you boot up the game again.
+
 There are currently 4 levels:
 
 #### Level 0: Disabled 
@@ -67,11 +69,16 @@ Level 1 save state includes:
 - Position: Coordinate, Facing Angle, Camera Angle
 - Runes (finishes cooldown on restore)
 #### Level 2: Basic + Durability
-Level 2 save state includes everything in Level 1 and:
-- Equipped arrow count
-  - Only save if + menu is opened
-  - Only restore if + menu is opened and is previously saved
-- Equipped Weapon/Bow/Shield Durability
+Level 2 save state includes everything in Level 1 and equipped Arrow count + Weapon/Bow/Shield Durability
+
+You will see a warning like below if you don't have something equipped, but the ones you do have equipped will still save/restore fine
+```
+Warning: Something not equipped?
+```
+When restoring, the values will only be restored if you are equipping the same item as when you saved. Otherwise you will see a warning message like below. The items that do match will still restore fine.
+```
+Warning: Some equipped items are different!
+```
 #### Level 3: All
 Level 3 save state includes everything available, which includes all from Level 1 and 2, plus:
 - Time of day values:
@@ -100,6 +107,9 @@ If you save a state with a low level (for example, level 1), then switch to a hi
 ```
 You need to lower the setting level to restore!
 ```
+
+### Save State Transfer Script
+A python script `ftp.py` is also included for transfering save state files over FTP (with the `ftpd` homebrew app). Run `python3 ftp.py` to see how to use
 
 ## Developer
 **This section is intented for developers**
@@ -157,10 +167,13 @@ Release workflow:
 
 ### Linking BOTW
 Follow these steps to statically link a botw symbol
-- Declare the symbol (data or function) in `ksys/Ksys.hpp`. Put the address in a comment
+- Include the symbol in the project
+  - If the symbol is in decomp project, copy over the headers to `lib/botw`
+  - Otherwise, declare the symbol (data or function) in `mem/KingPtr.hpp`. Put the address in a comment
 - Use the symbol as normal (i.e. call the function or access the data)
 - Build with `just build`
 - Find the mangled symbol with `just find-symbol <symbol>`
-- Copy the mangled symbol and put it in a comment in `ksys/Ksys.hpp`
+  - `<symbol>` is a search string that will be used to `grep` the symbol table
+- If the symbol is not in decomp project, copy the mangled symbol and put in in a comment in `mem/KingPtr.hpp`
 - Add the symbol `just add-symbol <symbol> <address>`
 - Verify that `just find-symbol <symbol>` cannot find the symbol

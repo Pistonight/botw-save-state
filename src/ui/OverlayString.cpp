@@ -1,7 +1,7 @@
 #include "OverlayString.hpp"
 #include <cstring>
 
-#include "ksys/KSys.hpp"
+#include "mem/KingPtr.hpp"
 #include "util/StringBuffer.hpp"
 
 #include "types.h"
@@ -21,7 +21,7 @@ u64 GetMessageStringHook(void* file, sead::SafeString& messageId, WideString* ou
         return 0;
     }
 
-    return ksys::GetMessageString(file, &messageId, outString);
+    return mem::KingPtr::GetMessageString(file, &messageId, outString);
 }
 
 void ShowOverridenMessage(const char* message) {
@@ -46,7 +46,7 @@ void ShowOverridenMessage(const char* message) {
 
 void ShowOriginalMessage(u64 idx) {
     sead::SafeString sUselessString("?");
-    ksys::ShowInfoOverlayWithString(idx, reinterpret_cast<const void*>(&sUselessString));
+    mem::KingPtr::ShowInfoOverlayWithString(idx, reinterpret_cast<const void*>(&sUselessString));
 }
 
 }  // namespace botwsavs::ui

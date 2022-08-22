@@ -3,13 +3,21 @@
 #include "fs/Logger.hpp"
 #include "types.h"
 
-namespace botwsavs::util {
+namespace botwsavs::mem {
 
 template <typename T>
 class SafePtr {
 public:
     SafePtr(T* ptr) : mPtr(ptr) {}
     SafePtr(const SafePtr& other) : mPtr(other.mPtr) {}
+
+    bool TakePtr(T** out) const {
+        if (!LooksSafe()) {
+            return false;
+        }
+        *out = mPtr;
+        return true;
+    }
 
     bool Get(T* out) const {
         if (!LooksSafe()) {
@@ -83,4 +91,4 @@ private:
     T* mPtr;
 };
 
-}  // namespace botwsavs::util
+}  // namespace botwsavs::mem

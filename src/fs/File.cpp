@@ -107,6 +107,7 @@ s64 File::Read(FileBuffer& buffer) {
     }
 
     buffer.IncLen(readSize);
+    mOffset += readSize;
 
     return static_cast<s64>(readSize);
 }

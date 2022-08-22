@@ -37,7 +37,8 @@ LIBDIRS :=  $(PORTLIBS) $(LIBNX)
 ALL_INCLUDE_DIRS	:=	\
 $(SOURCE_DIR) \
 ${LIB_DIR}/nnheaders/include \
-$(LIB_DIR)/sead/include 
+$(LIB_DIR)/sead/include  \
+$(LIB_DIR)/botw
 # $(LIB_DIR)/locked/skyline/include 
 # $(LIB_DIR)/locked/libeiffel/include 
 # $(LIB_DIR)/sync/agl/include 

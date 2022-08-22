@@ -15,6 +15,8 @@ extern "C" void application_init() {
 #endif
     botwsavs::fs::File latestTxt("sd:/botwsavs/latest.txt");
     latestTxt.Create();
+    botwsavs::fs::File workerTxt("sd:/botwsavs/worker.txt");
+    workerTxt.Create();
 
     // Start worker
     botwsavs::core::StartWorkerThread();

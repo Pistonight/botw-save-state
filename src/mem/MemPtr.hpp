@@ -1,15 +1,15 @@
 #pragma once
 
-#include "ksys/KSys.hpp"
+#include "KingPtr.hpp"
+#include "SafePtr.hpp"
 #include "types.h"
-#include "util/SafePtr.hpp"
 
-namespace botwsavs::core {
+namespace botwsavs::mem {
 
 class MemPtr {
 public:
     // Create pointer to main
-    MemPtr() { mPtr = reinterpret_cast<char*>(&ksys::MainMemory); }
+    MemPtr() { mPtr = reinterpret_cast<char*>(&KingPtr::MainMemory); }
     // Copy constructor
     MemPtr(const MemPtr& other) {
         mPtr = other.mPtr;
@@ -36,9 +36,9 @@ public:
     MemPtr& operator[](s64 offset) { return Add(offset).Deref(); }
 
     template <typename T>
-    util::SafePtr<T> AsPtrTo() {
+    SafePtr<T> AsPtrTo() {
         T* ptr = mError ? nullptr : reinterpret_cast<T*>(mPtr);
-        util::SafePtr safePtr{ptr};
+        SafePtr safePtr{ptr};
         return safePtr;
     }
 
@@ -47,4 +47,4 @@ private:
     bool mError = false;
 };
 
-}  // namespace botwsavs::core
+}  // namespace botwsavs::mem
