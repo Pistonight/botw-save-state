@@ -44,9 +44,9 @@ You can't do that right now
 
 If you see a message like this:
 ```
-Save state error!
+Pointer error!
 ```
-This means one or more of the values cannot be accessed. Mostly likely due to invalid memory pointer. Currently it's known that there's a small chance that Link's havok coordinates point to invalid memory. When this happens, restart the game and try again.
+This means one or more of the values cannot be accessed. Mostly likely due to invalid memory pointer. Currently it's known that there's a small chance that Link's havok coordinates point to invalid memory. Try again or restart the game if this happens.
 
 ### Setting Mode Combos
 
