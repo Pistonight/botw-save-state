@@ -38,13 +38,24 @@ jobs:
       run: | 
         just lintc
         if [[ $? -ne 0 ]]; then echo "Run just format to fix"; fi
+  release:
+    name: "Release"
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request' && startsWith(github.ref, 'refs/tags/v')
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Setup | just
+      uses: extractions/setup-just@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Release | Draft Release Notes
       if: github.event_name != 'pull_request' && startsWith(github.ref, 'refs/tags/v')
       run: |
         just draft-release > RELEASE_NOTES.txt
-        cp standalont_ftp.py ftp.py
+        cp standalone_ftp.py ftp.py
     - name: Release | Create Draft Release
-      if: github.event_name != 'pull_request' && startsWith(github.ref, 'refs/tags/v')
+      if: 
       uses: softprops/action-gh-release@v1
       with:
         draft: true
