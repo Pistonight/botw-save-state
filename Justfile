@@ -92,11 +92,11 @@ ftp COMMAND="install":
 
 # Run standalone ftp util wrapper for sending restore state.
 send-restore:
-    @if [[ -z ${SWITCH_CONSOLE_IP:+x} ]] ; then python3 tools/ftp.py install; else python3 standalone_ftp.py $SWITCH_CONSOLE_IP runtime/restore.txt set ; fi
+    @if [[ -z ${SWITCH_CONSOLE_IP:+x} ]] ; then python3 tools/ftp.py install; else python3 standalone_ftp.py runtime/restore.txt set -ip $SWITCH_CONSOLE_IP ; fi
 
 # Run standalone ftp util wrapper for getting latest state.
 get-latest:
-    @if [[ -z ${SWITCH_CONSOLE_IP:+x} ]] ; then python3 tools/ftp.py install; else python3 standalone_ftp.py $SWITCH_CONSOLE_IP runtime/latest.txt get ; fi
+    @if [[ -z ${SWITCH_CONSOLE_IP:+x} ]] ; then python3 tools/ftp.py install; else python3 standalone_ftp.py runtime/latest.txt get -ip $SWITCH_CONSOLE_IP ; fi
 
 # Search for symbol in dumpped (debug) build
 find-symbol SYMBOL:
