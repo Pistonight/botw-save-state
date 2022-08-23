@@ -71,7 +71,7 @@ publish:
 
 # Display draft release notes
 draft-release:
-    @sed -n $(grep -n "LATEST" CHANGELOG.md | cut -d ":" -f 1)',{{CHANGELOG_LATEST_LAST}}p;{{CHANGELOG_LATEST_LAST}}q' CHANGELOG.md | head -n -1
+    @sed -n $(grep -n "LATEST" CHANGELOG.md | cut -d ":" -f 1)',{{CHANGELOG_LATEST_LAST}}p;{{CHANGELOG_LATEST_LAST}}q' CHANGELOG.md | head -n -1 | tail -n +2
 
 # Clean output
 clean:
