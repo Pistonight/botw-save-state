@@ -3,17 +3,21 @@ from ftplib import FTP
 from os.path import isfile
 import sys
 
+# Change this to whatever your IP is shown in ftpd, can also use -ip option
+YOUR_IP = "192.168.0.123"
+
 def print_usage():
     """Print usage"""
-    print(f"Usage: {sys.argv[0]} ip file <get|set>")
-    print("ip        = your console's ip, like 192.168.0.123")
+    print(f"Usage: {sys.argv[0]} file <get|set>")
     print("file      = file name of the input for set, or output for get")
     print("<get|set> = get: download the latest save state from switch")
     print("            set: send input file to switch for restoring save state")
     print()
-    print(f"Example: {sys.argv[0]} 192.168.0.123 inside_bombs.txt set")
+    print(f"You also need to open {sys.argv[0]} and change YOUR_IP to your console's IP address")
+    print()
+    print(f"Example: {sys.argv[0]} inside_bombs.txt set")
     print("          ^ This will send inside_bombs.txt to your switch for restoring")
-    print(f"Example: {sys.argv[0]} 192.168.0.123 output_state.txt get")
+    print(f"Example: {sys.argv[0]} output_state.txt get")
     print("          ^ This will download the last save state from switch and save it as output_state.txt on your computer")
 def run(console_ip, local_path, command):
     """Main"""
@@ -87,7 +91,11 @@ def add_slash_if_need(path):
     return path if path.startswith("/") else "/"+path
 
 if __name__ == "__main__":
-    if len(sys.argv) < 4:
+    if len(sys.argv) < 3:
         print_usage()
         sys.exit(-1)
-    run(sys.argv[1], sys.argv[2], sys.argv[3])
+    ip = YOUR_IP
+    for i, arg in enumerate(sys.argv):
+        if arg[i] == "-ip":
+            ip = arg[i+1]
+    run(ip, sys.argv[1], sys.argv[2])
