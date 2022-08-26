@@ -37,6 +37,8 @@ You can use these key combos in the Active Mode.
 
 Note that for save to/restore from file, you need to hold `PLUS + R3` before pressing the D pad. Otherwise it would trigger save to/restore from memory instead
 
+Also note that the mod has a logging function that will block reading the `/botwsavs` folder when the game is running, if you read it from a ftp client like FileZilla. If you use the [script](#save-state-transfer-script) it will be fine.
+
 If you try to restore without saving, or without the right file on sd card. You will see a message like this
 ```
 You can't do that right now
@@ -164,7 +166,7 @@ Release workflow:
 - `just release` to build for release configuration and produce the release zip
   - `just release-gold-rush` to build for gold rush configuration
 - `just publish` to tag the current commit with latest version
-- `just draft-release` to generate release notes
+- Upload the built release zip to GitHub manually
 - `just clean`
 
 ### Linking BOTW

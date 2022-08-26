@@ -2,7 +2,8 @@
 
 #include "Worker.hpp"
 #include "fs/Logger.hpp"
-#include "fs/SaveFile.hpp"
+#include "fs/StateSaveFile.hpp"
+#include "fs/WorkerSaveFile.hpp"
 #include "ui/OverlayString.hpp"
 
 namespace botwsavs::core {
@@ -10,8 +11,8 @@ namespace botwsavs::core {
 bool Worker::Init() {
     info("Init worker config from file");
 
-    fs::SaveFile workerTxt("sd:/botwsavs/worker.txt");
-    bool result = workerTxt.LoadWorker(*this);
+    fs::WorkerSaveFile workerTxt(*this);
+    bool result = workerTxt.Load();
 
     if (!result) {
         warn("File operation failed. Cannot init worker");
@@ -121,8 +122,8 @@ void Worker::ExecuteSaveToFile() {
         warnf("State read gives error 0x%x, but continuing to write file anyway",
               tempState.GetError());
     }
-    fs::SaveFile latestTxt("sd:/botwsavs/latest.txt");
-    bool result = latestTxt.Save(tempState);
+    fs::StateSaveFile latestTxt("sd:/botwsavs/latest.txt", tempState);
+    bool result = latestTxt.Save();
 
     if (!result) {
         ui::ShowError();
@@ -141,9 +142,15 @@ void Worker::ExecuteRestore() {
         return;
     }
 
+    if(mState.mLevel == 0){
+        error("Restore failed because state level is 0 (nothing stored)");
+        ui::ShowCantDoThatRightNow();
+        return;
+    }
+
     if (mState.mLevel < mLevel) {
         error("Restore failed because state level is less than setting level");
-        ui::ShowLevelError();
+        ui::ShowLevelError(mState.mLevel);
         return;
     }
 
@@ -167,14 +174,14 @@ void Worker::ExecuteRestoreFromFile() {
     }
 
     State tempState;
-    fs::SaveFile restoreTxt("sd:/botwsavs/restore.txt");
+    fs::StateSaveFile restoreTxt("sd:/botwsavs/restore.txt", tempState);
     if (!restoreTxt.Exists()) {
         error("Restore failed because restore.txt does not exist");
         ui::ShowCantDoThatRightNow();
         return;
     }
 
-    bool result = restoreTxt.Load(tempState);
+    bool result = restoreTxt.Load();
     if (!result) {
         ui::ShowError();
         error("File operation failed");
@@ -182,7 +189,7 @@ void Worker::ExecuteRestoreFromFile() {
     }
     if (tempState.mLevel < mLevel) {
         error("Restore failed because state level is less than setting level");
-        ui::ShowLevelError();
+        ui::ShowLevelError(tempState.mLevel);
         return;
     }
 
@@ -218,8 +225,8 @@ void Worker::DisplayStateError(State& state) {
 void Worker::SaveWorker() {
     info("Saving worker config to file");
 
-    fs::SaveFile workerTxt("sd:/botwsavs/worker.txt");
-    bool result = workerTxt.SaveWorker(*this);
+    fs::WorkerSaveFile workerTxt(*this);
+    bool result = workerTxt.Save();
 
     if (!result) {
         warn("File operation failed. Cannot save worker");
