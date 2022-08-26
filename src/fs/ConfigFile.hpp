@@ -1,7 +1,6 @@
 #pragma once
-#include "util/StringBuffer.hpp"
 #include "File.hpp"
-
+#include "util/StringBuffer.hpp"
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wstrict-aliasing"
@@ -23,26 +22,26 @@ protected:
     virtual void SaveInternal();
     virtual void LoadInternal();
 
-    void WriteInteger(const char* fieldName, const u64 value){
-        if (mSuccess){
+    void WriteInteger(const char* fieldName, const u64 value) {
+        if (mSuccess) {
             mSuccess = WriteIntegerInternal(fieldName, value);
         }
     }
 
-    void ReadInteger(u64* outValue){
-        if (mSuccess){
+    void ReadInteger(u64* outValue) {
+        if (mSuccess) {
             mSuccess = ReadIntegerInternal(outValue);
         }
     }
 
-    void WriteString(const char* fieldName, const char* string){
-        if (mSuccess){
+    void WriteString(const char* fieldName, const char* string) {
+        if (mSuccess) {
             mSuccess = WriteStringInternal(fieldName, string);
         }
     }
 
-    void ReadString(char* outString, const u32 maxLength){
-        if (mSuccess){
+    void ReadString(char* outString, const u32 maxLength) {
+        if (mSuccess) {
             mSuccess = ReadStringInternal(outString, maxLength);
         }
     }
@@ -74,7 +73,7 @@ protected:
     template <typename T>
     void WriteIntegerArray(const char* fieldName, const T* array, u32 size) {
         WriteInteger(fieldName, array[0]);
-        if(!mSuccess){
+        if (!mSuccess) {
             return;
         }
         for (u32 i = 1; i < size; i++) {
@@ -88,12 +87,12 @@ protected:
     template <typename T>
     void ReadIntegerArray(T* outArray, u32 size) {
         ReadInteger(outArray);
-        if(!mSuccess){
+        if (!mSuccess) {
             return;
         }
         for (u32 i = 1; i < size; i++) {
             ReadInteger(outArray + i);
-            if(!mSuccess){
+            if (!mSuccess) {
                 return;
             }
         }
@@ -101,12 +100,12 @@ protected:
 
     void WriteFloatArray(const char* fieldName, const f32* array, u32 size) {
         WriteFloat(fieldName, array[0]);
-        if(!mSuccess){
+        if (!mSuccess) {
             return;
         }
         for (u32 i = 1; i < size; i++) {
             WriteFloat(" ---", array[i]);
-            if(!mSuccess){
+            if (!mSuccess) {
                 return;
             }
         }
@@ -114,7 +113,7 @@ protected:
 
     void ReadFloatArray(f32* outArray, u32 size) {
         ReadFloat(outArray);
-        if(!mSuccess){
+        if (!mSuccess) {
             return;
         }
         for (u32 i = 1; i < size; i++) {
@@ -126,14 +125,10 @@ protected:
     }
 
 private:
-
     // In save mode all read functions will be disabled, vise versa
-    enum class Mode {
-        Save,
-        Load
-    };
+    enum class Mode { Save, Load };
 
-    Mode mMode = Mode::Save; 
+    Mode mMode = Mode::Save;
     bool mSuccess = true;
     File mFile;
     FileBuffer mBuffer;
@@ -147,7 +142,6 @@ private:
     bool WriteStringInternal(const char* fieldName, const char* string);
 
     bool ReadStringInternal(char* outString, const u32 maxLength);
-
 };
 
 }  // namespace fs

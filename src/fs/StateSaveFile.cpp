@@ -3,7 +3,7 @@
 #include "fs/Logger.hpp"
 
 namespace botwsavs::fs {
-void StateSaveFile::LoadInternal()  {
+void StateSaveFile::LoadInternal() {
     u32 version = 0;
     ReadInteger(&version);
 
@@ -87,7 +87,7 @@ void StateSaveFile::ReadVersion2() {
     StateFileReadNamedValue(Integer, mOverworldEquippedShield, 64);
 }
 
-void StateSaveFile::ReadVersion3(){
+void StateSaveFile::ReadVersion3() {
     ReadVersion2();
     StateFileRead(Float, mTimeOfDayPaused);
     StateFileRead(Float, mTimeOfDayUnpaused);
@@ -114,4 +114,4 @@ void StateSaveFile::ReadVersion3(){
     StateFileRead(Float, mShockResistPotionTimer);
     StateFileRead(Float, mStealthPotionTimer);
 }
-}
+}  // namespace botwsavs::fs

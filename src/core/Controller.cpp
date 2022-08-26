@@ -36,7 +36,8 @@ bool Controller::TryGetController() {
 }
 
 bool Controller::ShouldSaveState() {
-    return mpController->isHoldAll(Key::ZL | Key::L | Key::Plus | Key::DpadLeft) && !mpController->isHold(Key::RStick);
+    return mpController->isHoldAll(Key::ZL | Key::L | Key::Plus | Key::DpadLeft) &&
+           !mpController->isHold(Key::RStick);
 }
 
 bool Controller::ShouldRestoreState() {

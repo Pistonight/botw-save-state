@@ -87,9 +87,7 @@ public:
     }
 
 private:
-    bool LooksSafe() const {
-        return PtrLooksSafe(mPtr);
-    }
+    bool LooksSafe() const { return PtrLooksSafe(mPtr); }
 
 private:
     T* mPtr;

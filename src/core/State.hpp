@@ -80,6 +80,7 @@ public:
     f32 mFlameResistPotionTimer;
     f32 mShockResistPotionTimer;
     f32 mStealthPotionTimer;
+
 private:
     void ReadLevel3();
     void WriteLevel3();

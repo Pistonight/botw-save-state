@@ -1,6 +1,6 @@
+#include "ConfigFile.hpp"
 #include <stdlib.h>
 #include "Logger.hpp"
-#include "ConfigFile.hpp"
 //#include "util/StringBuffer.hpp"
 
 namespace botwsavs::fs {
@@ -9,7 +9,7 @@ bool ConfigFile::Save() {
     if (!mFile.Open()) {
         return false;
     }
-    
+
     if (!mFile.Clear()) {
         mFile.Close();
         return false;
@@ -21,7 +21,7 @@ bool ConfigFile::Save() {
     return mSuccess;
 }
 
-bool ConfigFile::Load(){
+bool ConfigFile::Load() {
     if (!mFile.Open()) {
         return false;
     }
@@ -63,7 +63,7 @@ bool ConfigFile::ReadLine(u32* outLineLength) {
 }
 
 bool ConfigFile::WriteIntegerInternal(const char* fieldName, u64 value) {
-    if(mMode==Mode::Load){
+    if (mMode == Mode::Load) {
         error("Cannot write in load mode");
         return false;
     }
@@ -74,7 +74,7 @@ bool ConfigFile::WriteIntegerInternal(const char* fieldName, u64 value) {
 }
 
 bool ConfigFile::ReadIntegerInternal(u64* outValue) {
-    if(mMode==Mode::Save){
+    if (mMode == Mode::Save) {
         error("Cannot read in save mode");
         return false;
     }
@@ -91,7 +91,7 @@ bool ConfigFile::ReadIntegerInternal(u64* outValue) {
 }
 
 bool ConfigFile::WriteStringInternal(const char* fieldName, const char* string) {
-    if(mMode==Mode::Load){
+    if (mMode == Mode::Load) {
         error("Cannot write in load mode");
         return false;
     }
@@ -102,7 +102,7 @@ bool ConfigFile::WriteStringInternal(const char* fieldName, const char* string) 
 }
 
 bool ConfigFile::ReadStringInternal(char* outString, const u32 bufferLength) {
-    if(mMode==Mode::Save){
+    if (mMode == Mode::Save) {
         error("Cannot read in save mode");
         return false;
     }

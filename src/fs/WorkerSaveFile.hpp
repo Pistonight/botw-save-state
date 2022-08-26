@@ -1,17 +1,17 @@
 #pragma once
 #include "ConfigFile.hpp"
 
-namespace botwsavs{
+namespace botwsavs {
 
-namespace core{
+namespace core {
 class Worker;
 }
 
-namespace fs{
+namespace fs {
 
 class WorkerSaveFile : public ConfigFile {
 public:
-    WorkerSaveFile(core::Worker& worker) : ConfigFile("sd:/botwsavs/worker.txt"), mWorker(worker) {};
+    WorkerSaveFile(core::Worker& worker) : ConfigFile("sd:/botwsavs/worker.txt"), mWorker(worker){};
     ~WorkerSaveFile() = default;
 
 protected:
@@ -21,5 +21,5 @@ protected:
     core::Worker& mWorker;
 };
 
-}    
-}
+}  // namespace fs
+}  // namespace botwsavs

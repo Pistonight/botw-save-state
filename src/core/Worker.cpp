@@ -142,7 +142,7 @@ void Worker::ExecuteRestore() {
         return;
     }
 
-    if(mState.mLevel == 0){
+    if (mState.mLevel == 0) {
         error("Restore failed because state level is 0 (nothing stored)");
         ui::ShowCantDoThatRightNow();
         return;
