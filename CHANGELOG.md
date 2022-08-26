@@ -1,7 +1,8 @@
 # CHANGELOG
 
-### `1.6.0-SS0.3` `2022-08-23` `LATEST`
+### `1.6.0-SS1.0` `2022-08-26` `LATEST`
 - Level 3 save and restore
+- Change save/restore key combo to include both left triggers (`L` and `ZL`). This is so that you don't accidentally save or restore during a super launch
 - Enable logging (except for debug logging) in ship builds
 
 ### `1.6.0-SS0.2` `2022-08-21`

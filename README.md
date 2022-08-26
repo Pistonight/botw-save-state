@@ -30,12 +30,12 @@ Save state: Active Mode
 ### Active Mode Combos
 You can use these key combos in the Active Mode.
 
-- `PLUS + Dpad Left`: Save state to memory
-- `PLUS + R3 + Dpad Left`: Save state to `/botwsavs/latest.txt` on sd card
-- `PLUS + Dpad Right`: Restore state from memory
-- `PLUS + R3 + Dpad Right`: Restore state from `/botwsavs/restore.txt` on sd card
+- `ZL + L + PLUS + Dpad Left`: Save state to memory
+- `ZL + L + PLUS + R3 + Dpad Left`: Save state to `/botwsavs/latest.txt` on sd card
+- `ZL + L + PLUS + Dpad Right`: Restore state from memory
+- `ZL + L + PLUS + R3 + Dpad Right`: Restore state from `/botwsavs/restore.txt` on sd card
 
-Note that for save to/restore from file, you need to hold `PLUS + R3` before pressing the D pad. Otherwise it would trigger save to/restore from memory instead
+Note that for save to/restore from file, you can't press `R3` last. Otherwise you would trigger save to/restore from memory instead. I usually prefer holding `Triggers + Dpad + R3`, then hit `PLUS` to trigger.
 
 Also note that the mod has a logging function that will block reading the `/botwsavs` folder when the game is running, if you read it from a ftp client like FileZilla. If you use the [script](#save-state-transfer-script) it will be fine.
 

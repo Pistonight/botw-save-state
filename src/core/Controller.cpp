@@ -36,20 +36,20 @@ bool Controller::TryGetController() {
 }
 
 bool Controller::ShouldSaveState() {
-    return mpController->isHoldAll(Key::Plus | Key::DpadLeft) && !mpController->isHold(Key::RStick);
+    return mpController->isHoldAll(Key::ZL | Key::L | Key::Plus | Key::DpadLeft) && !mpController->isHold(Key::RStick);
 }
 
 bool Controller::ShouldRestoreState() {
-    return mpController->isHoldAll(Key::Plus | Key::DpadRight) &&
+    return mpController->isHoldAll(Key::ZL | Key::L | Key::Plus | Key::DpadRight) &&
            !mpController->isHold(Key::RStick);
 }
 
 bool Controller::ShouldSaveStateToFile() {
-    return mpController->isHoldAll(Key::Plus | Key::DpadLeft | Key::RStick);
+    return mpController->isHoldAll(Key::ZL | Key::L | Key::Plus | Key::DpadLeft | Key::RStick);
 }
 
 bool Controller::ShouldRestoreStateFromFile() {
-    return mpController->isHoldAll(Key::Plus | Key::DpadRight | Key::RStick);
+    return mpController->isHoldAll(Key::ZL | Key::L | Key::Plus | Key::DpadRight | Key::RStick);
 }
 
 bool Controller::ShouldSwitchMode() {
