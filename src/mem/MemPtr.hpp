@@ -24,8 +24,9 @@ public:
     MemPtr& operator+(s64 offset) { return Add(offset); }
     // Deferring and storing the value as pointer
     MemPtr& Deref() {
-        if (!mPtr) {
+        if (!PtrLooksSafe(mPtr)) {
             mError = true;
+            error("MemPtr deref failed");
             return *this;
         }
         char** pp = reinterpret_cast<char**>(mPtr);

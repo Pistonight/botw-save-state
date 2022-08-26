@@ -48,8 +48,8 @@ inline void ShowError() {
     ShowOverridenMessage("Save state error!");
 }
 
-inline void ShowLevelError() {
-    ShowOverridenMessage("You need to lower the setting level to restore!");
+inline void ShowLevelError(u32 stateLevel) {
+    ShowFormattedMessage("You need to lower the setting level to %d to restore!", stateLevel);
 }
 
 }  // namespace botwsavs::ui

@@ -55,7 +55,7 @@ GamePtrDefine(ksys::act::BaseProc, OverworldShieldActor, main[0x2CC4768][0xc0][-
 // Time
 GamePtrDefine(f32, TimeOfDayPaused, main[0x2CC5FE0][0xBE0][0x30][0xF8] + 0x18) // [[[[main+2CC5FE0]+BE0]+30]+F8]+18
 GamePtrDefine(f32, TimeOfDayUnpaused, main[0x2CD18C8][0x17630] + 0x468) // [[main+2CD18C8]+17630]+468
-GamePtrDefine(f32, BloodMoonTimer, main[0x2CD18D0][0x39][0x398] + 0x2D0) // [[[main+2CD18D0]+30]+398]+2D0
+GamePtrDefine(f32, BloodMoonTimer, main[0x2CD18D0][0x30][0x398] + 0x2D0) // [[[main+2CD18D0]+30]+398]+2D0
 
 // Climate Damage
 GamePtrDefine(f32, TemperatureDamageTimer, main[0x2CA1140][0x60] + 0x268C) // [[main+2CA1140]+60]+268C
@@ -80,7 +80,7 @@ GamePtrDefine(f32, DefensePotionTimer, main[0x2CC4768][0xC0] + 0x12E8) // [[main
 GamePtrDefine(f32, HeatResistPotionTimer, main[0x2CC4768][0xC0] + 0x12F4) // [[main+2CC4768]+C0]+12F4
 GamePtrDefine(f32, ColdResistPotionTimer, main[0x2CC4768][0xC0] + 0x1300) // [[main+2CC4768]+C0]+1300
 GamePtrDefine(f32, FlameResistPotionTimer, main[0x2CC4768][0xC0] + 0x130C) // [[main+2CC4768]+C0]+130C
-GamePtrDefine(f32, ShockResistPotinoTimer, main[0x2CC4768][0xC0] + 0x1324) // [[main+2CC4768]+C0]+1324
-GamePtrDefine(f32, StealthPotinoTimer, main[0x2CC4768][0xC0] + 0x133C) // [[main+2CC4768]+C0]+133C
+GamePtrDefine(f32, ShockResistPotionTimer, main[0x2CC4768][0xC0] + 0x1324) // [[main+2CC4768]+C0]+1324
+GamePtrDefine(f32, StealthPotionTimer, main[0x2CC4768][0xC0] + 0x133C) // [[main+2CC4768]+C0]+133C
 
 }  // namespace botwsavs::core::ptr

@@ -36,9 +36,4 @@ bool State::WriteToGame(u32 level) {
     return mError == Error::None;
 }
 
-void State::ReadLevel3() { /*TODO*/
-}
-void State::WriteLevel3() { /*TODO*/
-}
-
 }  // namespace botwsavs::core

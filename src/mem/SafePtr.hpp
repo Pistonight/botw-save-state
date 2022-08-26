@@ -5,6 +5,21 @@
 
 namespace botwsavs::mem {
 
+static bool PtrLooksSafe(void* p) {
+    u64 raw = reinterpret_cast<u64>(p);
+
+    if (raw > 0xFFFFFFFFFF || (raw >> 32 == 0)) {
+        warnf("Pointer %p does not look safe", p);
+        return false;
+    }
+    if ((raw & 3) != 0) {
+        warnf("Pointer %p does not look safe", p);
+        return false;
+    }
+
+    return true;
+}
+
 template <typename T>
 class SafePtr {
 public:
@@ -72,20 +87,7 @@ public:
     }
 
 private:
-    bool LooksSafe() const {
-        u64 raw = reinterpret_cast<u64>(mPtr);
-
-        if (raw > 0xFFFFFFFFFF || (raw >> 32 == 0)) {
-            warnf("Pointer %p does not look safe", mPtr);
-            return false;
-        }
-        if ((raw & 3) != 0) {
-            warnf("Pointer %p does not look safe", mPtr);
-            return false;
-        }
-
-        return true;
-    }
+    bool LooksSafe() const { return PtrLooksSafe(mPtr); }
 
 private:
     T* mPtr;

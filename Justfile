@@ -47,15 +47,14 @@ release EXTRA_DEFINES="": clean (_make EXTRA_DEFINES)
     mkdir -p release/atmosphere/contents/01007EF00011E000/romfs/System
     mkdir -p release/atmosphere/exefs_patches/botwsavs
     mkdir -p release/botwsavs
-    cp build/botwsavs.nso release/atmosphere/contents/01007EF00011E000/exefs/subsdk9
-    cp build/app.npdm release/atmosphere/contents/01007EF00011E000/exefs/main.npdm
-    cp build/8E9978D50BDD20B4C8395A106C27FFDE.ips release/atmosphere/exefs_patches/botwsavs/8E9978D50BDD20B4C8395A106C27FFDE.ips
+    cp build{{EXTRA_DEFINES}}/botwsavs.nso release/atmosphere/contents/01007EF00011E000/exefs/subsdk9
+    cp build{{EXTRA_DEFINES}}/app.npdm release/atmosphere/contents/01007EF00011E000/exefs/main.npdm
+    cp build{{EXTRA_DEFINES}}/8E9978D50BDD20B4C8395A106C27FFDE.ips release/atmosphere/exefs_patches/botwsavs/8E9978D50BDD20B4C8395A106C27FFDE.ips
     cp README.md release
     cp CHANGELOG.md release
-    cp standalone_ftp.py release/ftp.py
     echo "" > release/botwsavs/latest.txt
     echo -n {{VERSION_TEXT}} > release/atmosphere/contents/01007EF00011E000/romfs/System/Version.txt
-    cd release && zip -r ../save-state-{{VERSION_TEXT}}.zip *
+    cd release && zip -r ../save-state-{{VERSION_TEXT}}{{EXTRA_DEFINES}}.zip *
 
 # Build gold rush configuration and package
 release-gold-rush: (release "-DGOLD_RUSH")

@@ -96,6 +96,6 @@ if __name__ == "__main__":
         sys.exit(-1)
     ip = YOUR_IP
     for i, arg in enumerate(sys.argv):
-        if arg[i] == "-ip":
-            ip = arg[i+1]
+        if sys.argv[i] == "-ip":
+            ip = sys.argv[i+1]
     run(ip, sys.argv[1], sys.argv[2])
