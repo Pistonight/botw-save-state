@@ -1,5 +1,6 @@
 #include <Game/UI/uiPauseMenuDataMgr.h>
 #include <KingSystem/ActorSystem/actBaseProc.h>
+#include <container/seadOffsetList.h>
 #include <prim/seadSafeString.h>
 #include "State.hpp"
 #include "StateMacros.hpp"
@@ -11,6 +12,10 @@ namespace botwsavs::core {
 void State::ReadLevel2() {
     GameUseSafePtrOrError(uking::ui::PauseMenuDataMgr::instance(), uking::ui::PauseMenuDataMgr,
                           pPauseMenuDataMgr) {
+        // test if stuff works
+        s32 size = pPauseMenuDataMgr->getItems().size();
+        debugf("mCount is %d", size);
+
         // update equipped weapons
         pPauseMenuDataMgr->updateEquippedItemArray();
 
