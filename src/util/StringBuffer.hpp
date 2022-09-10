@@ -70,6 +70,15 @@ public:
         EnsureTermination();
     }
 
+    void SafeDeleteEnd(u32 size){
+        if(mLen <= size){
+            mLen = 0;
+        }else{
+            mLen -= size;
+        }
+        EnsureTermination();
+    }
+
 private:
     char mContent[L + 1];
     u32 mLen;

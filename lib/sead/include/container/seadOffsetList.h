@@ -17,8 +17,6 @@ public:
     void initOffset(s32 offset) { mOffset = offset; }
 
     void clear() { ListImpl::clear(); }
-// // BOTW-SAVE-STATE hack: size
-//     s32 size() { return ListImpl::size(); }
 
     void pushBack(T* item)
     {

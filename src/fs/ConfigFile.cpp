@@ -5,7 +5,7 @@
 
 namespace botwsavs::fs {
 
-bool ConfigFile::Save() {
+bool ConfigFile::Save(const Config& config) {
     if (!mFile.Open()) {
         return false;
     }
@@ -16,19 +16,19 @@ bool ConfigFile::Save() {
     }
     mSuccess = true;
     mMode = Mode::Save;
-    SaveInternal();
+    config.Save(*this);
     mFile.Close();
     return mSuccess;
 }
 
-bool ConfigFile::Load() {
+bool ConfigFile::Load(Config& config) {
     if (!mFile.Open()) {
         return false;
     }
     mSuccess = true;
     mMode = Mode::Load;
     mBuffer.Clear();
-    LoadInternal();
+    config.Load(*this);
     mFile.Close();
     return mSuccess;
 }

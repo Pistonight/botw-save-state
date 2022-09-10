@@ -2,7 +2,7 @@
 #include <prim/seadSafeString.h>
 #include <types.h>
 
-namespace botwsavs::core {
+namespace botwsavs::util {
 
 template <typename T, u32 L>
 class NamedValue {
@@ -14,7 +14,7 @@ public:
         mName[L - 1] = '\0';
     }
 
-    bool NameMatches(const sead::FixedSafeString<L>& string) {
+    bool NameMatches(const sead::FixedSafeString<L>& string) const {
         return strncmp(mName, string.cstr(), L) == 0;
     }
 

@@ -1,5 +1,6 @@
 #pragma once
 #include "File.hpp"
+#include "util/NamedValue.hpp"
 #include "util/StringBuffer.hpp"
 
 #pragma GCC diagnostic push
@@ -8,6 +9,14 @@ namespace botwsavs {
 
 namespace fs {
 
+class ConfigFile;
+
+class Config {
+public:
+    virtual void Save(ConfigFile& file) const;
+    virtual void Load(ConfigFile& file);
+};
+
 class ConfigFile {
 public:
     ConfigFile(const char* path) : mFile(path) {}
@@ -15,12 +24,8 @@ public:
 
     bool Exists() { return mFile.Exists(); }
 
-    bool Save();
-    bool Load();
-
-protected:
-    virtual void SaveInternal();
-    virtual void LoadInternal();
+    bool Save(const Config& config);
+    bool Load(Config& config);
 
     void WriteInteger(const char* fieldName, const u64 value) {
         if (mSuccess) {
@@ -55,6 +60,10 @@ protected:
 
         u32 truncated = (u32)(iValue);
         *outValue = truncated;
+    }
+
+    void ReadInteger(s32* outValue) {
+        ReadInteger(reinterpret_cast<u32*>(outValue));
     }
 
     void WriteFloat(const char* fieldName, const f32 value) {
@@ -122,6 +131,30 @@ protected:
                 return;
             }
         }
+    }
+
+    template<typename T, u32 L>
+    void WriteNamedInteger(const char* fieldName, const util::NamedValue<T, L>& value){
+        WriteString("Name of value below", value.GetName());                                   
+        WriteInteger(fieldName, value.GetValue());
+    }
+
+    template<typename T, u32 L>
+    void ReadNamedInteger(util::NamedValue<T, L>& value){
+        ReadString(value.Name(), L);                                                        
+        ReadInteger(value.GetValuePtr());
+    }
+
+    template<typename T, u32 L>
+    void WriteNamedFloat(const char* fieldName, const util::NamedValue<T, L>& value){
+        WriteString("Name of value below", value.GetName());                                   
+        WriteFloat(fieldName, value.GetValue());
+    }
+
+    template<typename T, u32 L>
+    void ReadNamedFloat(const char* fieldName, const util::NamedValue<T, L>& value){
+        ReadString(value.Name(), L);                                                        
+        ReadFloat(value.GetValuePtr());
     }
 
 private:

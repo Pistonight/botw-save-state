@@ -1,28 +1,56 @@
 #pragma once
+
+#include "fs/ConfigFile.hpp"
+
 #include "Controller.hpp"
+#include "KeyMgr.hpp"
 #include "State.hpp"
+
+#define WORKER_TXT_PATH "sd:/botwsavs/worker.txt"
 
 namespace botwsavs {
 
 namespace core {
 
-class Worker {
+class Worker : fs::Config {
 public:
     enum class Mode { Active, Setting };
-    enum class Hold {
-        None,
-        ModeSwitch,
-        IncreaseLevel,
-        DecreaseLevel,
-    };
+    // enum class Hold {
+    //     None,
+    //     ModeSwitch,
+    //     IncreaseLevel,
+    //     DecreaseLevel,
+    // };
 
 public:
     bool Init();
     // Return if work is successful
-    bool Work();
+    bool Work() {
+        if (!CanWork()){
+            return false;
+        }
+        if (TrySwitchMode()){
+            return true;
+        }
+        if (mMode == Mode::Active){
+            return WorkActiveMode();
+        }else{
+            return WorkSettingMode();
+        }
+    }
+
+    void Save(fs::ConfigFile& configFile) const override;
+    void Load(fs::ConfigFile& configFile) override;
 
 private:
-    bool DidHoldFor(Hold hold, u32 seconds);
+    // Core
+    bool CanWork() {
+        return mController.IsInitialized();
+    }
+    bool WorkActiveMode();
+    bool WorkSettingMode();
+    bool TrySwitchMode();
+
     // Save state to memory
     void ExecuteSave();
     // Save state to file
@@ -34,17 +62,20 @@ private:
     // Display the most important state error
     void DisplayStateError(State& state);
     // Save worker config
-    void SaveWorker();
+    bool SaveConfig() const;
+    // Load worker config
+    bool LoadConfig();
 
 public:
     u32 mLevel = 1;
+    
 
 private:
     Controller mController;
+    KeyMgr mKeyMgr;
     State mState;
     Mode mMode = Mode::Active;
-    u32 mHoldCounter = 0;
-    Hold mHold = Hold::None;
+    
 };
 
 }  // namespace core
