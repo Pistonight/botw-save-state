@@ -1,6 +1,11 @@
 # CHANGELOG
 
-### `1.6.0-SS1.0` `2022-08-26` `LATEST`
+### `1.6.0-SS1.1` `2022-09-10` `LATEST`
+- Add save and restore offset between pouch item list count (i.e. `mCount`) and actual inventory size to level 3
+- Make save and restore key binding configurable
+  - In setting mode, hold the current key binding for 3 seconds, then hold the new key binding for 3 seconds.
+
+### `1.6.0-SS1.0` `2022-08-26`
 - Level 3 save and restore
 - Change save/restore key combo to include both left triggers (`L` and `ZL`). This is so that you don't accidentally save or restore during a super launch
 - Enable logging (except for debug logging) in ship builds

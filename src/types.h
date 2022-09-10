@@ -49,3 +49,6 @@ typedef char16_t wchar;
 #define infof(mes, value) botwsavs::fs::Logger::Instance().InfoF(mes, value)
 #define warnf(mes, value) botwsavs::fs::Logger::Instance().WarnF(mes, value)
 #define errorf(mes, value) botwsavs::fs::Logger::Instance().ErrorF(mes, value)
+
+#define nameof(x) #x
+#define named(x) #x, x

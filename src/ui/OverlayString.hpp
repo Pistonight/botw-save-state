@@ -15,7 +15,7 @@ u64 GetMessageStringHook(void* file, sead::SafeString& messageId, WideString* ou
 void ShowOverridenMessage(const char* message);
 
 template <typename T>
-void ShowFormattedMessage(const char* format, T& value) {
+void ShowFormattedMessage(const char* format, T value) {
     char result[200];
     snprintf(result, 200, format, value);
     ShowOverridenMessage(result);
@@ -50,6 +50,10 @@ inline void ShowError() {
 
 inline void ShowLevelError(u32 stateLevel) {
     ShowFormattedMessage("You need to lower the setting level to %d to restore!", stateLevel);
+}
+
+inline void ShowSetKeyBinding(const char* keyName) {
+    ShowFormattedMessage("Configure %s key (Hold for 3s)", keyName);
 }
 
 }  // namespace botwsavs::ui

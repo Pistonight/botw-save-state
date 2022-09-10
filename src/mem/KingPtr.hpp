@@ -27,6 +27,7 @@ extern u64 GetMessageString(void* file, void* messageId, void* outString);
 
 // Other used:
 // uking::ui::PauseMenuDataMgr::sInstance
-//
+// 0x02CA6D50
+// _ZN5uking2ui16PauseMenuDataMgr9sInstanceE
 //
 }  // namespace botwsavs::mem::KingPtr

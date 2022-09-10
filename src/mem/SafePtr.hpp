@@ -5,7 +5,7 @@
 
 namespace botwsavs::mem {
 
-static bool PtrLooksSafe(void* p) {
+inline bool PtrLooksSafe(void* p) {
     u64 raw = reinterpret_cast<u64>(p);
 
     if (raw > 0xFFFFFFFFFF || (raw >> 32 == 0)) {
@@ -42,7 +42,7 @@ public:
         return true;
     }
 
-    bool Set(T value) {
+    bool Set(T value) const {
         if (!LooksSafe()) {
             return false;
         }
@@ -58,7 +58,7 @@ public:
         return true;
     }
 
-    bool Set(T value, u32 i) {
+    bool Set(T value, u32 i) const {
         if (!LooksSafe()) {
             return false;
         }
@@ -76,7 +76,7 @@ public:
         return true;
     }
 
-    bool SetArray(const T* array, u32 len) {
+    bool SetArray(const T* array, u32 len) const {
         if (!LooksSafe()) {
             return false;
         }

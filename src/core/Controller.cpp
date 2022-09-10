@@ -6,10 +6,6 @@
 
 namespace botwsavs::core {
 
-Controller::~Controller() {
-    mpController = nullptr;
-}
-
 bool Controller::TryGetController() {
     if (mpController) {
         return true;
@@ -27,41 +23,18 @@ bool Controller::TryGetController() {
         return false;
     }
 
-    fs::FileBuffer buf;
-    buf.SafeAppendF("Found controller instance: %p", pController);
-    info(buf);
+    infof("Found controller instance: %p", pController);
 
     mpController = pController;
     return true;
 }
 
-bool Controller::ShouldSaveState() {
-    return mpController->isHoldAll(Key::ZL | Key::L | Key::Plus | Key::DpadLeft) &&
-           !mpController->isHold(Key::RStick);
+bool Controller::IsOnlyHolding(u32 mask) {
+    return mpController->isHoldAll(mask) && !mpController->isHold(~mask);
 }
 
-bool Controller::ShouldRestoreState() {
-    return mpController->isHoldAll(Key::ZL | Key::L | Key::Plus | Key::DpadRight) &&
-           !mpController->isHold(Key::RStick);
-}
-
-bool Controller::ShouldSaveStateToFile() {
-    return mpController->isHoldAll(Key::ZL | Key::L | Key::Plus | Key::DpadLeft | Key::RStick);
-}
-
-bool Controller::ShouldRestoreStateFromFile() {
-    return mpController->isHoldAll(Key::ZL | Key::L | Key::Plus | Key::DpadRight | Key::RStick);
-}
-
-bool Controller::ShouldSwitchMode() {
-    return mpController->isHoldAll(Key::DpadDown | Key::ZL | Key::ZR | Key::L | Key::R);
-}
-
-bool Controller::ShouldIncreaseLevel() {
-    return mpController->isHold(Key::R);
-}
-bool Controller::ShouldDecreaseLevel() {
-    return mpController->isHold(Key::L);
+u32 Controller::GetHoldKeys() {
+    return mpController->getHoldMask();
 }
 
 }  // namespace botwsavs::core

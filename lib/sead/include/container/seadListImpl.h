@@ -37,6 +37,17 @@ public:
 
     bool isEmpty() const { return mCount == 0; }
     s32 size() const { return mCount; }
+// BOTW-sAVE-STATE hack
+    void setSize(s32 size) { mCount = size; }
+    s32 sizeSlow() const {
+        s32 size = 0;
+        ListNode* ptr = mStartEnd.mNext;
+        while(ptr && ptr != &mStartEnd){
+            ptr = ptr->mNext;
+            size++;
+        }
+        return size;
+    }
 
     void reverse();
     void shuffle();

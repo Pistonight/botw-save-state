@@ -1,214 +1,163 @@
 #include <Game/UI/uiPauseMenuDataMgr.h>
 #include <KingSystem/ActorSystem/actBaseProc.h>
 #include <prim/seadSafeString.h>
-#include "State.hpp"
-#include "StateMacros.hpp"
+
+#include "fs/ConfigFile.hpp"
 #include "fs/Logger.hpp"
 #include "mem/GamePtr.h"
 
+#include "StateLevel2.hpp"
 namespace botwsavs::core {
 
-void State::ReadLevel2() {
-    GameUseSafePtrOrError(uking::ui::PauseMenuDataMgr::instance(), uking::ui::PauseMenuDataMgr,
-                          pPauseMenuDataMgr) {
+void StateLevel2::ReadInventoryEquipment(const char* name, uking::ui::PouchItem* pItem,
+                                         util::NamedValue<u32, 64>& value) {
+    if (mem::PtrLooksSafe(pItem)) {
+        value.Set(pItem->getName(), pItem->getValue());
+    } else {
+        value.ClearName();
+        SetError(StateError::NotEquipped);
+        warnf("Cannot read equipped %s count", name);
+    }
+}
+
+void StateLevel2::WriteInventoryEquipment(const char* name, uking::ui::PouchItem* pItem,
+                                          const util::NamedValue<u32, 64>& value) {
+    if (mem::PtrLooksSafe(pItem)) {
+        if (value.NameMatches(pItem->getName())) {
+            pItem->setValue(value.GetValue());
+        } else {
+            SetError(StateError::DifferentName);
+            warnf("Cannot restore equipped %s count: different name", name);
+        }
+    } else {
+        SetError(StateError::NotEquipped);
+        warnf("Cannot restore equipped %s count", name);
+    }
+}
+
+void StateLevel2::ReadOverworldEquipment(const char* name,
+                                         const mem::SafePtr<ksys::act::BaseProc>& safepActor,
+                                         const mem::SafePtr<u32>& safepDurability,
+                                         util::NamedValue<u32, 64>& value) {
+    ksys::act::BaseProc* pActor;
+    if (safepActor.TakePtr(&pActor)) {
+        u32 durability;
+        if (safepDurability.Get(&durability)) {
+            value.Set(pActor->getName(), durability);
+        } else {
+            value.ClearName();
+            SetError(StateError::Pointer);
+            warnf("Cannot read equipped overworld %s durability", name);
+        }
+    } else {
+        value.ClearName();
+        SetError(StateError::NotEquipped);
+        warnf("Cannot read equipped overworld %s actor", name);
+    }
+}
+
+void StateLevel2::WriteOverworldEquipment(const char* name,
+                                          const mem::SafePtr<ksys::act::BaseProc>& safepActor,
+                                          const mem::SafePtr<u32>& safepDurability,
+                                          const util::NamedValue<u32, 64>& value) {
+    ksys::act::BaseProc* pActor;
+    if (safepActor.TakePtr(&pActor)) {
+        if (value.NameMatches(pActor->getName())) {
+            if (!safepDurability.Set(value.GetValue())) {
+                SetError(StateError::Pointer);
+                warnf("Cannot restore equipped overworld %s: pointer error", name);
+            }
+        } else {
+            SetError(StateError::DifferentName);
+            warnf("Cannot restore equipped overworld %s: different name", name);
+        }
+    } else {
+        SetError(StateError::NotEquipped);
+        warnf("Cannot restore equipped overworld %s actor", name);
+    }
+}
+
+void StateLevel2::ReadFromGame() {
+    uking::ui::PauseMenuDataMgr* pPauseMenuDataMgr;
+    if (TakePtrOrError(named(mem::SafePtr(uking::ui::PauseMenuDataMgr::instance())),
+                       &pPauseMenuDataMgr)) {
         // update equipped weapons
         pPauseMenuDataMgr->updateEquippedItemArray();
 
         // Save arrow, weapon, bow, shield
-        GameUseSafePtr(pPauseMenuDataMgr->getEquippedWeapon(uking::ui::PouchItemType::Arrow),
-                       uking::ui::PouchItem, pEquippedArrow) {
-            mMenuEquippedArrow.Set(pEquippedArrow->getName(), pEquippedArrow->getValue());
-        }
-        else {
-            mMenuEquippedArrow.ClearName();
-            SetError(Error::NotEquipped);
-            warn("Cannot read equipped arrow count");
-        }
-
-        GameUseSafePtr(pPauseMenuDataMgr->getEquippedWeapon(uking::ui::PouchItemType::Sword),
-                       uking::ui::PouchItem, pEquippedWeapon) {
-            mMenuEquippedWeapon.Set(pEquippedWeapon->getName(), pEquippedWeapon->getValue());
-        }
-        else {
-            mMenuEquippedWeapon.ClearName();
-            SetError(Error::NotEquipped);
-            warn("Cannot read equipped weapon");
-        }
-
-        GameUseSafePtr(pPauseMenuDataMgr->getEquippedWeapon(uking::ui::PouchItemType::Bow),
-                       uking::ui::PouchItem, pEquippedBow) {
-            mMenuEquippedBow.Set(pEquippedBow->getName(), pEquippedBow->getValue());
-        }
-        else {
-            mMenuEquippedBow.ClearName();
-            SetError(Error::NotEquipped);
-            warn("Cannot read equipped bow");
-        }
-
-        GameUseSafePtr(pPauseMenuDataMgr->getEquippedWeapon(uking::ui::PouchItemType::Shield),
-                       uking::ui::PouchItem, pEquippedShield) {
-            mMenuEquippedShield.Set(pEquippedShield->getName(), pEquippedShield->getValue());
-        }
-        else {
-            mMenuEquippedShield.ClearName();
-            SetError(Error::NotEquipped);
-            warn("Cannot read equipped shield");
-        }
+        ReadInventoryEquipment(
+            "arrow", pPauseMenuDataMgr->getEquippedWeapon(uking::ui::PouchItemType::Arrow),
+            mMenuEquippedArrow);
+        ReadInventoryEquipment(
+            "weapon", pPauseMenuDataMgr->getEquippedWeapon(uking::ui::PouchItemType::Sword),
+            mMenuEquippedWeapon);
+        ReadInventoryEquipment("bow",
+                               pPauseMenuDataMgr->getEquippedWeapon(uking::ui::PouchItemType::Bow),
+                               mMenuEquippedBow);
+        ReadInventoryEquipment(
+            "shield", pPauseMenuDataMgr->getEquippedWeapon(uking::ui::PouchItemType::Shield),
+            mMenuEquippedShield);
     }
 
-    GameUsePtr(mem::GamePtr::OverworldWeaponActor(), ksys::act::BaseProc, pActorWeapon) {
-        u32 overworldWeaponDurability;
-        GameRead(GamePtr::OverworldWeaponDurability, overworldWeaponDurability) {
-            mOverworldEquippedWeapon.Set(pActorWeapon->getName(), overworldWeaponDurability);
-        }
-        else {
-            mOverworldEquippedWeapon.ClearName();
-            SetError(Error::Pointer);
-            warn("Cannot read equipped overworld weapon durability");
-        }
-    }
-    else {
-        mOverworldEquippedWeapon.ClearName();
-        SetError(Error::NotEquipped);
-        warn("Cannot read equipped overworld weapon actor");
-    }
-
-    GameUsePtr(mem::GamePtr::OverworldBowActor(), ksys::act::BaseProc, pActorBow) {
-        u32 overworldBowDurability;
-        GameRead(GamePtr::OverworldBowDurability, overworldBowDurability) {
-            mOverworldEquippedBow.Set(pActorBow->getName(), overworldBowDurability);
-        }
-        else {
-            mOverworldEquippedBow.ClearName();
-            SetError(Error::Pointer);
-            warn("Cannot read equipped overworld bow durability");
-        }
-    }
-    else {
-        mOverworldEquippedBow.ClearName();
-        SetError(Error::NotEquipped);
-        warn("Cannot read equipped overworld bow actor");
-    }
-
-    GameUsePtr(mem::GamePtr::OverworldShieldActor(), ksys::act::BaseProc, pActorShield) {
-        u32 overworldShieldDurability;
-        GameRead(GamePtr::OverworldShieldDurability, overworldShieldDurability) {
-            mOverworldEquippedShield.Set(pActorShield->getName(), overworldShieldDurability);
-        }
-        else {
-            mOverworldEquippedShield.ClearName();
-            SetError(Error::Pointer);
-            warn("Cannot read equipped overworld shield durability");
-        }
-    }
-    else {
-        mOverworldEquippedShield.ClearName();
-        SetError(Error::NotEquipped);
-        warn("Cannot read equipped overworld shield actor");
-    }
+    ReadOverworldEquipment("weapon", mem::GamePtr::OverworldWeaponActor(),
+                           mem::GamePtr::OverworldWeaponDurability(), mOverworldEquippedWeapon);
+    ReadOverworldEquipment("bow", mem::GamePtr::OverworldBowActor(),
+                           mem::GamePtr::OverworldBowDurability(), mOverworldEquippedBow);
+    ReadOverworldEquipment("shield", mem::GamePtr::OverworldShieldActor(),
+                           mem::GamePtr::OverworldShieldDurability(), mOverworldEquippedShield);
 }
-void State::WriteLevel2() {
-    GameUseSafePtr(uking::ui::PauseMenuDataMgr::instance(), uking::ui::PauseMenuDataMgr,
-                   pPauseMenuDataMgr) {
+
+void StateLevel2::WriteToGame() {
+    uking::ui::PauseMenuDataMgr* pPauseMenuDataMgr;
+    if (TakePtrOrError(named(mem::SafePtr(uking::ui::PauseMenuDataMgr::instance())),
+                       &pPauseMenuDataMgr)) {
         // update equipped weapons
         pPauseMenuDataMgr->updateEquippedItemArray();
 
-        // Restore each of them
-        GameUseSafePtr(pPauseMenuDataMgr->getEquippedWeapon(uking::ui::PouchItemType::Arrow),
-                       uking::ui::PouchItem, pEquippedArrow) {
-            if (mMenuEquippedArrow.NameMatches(pEquippedArrow->getName())) {
-                pEquippedArrow->setValue(mMenuEquippedArrow.GetValue());
-            } else {
-                SetError(Error::DifferentName);
-                warn("Cannot restore equipped arrow count: different name");
-            }
-        }
-        else {
-            SetError(Error::NotEquipped);
-            warn("Cannot restore equipped arrow count");
-        }
-
-        GameUseSafePtr(pPauseMenuDataMgr->getEquippedWeapon(uking::ui::PouchItemType::Sword),
-                       uking::ui::PouchItem, pEquippedWeapon) {
-            if (mMenuEquippedWeapon.NameMatches(pEquippedWeapon->getName())) {
-                pEquippedWeapon->setValue(mMenuEquippedWeapon.GetValue());
-            } else {
-                SetError(Error::DifferentName);
-                warn("Cannot restore equipped weapon: different name");
-            }
-        }
-        else {
-            SetError(Error::NotEquipped);
-            warn("Cannot restore equipped weapon");
-        }
-
-        GameUseSafePtr(pPauseMenuDataMgr->getEquippedWeapon(uking::ui::PouchItemType::Bow),
-                       uking::ui::PouchItem, pEquippedBow) {
-            if (mMenuEquippedBow.NameMatches(pEquippedBow->getName())) {
-                pEquippedBow->setValue(mMenuEquippedBow.GetValue());
-            } else {
-                SetError(Error::DifferentName);
-                warn("Cannot restore equipped bow: different name");
-            }
-        }
-        else {
-            SetError(Error::NotEquipped);
-            warn("Cannot restore equipped bow");
-        }
-
-        GameUseSafePtr(pPauseMenuDataMgr->getEquippedWeapon(uking::ui::PouchItemType::Shield),
-                       uking::ui::PouchItem, pEquippedShield) {
-            if (mMenuEquippedShield.NameMatches(pEquippedShield->getName())) {
-                pEquippedShield->setValue(mMenuEquippedShield.GetValue());
-            } else {
-                SetError(Error::DifferentName);
-                warn("Cannot restore equipped shield: different name");
-            }
-        }
-        else {
-            SetError(Error::NotEquipped);
-            warn("Cannot restore equipped shield");
-        }
+        // Restore arrow, weapon, bow, shield
+        WriteInventoryEquipment(
+            "arrow", pPauseMenuDataMgr->getEquippedWeapon(uking::ui::PouchItemType::Arrow),
+            mMenuEquippedArrow);
+        WriteInventoryEquipment(
+            "weapon", pPauseMenuDataMgr->getEquippedWeapon(uking::ui::PouchItemType::Sword),
+            mMenuEquippedWeapon);
+        WriteInventoryEquipment("bow",
+                                pPauseMenuDataMgr->getEquippedWeapon(uking::ui::PouchItemType::Bow),
+                                mMenuEquippedBow);
+        WriteInventoryEquipment(
+            "shield", pPauseMenuDataMgr->getEquippedWeapon(uking::ui::PouchItemType::Shield),
+            mMenuEquippedShield);
     }
 
-    GameUsePtr(mem::GamePtr::OverworldWeaponActor(), ksys::act::BaseProc, pActorWeapon) {
-        if (mOverworldEquippedWeapon.NameMatches(pActorWeapon->getName())) {
-            GameWrite(GamePtr::OverworldWeaponDurability, mOverworldEquippedWeapon.GetValue());
-        } else {
-            SetError(Error::DifferentName);
-            warn("Cannot restore equipped overworld weapon: different name");
-        }
-    }
-    else {
-        SetError(Error::NotEquipped);
-        warn("Cannot restore equipped overworld weapon actor");
-    }
+    WriteOverworldEquipment("weapon", mem::GamePtr::OverworldWeaponActor(),
+                            mem::GamePtr::OverworldWeaponDurability(), mOverworldEquippedWeapon);
+    WriteOverworldEquipment("bow", mem::GamePtr::OverworldBowActor(),
+                            mem::GamePtr::OverworldBowDurability(), mOverworldEquippedBow);
+    WriteOverworldEquipment("shield", mem::GamePtr::OverworldShieldActor(),
+                            mem::GamePtr::OverworldShieldDurability(), mOverworldEquippedShield);
+}
 
-    GameUsePtr(mem::GamePtr::OverworldBowActor(), ksys::act::BaseProc, pActorBow) {
-        if (mOverworldEquippedBow.NameMatches(pActorBow->getName())) {
-            GameWrite(GamePtr::OverworldBowDurability, mOverworldEquippedBow.GetValue());
-        } else {
-            SetError(Error::DifferentName);
-            warn("Cannot restore equipped overworld bow: different name");
-        }
+void StateLevel2::ReadFromFile(fs::ConfigFile& file, u32 version) {
+    if (version < 2) {
+        return;
     }
-    else {
-        SetError(Error::NotEquipped);
-        warn("Cannot restore equipped overworld bow actor");
-    }
+    file.ReadNamedInteger(mMenuEquippedArrow);
+    file.ReadNamedInteger(mMenuEquippedWeapon);
+    file.ReadNamedInteger(mMenuEquippedBow);
+    file.ReadNamedInteger(mMenuEquippedShield);
+    file.ReadNamedInteger(mOverworldEquippedWeapon);
+    file.ReadNamedInteger(mOverworldEquippedBow);
+    file.ReadNamedInteger(mOverworldEquippedShield);
+}
 
-    GameUsePtr(mem::GamePtr::OverworldShieldActor(), ksys::act::BaseProc, pActorShield) {
-        if (mOverworldEquippedShield.NameMatches(pActorShield->getName())) {
-            GameWrite(GamePtr::OverworldShieldDurability, mOverworldEquippedShield.GetValue());
-        } else {
-            SetError(Error::DifferentName);
-            warn("Cannot restore equipped overworld shield: different name");
-        }
-    }
-    else {
-        SetError(Error::NotEquipped);
-        warn("Cannot restore equipped overworld shield actor");
-    }
+void StateLevel2::WriteToFile(fs::ConfigFile& file) const {
+    file.WriteNamedInteger(named(mMenuEquippedArrow));
+    file.WriteNamedInteger(named(mMenuEquippedWeapon));
+    file.WriteNamedInteger(named(mMenuEquippedBow));
+    file.WriteNamedInteger(named(mMenuEquippedShield));
+    file.WriteNamedInteger(named(mOverworldEquippedWeapon));
+    file.WriteNamedInteger(named(mOverworldEquippedBow));
+    file.WriteNamedInteger(named(mOverworldEquippedShield));
 }
 
 }  // namespace botwsavs::core

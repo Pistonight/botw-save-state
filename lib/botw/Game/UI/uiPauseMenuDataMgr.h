@@ -376,7 +376,7 @@ public:
 
     void grabbedItemStuff(PouchItem* item);
 
-    // SAVE-STATE-HACK expose equipped weapons aray
+    // SAVE-STATE-HACK expose equipped weapons array
     PouchItem* getEquippedWeapon(PouchItemType type) {
         return mEquippedWeapons[u32(type)];
     }
@@ -412,9 +412,12 @@ private:
         sead::SafeArray<PouchItem, NumPouchItemsMax> buffer;
     };
 
+// BOTW-SAVE-STATE hack: make these public
+public:
     sead::OffsetList<PouchItem>& getItems() { return mItemLists.list1; }
     const sead::OffsetList<PouchItem>& getItems() const { return mItemLists.list1; }
-
+// BOTW-SAVE-STATE hack end
+private:
     // FIXME: types
     bool useItemFromRecipe(Lists* lists, void* unk, int multiplier, PouchItem* item);
 
