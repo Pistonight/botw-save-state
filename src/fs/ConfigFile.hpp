@@ -62,9 +62,7 @@ public:
         *outValue = truncated;
     }
 
-    void ReadInteger(s32* outValue) {
-        ReadInteger(reinterpret_cast<u32*>(outValue));
-    }
+    void ReadInteger(s32* outValue) { ReadInteger(reinterpret_cast<u32*>(outValue)); }
 
     void WriteFloat(const char* fieldName, const f32 value) {
         WriteInteger(fieldName, reinterpret_cast<const u32&>(value));
@@ -133,27 +131,27 @@ public:
         }
     }
 
-    template<typename T, u32 L>
-    void WriteNamedInteger(const char* fieldName, const util::NamedValue<T, L>& value){
-        WriteString("Name of value below", value.GetName());                                   
+    template <typename T, u32 L>
+    void WriteNamedInteger(const char* fieldName, const util::NamedValue<T, L>& value) {
+        WriteString("Name of value below", value.GetName());
         WriteInteger(fieldName, value.GetValue());
     }
 
-    template<typename T, u32 L>
-    void ReadNamedInteger(util::NamedValue<T, L>& value){
-        ReadString(value.Name(), L);                                                        
+    template <typename T, u32 L>
+    void ReadNamedInteger(util::NamedValue<T, L>& value) {
+        ReadString(value.Name(), L);
         ReadInteger(value.GetValuePtr());
     }
 
-    template<typename T, u32 L>
-    void WriteNamedFloat(const char* fieldName, const util::NamedValue<T, L>& value){
-        WriteString("Name of value below", value.GetName());                                   
+    template <typename T, u32 L>
+    void WriteNamedFloat(const char* fieldName, const util::NamedValue<T, L>& value) {
+        WriteString("Name of value below", value.GetName());
         WriteFloat(fieldName, value.GetValue());
     }
 
-    template<typename T, u32 L>
-    void ReadNamedFloat(const char* fieldName, const util::NamedValue<T, L>& value){
-        ReadString(value.Name(), L);                                                        
+    template <typename T, u32 L>
+    void ReadNamedFloat(const char* fieldName, const util::NamedValue<T, L>& value) {
+        ReadString(value.Name(), L);
         ReadFloat(value.GetValuePtr());
     }
 

@@ -1,6 +1,6 @@
 #pragma once
-#include "util/NamedValue.hpp"
 #include "StateStorage.hpp"
+#include "util/NamedValue.hpp"
 
 namespace uking::ui {
 class PouchItem;
@@ -9,8 +9,7 @@ class PouchItem;
 namespace ksys::act {
 class BaseProc;
 }
-namespace botwsavs::core{
-
+namespace botwsavs::core {
 
 class StateLevel2 : public StateStorage {
 public:
@@ -20,11 +19,18 @@ public:
     void WriteToFile(fs::ConfigFile& file) const override;
 
 private:
-
-    void ReadInventoryEquipment(const char* name, uking::ui::PouchItem* pItem, util::NamedValue<u32, 64>& value);
-    void WriteInventoryEquipment(const char* name, uking::ui::PouchItem* pItem, const util::NamedValue<u32, 64>& value);
-    void ReadOverworldEquipment(const char* name, const mem::SafePtr<ksys::act::BaseProc>& safepActor, const mem::SafePtr<u32>& safepDurability, util::NamedValue<u32, 64>& value);
-    void WriteOverworldEquipment(const char* name, const mem::SafePtr<ksys::act::BaseProc>& safepActor, const mem::SafePtr<u32>& safepDurability,const util::NamedValue<u32, 64>& value);
+    void ReadInventoryEquipment(const char* name, uking::ui::PouchItem* pItem,
+                                util::NamedValue<u32, 64>& value);
+    void WriteInventoryEquipment(const char* name, uking::ui::PouchItem* pItem,
+                                 const util::NamedValue<u32, 64>& value);
+    void ReadOverworldEquipment(const char* name,
+                                const mem::SafePtr<ksys::act::BaseProc>& safepActor,
+                                const mem::SafePtr<u32>& safepDurability,
+                                util::NamedValue<u32, 64>& value);
+    void WriteOverworldEquipment(const char* name,
+                                 const mem::SafePtr<ksys::act::BaseProc>& safepActor,
+                                 const mem::SafePtr<u32>& safepDurability,
+                                 const util::NamedValue<u32, 64>& value);
     util::NamedValue<u32, 64> mMenuEquippedArrow{sInvalid};
     util::NamedValue<u32, 64> mMenuEquippedWeapon{sInvalid};
     util::NamedValue<u32, 64> mMenuEquippedBow{sInvalid};
@@ -32,7 +38,6 @@ private:
     util::NamedValue<u32, 64> mOverworldEquippedWeapon{sInvalid};
     util::NamedValue<u32, 64> mOverworldEquippedBow{sInvalid};
     util::NamedValue<u32, 64> mOverworldEquippedShield{sInvalid};
-
 };
 
-}
+}  // namespace botwsavs::core

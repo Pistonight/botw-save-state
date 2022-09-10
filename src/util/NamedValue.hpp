@@ -34,4 +34,4 @@ private:
     char mName[L];
     T mValue;
 };
-}  // namespace botwsavs::core
+}  // namespace botwsavs::util

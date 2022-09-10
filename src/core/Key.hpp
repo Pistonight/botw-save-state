@@ -1,7 +1,7 @@
 #pragma once
 
-#include "util/StringBuffer.hpp"
 #include "types.h"
+#include "util/StringBuffer.hpp"
 
 namespace botwsavs::core {
 enum Key : u32 {
@@ -27,63 +27,62 @@ enum Key : u32 {
 };
 
 namespace key {
-template<u32 L>
-void GetKeyString(u32 mask, util::StringBuffer<L>& outBuffer){
+template <u32 L>
+void GetKeyString(u32 mask, util::StringBuffer<L>& outBuffer) {
     static_assert(L >= 100, "Key string buffer length should be at least 100");
     outBuffer.Clear();
-    if (mask == 0){
+    if (mask == 0) {
         return;
     }
-    if (mask & Key::A){
+    if (mask & Key::A) {
         outBuffer.SafeAppend("A+");
     }
-    if (mask & Key::B){
+    if (mask & Key::B) {
         outBuffer.SafeAppend("B+");
     }
-    if (mask & Key::X){
+    if (mask & Key::X) {
         outBuffer.SafeAppend("X+");
     }
-    if (mask & Key::Y){
+    if (mask & Key::Y) {
         outBuffer.SafeAppend("Y+");
     }
-    if (mask & Key::L){
+    if (mask & Key::L) {
         outBuffer.SafeAppend("L+");
     }
-    if (mask & Key::R){
+    if (mask & Key::R) {
         outBuffer.SafeAppend("R+");
     }
-    if (mask & Key::ZL){
+    if (mask & Key::ZL) {
         outBuffer.SafeAppend("ZL+");
     }
-    if (mask & Key::ZR){
+    if (mask & Key::ZR) {
         outBuffer.SafeAppend("ZR+");
     }
-    if (mask & Key::DpadUp){
+    if (mask & Key::DpadUp) {
         outBuffer.SafeAppend("DpadUp+");
     }
-    if (mask & Key::DpadDown){
+    if (mask & Key::DpadDown) {
         outBuffer.SafeAppend("DpadDown+");
     }
-    if (mask & Key::DpadLeft){
+    if (mask & Key::DpadLeft) {
         outBuffer.SafeAppend("DpadLeft+");
     }
-    if (mask & Key::DpadRight){
+    if (mask & Key::DpadRight) {
         outBuffer.SafeAppend("DpadRight+");
     }
-    if (mask & Key::Minus){
+    if (mask & Key::Minus) {
         outBuffer.SafeAppend("Minus+");
     }
-    if (mask & Key::Plus){
+    if (mask & Key::Plus) {
         outBuffer.SafeAppend("Plus+");
     }
-    if (mask & Key::LStick){
+    if (mask & Key::LStick) {
         outBuffer.SafeAppend("LStick+");
     }
-    if (mask & Key::RStick){
+    if (mask & Key::RStick) {
         outBuffer.SafeAppend("RStick+");
     }
     outBuffer.SafeDeleteEnd(1);
-
 }
-}
-}
+}  // namespace key
+}  // namespace botwsavs::core

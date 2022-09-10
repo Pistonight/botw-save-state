@@ -26,15 +26,15 @@ public:
     bool Init();
     // Return if work is successful
     bool Work() {
-        if (!CanWork()){
+        if (!CanWork()) {
             return false;
         }
-        if (TrySwitchMode()){
+        if (TrySwitchMode()) {
             return true;
         }
-        if (mMode == Mode::Active){
+        if (mMode == Mode::Active) {
             return WorkActiveMode();
-        }else{
+        } else {
             return WorkSettingMode();
         }
     }
@@ -44,9 +44,7 @@ public:
 
 private:
     // Core
-    bool CanWork() {
-        return mController.IsInitialized();
-    }
+    bool CanWork() { return mController.IsInitialized(); }
     bool WorkActiveMode();
     bool WorkSettingMode();
     bool TrySwitchMode();
@@ -68,14 +66,12 @@ private:
 
 public:
     u32 mLevel = 1;
-    
 
 private:
     Controller mController;
     KeyMgr mKeyMgr;
     State mState;
     Mode mMode = Mode::Active;
-    
 };
 
 }  // namespace core

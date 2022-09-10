@@ -1,13 +1,11 @@
-#include "fs/Logger.hpp"
 #include "Worker.hpp"
-
+#include "fs/Logger.hpp"
 
 namespace botwsavs::core {
 
 void Worker::Save(fs::ConfigFile& file) const {
     file.WriteInteger(named(mLevel));
     mKeyMgr.Save(file);
-    
 }
 
 void Worker::Load(fs::ConfigFile& file) {
@@ -37,4 +35,4 @@ bool Worker::LoadConfig() {
     return true;
 }
 
-}
+}  // namespace botwsavs::core

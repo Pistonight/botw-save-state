@@ -29,11 +29,11 @@ bool Controller::TryGetController() {
     return true;
 }
 
-bool Controller::IsOnlyHolding(u32 mask){
+bool Controller::IsOnlyHolding(u32 mask) {
     return mpController->isHoldAll(mask) && !mpController->isHold(~mask);
 }
 
-u32 Controller::GetHoldKeys(){
+u32 Controller::GetHoldKeys() {
     return mpController->getHoldMask();
 }
 

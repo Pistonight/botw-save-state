@@ -15,18 +15,14 @@
 namespace botwsavs::core {
 class State : fs::Config {
 public:
-    
-    u32 GetErrorMask() const { 
-        return mStorageLevel1.GetErrorMask() | mStorageLevel2.GetErrorMask() | mStorageLevel3.GetErrorMask(); 
+    u32 GetErrorMask() const {
+        return mStorageLevel1.GetErrorMask() | mStorageLevel2.GetErrorMask() |
+               mStorageLevel3.GetErrorMask();
     }
-    bool HasError(StateError mask) const { 
-        return (GetErrorMask() & mask) != 0; 
-    }
-    bool HasAnyError() const {return GetErrorMask() != StateError::None; }
+    bool HasError(StateError mask) const { return (GetErrorMask() & mask) != 0; }
+    bool HasAnyError() const { return GetErrorMask() != StateError::None; }
 
-    u32 GetLevel() const {
-        return mLevel;
-    }
+    u32 GetLevel() const { return mLevel; }
 
     // Read from game memory
     bool ReadFromGame(u32 level);
@@ -44,7 +40,7 @@ private:
         mStorageLevel2.ClearError();
         mStorageLevel3.ClearError();
     }
-    
+
     // internal functions for read/write file
     void Load(fs::ConfigFile& file) override;
     void Save(fs::ConfigFile& file) const override;
@@ -54,7 +50,6 @@ private:
     StateLevel1 mStorageLevel1;
     StateLevel2 mStorageLevel2;
     StateLevel3 mStorageLevel3;
-    
 };
 
 }  // namespace botwsavs::core

@@ -45,12 +45,12 @@ bool State::WriteToFile() const {
     return fs::ConfigFile(LATEST_TXT_PATH).Save(*this);
 }
 
-void State::Load(fs::ConfigFile& file){
+void State::Load(fs::ConfigFile& file) {
     u32 version = 0;
     file.ReadInteger(&version);
     file.ReadInteger(&mLevel);
 
-    if (version < 1 || version > STATE_SAVE_FILE_VERSION){
+    if (version < 1 || version > STATE_SAVE_FILE_VERSION) {
         errorf("Bad version: %d", version);
         return;
     }
@@ -67,5 +67,5 @@ void State::Save(fs::ConfigFile& file) const {
     mStorageLevel2.WriteToFile(file);
     mStorageLevel3.WriteToFile(file);
 }
-    
+
 }  // namespace botwsavs::core

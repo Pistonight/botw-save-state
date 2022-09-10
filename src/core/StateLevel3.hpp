@@ -2,9 +2,7 @@
 
 #include "StateStorage.hpp"
 
-
-namespace botwsavs::core{
-
+namespace botwsavs::core {
 
 class StateLevel3 : public StateStorage {
 public:
@@ -38,6 +36,5 @@ private:
     f32 mStealthPotionTimer;
 
     s32 mCountOffset;
-
 };
-}
+}  // namespace botwsavs::core

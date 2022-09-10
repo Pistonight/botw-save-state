@@ -11,9 +11,7 @@ class ConfigFile;
 namespace core {
 // class for managing key combos and key presses
 class KeyMgr {
-
 public:
-
     enum class ConfigureResult : u32 {
         Success = 0,
         Pending = 1,
@@ -39,7 +37,7 @@ public:
     u32 mKeySaveFile = Key::ZL | Key::L | Key::Plus | Key::DpadLeft | Key::RStick;
     u32 mKeyRestore = Key::ZL | Key::L | Key::Plus | Key::DpadRight;
     u32 mKeyRestoreFile = Key::ZL | Key::L | Key::Plus | Key::DpadRight | Key::RStick;
-    
+
     // Not configurable
     u32 mKeySwitchMode = Key::DpadDown | Key::ZL | Key::ZR | Key::L | Key::R;
     u32 mKeyIncreaseLevel = Key::R;
@@ -52,6 +50,5 @@ private:
     u32 mConfigureCounter = 0;
 };
 
-}
-}
-
+}  // namespace core
+}  // namespace botwsavs

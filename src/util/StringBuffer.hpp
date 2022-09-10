@@ -70,10 +70,10 @@ public:
         EnsureTermination();
     }
 
-    void SafeDeleteEnd(u32 size){
-        if(mLen <= size){
+    void SafeDeleteEnd(u32 size) {
+        if (mLen <= size) {
             mLen = 0;
-        }else{
+        } else {
             mLen -= size;
         }
         EnsureTermination();

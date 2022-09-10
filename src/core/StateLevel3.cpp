@@ -33,17 +33,16 @@ void StateLevel3::ReadFromGame() {
     ReadMemory(named(mem::GamePtr::StealthPotionTimer()), &mStealthPotionTimer);
 
     uking::ui::PauseMenuDataMgr* pPauseMenuDataMgr;
-    if(TakePtrOrError(named(mem::SafePtr(uking::ui::PauseMenuDataMgr::instance())), &pPauseMenuDataMgr)){
+    if (TakePtrOrError(named(mem::SafePtr(uking::ui::PauseMenuDataMgr::instance())),
+                       &pPauseMenuDataMgr)) {
         // Save mCount Offset
         s32 count = pPauseMenuDataMgr->getItems().size();
         s32 actualSize = pPauseMenuDataMgr->getItems().sizeSlow();
         mCountOffset = actualSize - count;
     }
-
 }
 
 void StateLevel3::WriteToGame() {
-
     WriteMemory(named(mem::GamePtr::TimeOfDayPaused()), mTimeOfDayPaused);
     WriteMemory(named(mem::GamePtr::TimeOfDayUnpaused()), mTimeOfDayUnpaused);
     WriteMemory(named(mem::GamePtr::BloodMoonTimer()), mBloodMoonTimer);
@@ -67,18 +66,17 @@ void StateLevel3::WriteToGame() {
     WriteMemory(named(mem::GamePtr::StealthPotionTimer()), mStealthPotionTimer);
 
     uking::ui::PauseMenuDataMgr* pPauseMenuDataMgr;
-    if(TakePtrOrError(named(mem::SafePtr(uking::ui::PauseMenuDataMgr::instance())), &pPauseMenuDataMgr)){
+    if (TakePtrOrError(named(mem::SafePtr(uking::ui::PauseMenuDataMgr::instance())),
+                       &pPauseMenuDataMgr)) {
         // Set mCount Offset
         s32 actualSize = pPauseMenuDataMgr->getItems().sizeSlow();
         s32 count = actualSize - mCountOffset;
         pPauseMenuDataMgr->getItems().setSize(count);
-
     }
-
 }
 
 void StateLevel3::ReadFromFile(fs::ConfigFile& file, u32 version) {
-    if(version < 3){
+    if (version < 3) {
         return;
     }
     file.ReadFloat(&mTimeOfDayPaused);
@@ -102,13 +100,12 @@ void StateLevel3::ReadFromFile(fs::ConfigFile& file, u32 version) {
     file.ReadFloat(&mFlameResistPotionTimer);
     file.ReadFloat(&mShockResistPotionTimer);
     file.ReadFloat(&mStealthPotionTimer);
-    
-    if (version < 4){
+
+    if (version < 4) {
         return;
     }
     // Version 4
     file.ReadInteger(&mCountOffset);
-
 }
 
 void StateLevel3::WriteToFile(fs::ConfigFile& file) const {
@@ -136,7 +133,5 @@ void StateLevel3::WriteToFile(fs::ConfigFile& file) const {
     // Version 4
     file.WriteInteger(named(mCountOffset));
 }
-
-
 
 }  // namespace botwsavs::core

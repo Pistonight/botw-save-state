@@ -10,12 +10,9 @@ namespace botwsavs {
 
 namespace core {
 class Controller {
-
 public:
     Controller() = default;
-    ~Controller() {
-        mpController = nullptr;
-    }
+    ~Controller() { mpController = nullptr; }
 
     bool IsInitialized() {
         if (!mpController) {

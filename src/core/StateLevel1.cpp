@@ -1,7 +1,6 @@
+#include "StateLevel1.hpp"
 #include "fs/ConfigFile.hpp"
 #include "mem/GamePtr.h"
-#include "StateLevel1.hpp"
-
 
 namespace botwsavs::core {
 
@@ -31,7 +30,7 @@ void StateLevel1::WriteToGame() {
 }
 
 void StateLevel1::ReadFromFile(fs::ConfigFile& file, u32 version) {
-    if (version < 1){
+    if (version < 1) {
         return;
     }
     file.ReadInteger(&mHealth);

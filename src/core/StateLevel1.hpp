@@ -2,9 +2,7 @@
 
 #include "StateStorage.hpp"
 
-
-namespace botwsavs::core{
-
+namespace botwsavs::core {
 
 class StateLevel1 : public StateStorage {
 public:
@@ -26,4 +24,4 @@ private:
     // TODO reset fall damage
 };
 
-}
+}  // namespace botwsavs::core

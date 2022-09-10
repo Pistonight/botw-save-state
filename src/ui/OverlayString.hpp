@@ -52,7 +52,7 @@ inline void ShowLevelError(u32 stateLevel) {
     ShowFormattedMessage("You need to lower the setting level to %d to restore!", stateLevel);
 }
 
-inline void ShowSetKeyBinding(const char* keyName){
+inline void ShowSetKeyBinding(const char* keyName) {
     ShowFormattedMessage("Configure %s key (Hold for 3s)", keyName);
 }
 
