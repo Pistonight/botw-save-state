@@ -1,7 +1,7 @@
 # CHANGELOG
 
 ### `1.6.0-SS1.1` `2022-09-10` `LATEST`
-- Add save and restore offset between pouch item list count (i.e. `mCount`) and actual inventory size  to level 3
+- Add save and restore offset between pouch item list count (i.e. `mCount`) and actual inventory size to level 3
 - Make save and restore key binding configurable
   - In setting mode, hold the current key binding for 3 seconds, then hold the new key binding for 3 seconds.
 
