@@ -15,7 +15,7 @@ Remove these folders from the SD card if they exist
 
 ## Usage (Key Combos)
 
-**Make sure you are only activating the key combos while having control of Link. The game may bahave weirdly or even crash if you press them in loading screen or title screen**
+**Make sure you are only activating the key combos while having control of Link. The game may behave weirdly or even crash if you press them in loading screen or title screen**
 
 ### Active and Setting Mode
 There are 2 modes in the save state mod, the Active Mode and the Setting Mode.
