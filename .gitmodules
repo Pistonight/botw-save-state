@@ -14,3 +14,7 @@
 	path = libs/sead
 	url = https://github.com/open-ead/sead
 	branch = master
+[submodule "exlaunch"]
+	path = libs/exlaunch
+	url = https://github.com/Pistonight/exlaunch
+	branch = dev
