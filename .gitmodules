@@ -1,16 +1,16 @@
-[submodule "libs/botw-symbols"]
+[submodule "botw"]
+	path = libs/botw
+	url = https://github.com/Pistonight/botw-decomp
+	branch = master
+[submodule "botw-symbols"]
 	path = libs/botw-symbols
 	url = https://github.com/Pistonight/botw-symbols
 	branch = main
-[submodule "libs/sead"]
-	path = libs/sead
-	url = https://github.com/open-ead/sead
-	branch = master
-[submodule "libs/nnheaders"]
+[submodule "nnheaders"]
 	path = libs/nnheaders
 	url = https://github.com/open-ead/nnheaders
 	branch = master
-[submodule "libs/botw"]
-	path = libs/botw
-	url = https://github.com/Pistonight/botw-decomp
+[submodule "sead"]
+	path = libs/sead
+	url = https://github.com/open-ead/sead
 	branch = master
