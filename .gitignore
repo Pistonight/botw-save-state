@@ -9,3 +9,5 @@ runtime
 temp.txt
 *.pack
 .env
+
+/target

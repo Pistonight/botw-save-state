@@ -135,17 +135,19 @@ A python script `ftp.py` is also included for transfering save state files over 
 **This section is intented for developers**
 
 ### Environment
-#### OS
-You need a linux or WSL environment. Mac probably work as well.
-#### DevkitPro
-For Debian based systems (linux)
-```
-wget https://apt.devkitpro.org/install-devkitpro-pacman
-chmod +x ./install-devkitpro-pacman
-sudo ./install-devkitpro-pacman
-sudo dkp-pacman -S switch-dev
-```
-For other systems follow https://devkitpro.org/wiki/Getting_Started (need `switch-dev` package)
+#### Pre-requisites
+Only Linux environment is tested.
+
+Install these tools:
+- [`DevKitPro`](https://devkitpro.org/wiki/Getting_Started) for switch development. Distros with `pacman` can use the commands at [vmsetup](https://vmsetup.pistonite.org/tool/devkitpro)
+- [`megaton`](https://github.com/Pistonight/megaton) for building
+
+These tools are (very strongly) recommended but optional:
+- This project has out-of-the-box support for `clangd`. Make sure `/usr/bin/g++` is available or you can change the compiler manually in `.clangd`
+- [`magoo`](https://github.com/Pistonite/magoo) for git submodule management
+
+Clone the repo, then run `magoo install` to clone the submodules
+
 #### Just
 Just is used to run command shortcuts. https://github.com/casey/just
 

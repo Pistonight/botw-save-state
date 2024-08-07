@@ -1,13 +1,11 @@
 #pragma once
 #include <nn/fs.h>
+#include <exl/types.h>
 
-#include "types.h"
-namespace botwsavs {
-namespace util {
-template <u32 T>
-class StringBuffer;
-}
-namespace fs {
+#include "./string.hpp"
+
+namespace botwsavs::util {
+
 using FileBuffer = util::StringBuffer<1024>;
 
 class File {
@@ -16,22 +14,22 @@ public:
     ~File();
 
     // Check if file exists
-    bool Exists();
+    bool exists();
     // Try creating a new file
-    bool Create();
+    bool create();
     // Open the file for read and write
-    bool Open();
+    bool open();
     // Close the file
-    bool Close();
+    bool close();
     // Set file to empty
-    bool Clear();
+    bool clear();
     // Write to file
-    bool Write(const FileBuffer& buffer);
+    bool write(const FileBuffer& buffer);
     // Read into buffer
-    s64 Read(FileBuffer& buffer);
+    s64 read(FileBuffer& buffer);
 
-    const char* Path() const { return mPath; }
-    bool isOpened() const { return mOpen; }
+    const char* path() const { return mPath; }
+    bool is_opened() const { return mOpen; }
 
 private:
     const char* mPath = nullptr;
@@ -40,5 +38,4 @@ private:
     u64 mOffset = 0;
 };
 
-}  // namespace fs
 }  // namespace botwsavs

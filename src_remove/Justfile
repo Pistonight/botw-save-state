@@ -16,7 +16,6 @@ lint VERBOSE="": (lintpy VERBOSE) (lintc VERBOSE)
 
 # Lint text files and python scripts
 lintpy VERBOSE="":
-    python3 tools/lint.py {{VERBOSE}}
     pylint tools
 
 # Lint Cpp files with clang-format

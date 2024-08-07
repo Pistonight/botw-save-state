@@ -1,30 +1,20 @@
-#include "main.hpp"
-#include "core/WorkerThread.hpp"
-#include "fs/File.hpp"
-#include "fs/Logger.hpp"
+#include <exl/lib.hpp>
+#include <nn/fs.h>
 
-extern "C" void application_init() {
+#include "util/message.hpp"
+#include "./worker.hpp"
+
+extern "C" void exl_main(void* x0, void* x1) {
+    exl::hook::Initialize();
     nn::fs::MountSdCardForDebug("sd");
-    // Create runtime files
-#ifdef DEBUG
-    botwsavs::fs::File mainLog("sd:/botwsavs/main.log");
-    mainLog.Create();
-
-    // Initialize Logger
-    botwsavs::fs::Logger::Instance().Init();
-#endif
-    botwsavs::fs::File latestTxt("sd:/botwsavs/latest.txt");
-    latestTxt.Create();
-    botwsavs::fs::File workerTxt("sd:/botwsavs/worker.txt");
-    workerTxt.Create();
-
-    // Start worker
-    botwsavs::core::StartWorkerThread();
+    
+    // patch message system for displaying custom info overlay
+    exl::patch::CodePatcher patcher { 0x010D2DC4 };
+    patcher.BranchLinkInst(reinterpret_cast<void*>(botwsavs::util::msg::get_message_string_hook));
+    
+    botwsavs::start_worker_thread();
 }
 
-extern "C" void application_clean() {
-#ifdef DEBUG
-    // Close logger
-    botwsavs::fs::Logger::Instance().Close();
-#endif
+extern "C" NORETURN void exl_exception_entry() {
+    EXL_ABORT(0x420);
 }

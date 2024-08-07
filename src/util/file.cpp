@@ -1,8 +1,7 @@
-#include "util/StringBuffer.hpp"
 
-#include "File.hpp"
+#include "./file.hpp"
 
-namespace botwsavs::fs {
+namespace botwsavs::util {
 
 File::File(const char* path) {
     mPath = path;
@@ -10,11 +9,11 @@ File::File(const char* path) {
 
 File::~File() {
     if (mOpen) {
-        Close();
+        close();
     }
 }
 
-bool File::Exists() {
+bool File::exists() {
     nn::fs::DirectoryEntryType type;
     nn::Result result = nn::fs::GetEntryType(&type, mPath);
 
@@ -25,8 +24,8 @@ bool File::Exists() {
     return type != nn::fs::DirectoryEntryType_Directory;
 }
 
-bool File::Create() {
-    if (Exists()) {
+bool File::create() {
+    if (exists()) {
         return false;
     }
 
@@ -35,12 +34,12 @@ bool File::Create() {
     return result.IsSuccess();
 }
 
-bool File::Open() {
+bool File::open() {
     if (mOpen) {
         return false;
     }
 
-    if (!Exists()) {
+    if (!exists()) {
         return false;
     }
 
@@ -51,7 +50,7 @@ bool File::Open() {
     return mOpen;
 }
 
-bool File::Close() {
+bool File::close() {
     if (!mOpen) {
         return false;
     }
@@ -60,7 +59,7 @@ bool File::Close() {
     return true;
 }
 
-bool File::Clear() {
+bool File::clear() {
     if (!mOpen) {
         return false;
     }
@@ -70,26 +69,26 @@ bool File::Clear() {
     return result.IsSuccess();
 }
 
-bool File::Write(const FileBuffer& buffer) {
+bool File::write(const FileBuffer& buffer) {
     if (!mOpen) {
         return false;
     }
-    nn::Result result = nn::fs::SetFileSize(mHandle, mOffset + buffer.Len());
+    nn::Result result = nn::fs::SetFileSize(mHandle, mOffset + buffer.len());
     if (result.IsFailure()) {
         return false;
     }
 
-    result = nn::fs::WriteFile(mHandle, mOffset, buffer.Content(), buffer.Len(),
+    result = nn::fs::WriteFile(mHandle, mOffset, buffer.content(), buffer.len(),
                                nn::fs::WriteOption::CreateOption(nn::fs::WriteOptionFlag_Flush));
     if (result.IsFailure()) {
         return false;
     }
 
-    mOffset += buffer.Len();
+    mOffset += buffer.len();
 
     return true;
 }
-s64 File::Read(FileBuffer& buffer) {
+s64 File::read(FileBuffer& buffer) {
     if (!mOpen) {
         return -1;
     }
@@ -97,7 +96,7 @@ s64 File::Read(FileBuffer& buffer) {
     u64 readSize = 0;
 
     nn::Result result =
-        nn::fs::ReadFile(&readSize, mHandle, mOffset, buffer.Last(), 1024 - buffer.Len());
+        nn::fs::ReadFile(&readSize, mHandle, mOffset, buffer.last(), 1024 - buffer.len());
     if (result.IsFailure()) {
         return -1;
     }
@@ -106,7 +105,7 @@ s64 File::Read(FileBuffer& buffer) {
         return -1;
     }
 
-    buffer.IncLen(readSize);
+    buffer.increase_length(readSize);
     mOffset += readSize;
 
     return static_cast<s64>(readSize);
