@@ -1,0 +1,4 @@
+[submodule "libs/botw-symbols"]
+	path = libs/botw-symbols
+	url = https://github.com/Pistonight/botw-symbols
+	branch = main
