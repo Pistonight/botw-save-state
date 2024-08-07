@@ -6,3 +6,11 @@
 	path = libs/sead
 	url = https://github.com/open-ead/sead
 	branch = master
+[submodule "libs/nnheaders"]
+	path = libs/nnheaders
+	url = https://github.com/open-ead/nnheaders
+	branch = master
+[submodule "libs/botw"]
+	path = libs/botw
+	url = https://github.com/Pistonight/botw-decomp
+	branch = master
