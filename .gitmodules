@@ -2,3 +2,7 @@
 	path = libs/botw-symbols
 	url = https://github.com/Pistonight/botw-symbols
 	branch = main
+[submodule "libs/sead"]
+	path = libs/sead
+	url = https://github.com/open-ead/sead
+	branch = master
