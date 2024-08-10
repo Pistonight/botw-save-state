@@ -1,0 +1,27 @@
+# idx => msg_id mapping for MessageTipsRuntime, and there respective flag
+# source: sinitScreenMessageTipsRuntime
+# 0x17 is added in 1.6. It's the VR message and potentially doesn't have a flag
+0x00,"0000",GuideSPlus_GurdJust
+0x01,"0001",GuideSPlus_KaihiJust
+0x02,"0003",GuideS_HeadShoot
+0x03,"0002",GuideSPlus_Surfing
+0x04,"0004",GuideS_WarningGanbari
+0x05,"0005",GuideS_WarningCold
+0x06,"0006",GuideS_WarningHot
+0x07,"0007",GuideS_StealthAttack
+0x08,"0008",GuideS_WeaponDestruction
+0x09,"0009",GuideS_WeaponThrowAttack
+0x0A,"0010",GuideS_WarningBurn
+0x0B,"0013",GuideS_ClimbSlip
+0x0C,"0014",GuideS_WeaponBurning
+0x0D,"0015",GuideSPlus_Squat
+0x0E,"0017",GuideS_WorfLead
+0x0F,"0016",GuideS_SandSealError
+0x10,"0018",GuideS_Recipe
+0x11,"0019",GuideS_ElectricDamage
+0x12,"0020",GuideS_WarningColdLv2
+0x13,"0021",GuideS_WarningHotLv2
+0x14,"0022",GuideS_WarningBurnLv2
+0x15,"0023",GuideS_RelicControl
+0x16,"0024",GuideS_MotocycleGasOff
+0x17,"0025",

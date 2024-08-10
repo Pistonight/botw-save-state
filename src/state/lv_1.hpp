@@ -31,6 +31,29 @@ private:
     // Extras:
     // reset rune cooldown
     // TODO reset fall damage
+
+    float m_tod_paused;
+    float m_tod_unpaused;
+    float m_blood_moon_timer;
+    float m_temperature_damage_timer;
+    float m_flame_timer;
+    float m_gale_timer;
+    float m_fury_timer;
+    float m_protection_timer;
+    float m_grace_timer;
+    u32 m_ability_uses[3];
+    float m_master_sword_cooldown;
+
+    float m_speed_potion_timer_1;
+    float m_speed_potion_timer_2;
+    float m_speed_potion_timer_3;
+    float m_attack_potion_timer;
+    float m_defense_potion_timer;
+    float m_heat_resist_potion_timer;
+    float m_cold_resist_potion_timer;
+    float m_flame_resist_potion_timer;
+    float m_shock_resist_potion_timer;
+    float m_stealth_potion_timer;
 };
 
 }  // namespace botwsavs::core

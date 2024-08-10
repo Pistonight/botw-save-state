@@ -125,6 +125,7 @@ Command Controller::update() {
             clear_hold();
             return Command::SwitchMode;
         }
+        return Command::None;
     }
 
     if (m_mode == Mode::Setting) {

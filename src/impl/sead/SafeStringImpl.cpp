@@ -28,4 +28,20 @@ template <>
 SafeStringBase<char16>&
 SafeStringBase<char16>::operator=(const SafeStringBase<char16>& other) = default;
 
+template <>
+BufferedSafeStringBase<char>&
+BufferedSafeStringBase<char>::operator=(const SafeStringBase<char>& other)
+{
+    copy(other);
+    return *this;
+}
+
+template <>
+BufferedSafeStringBase<char16>&
+BufferedSafeStringBase<char16>::operator=(const SafeStringBase<char16>& other)
+{
+    copy(other);
+    return *this;
+}
+
 }  // namespace sead

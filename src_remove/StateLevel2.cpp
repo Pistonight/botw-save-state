@@ -99,7 +99,8 @@ void StateLevel2::ReadFromGame() {
             mMenuEquippedShield);
     }
 
-    ReadOverworldEquipment("weapon", mem::GamePtr::OverworldWeaponActor(),
+    ReadOverworldEquipment("weapon", 
+                           mem::GamePtr::OverworldWeaponActor(),
                            mem::GamePtr::OverworldWeaponDurability(), mOverworldEquippedWeapon);
     ReadOverworldEquipment("bow", mem::GamePtr::OverworldBowActor(),
                            mem::GamePtr::OverworldBowDurability(), mOverworldEquippedBow);

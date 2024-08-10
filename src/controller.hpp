@@ -152,13 +152,13 @@ private:
     void get_key_name(util::StringBuffer<30>& out_buffer, Key* key) const {
         out_buffer.clear();
         if (key == &m_key_save) {
-            out_buffer.append("SaveStateToMemory");
+            out_buffer.append("SaveToMem");
         } else if (key == &m_key_save_file) {
-            out_buffer.append("SaveStateToFile");
+            out_buffer.append("SaveToFile");
         } else if (key == &m_key_restore) {
-            out_buffer.append("RestoreStateFromMemory");
+            out_buffer.append("RestoreMem");
         } else if (key == &m_key_restore_file) {
-            out_buffer.append("RestoreStateFromFile");
+            out_buffer.append("RestoreFile");
         }
     }
 

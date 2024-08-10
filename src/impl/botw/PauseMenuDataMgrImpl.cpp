@@ -2,12 +2,17 @@
 #include <Game/UI/uiPauseMenuDataMgr.h>
 #include <prim/seadScopedLock.h>
 
+#include "util/scoped_lock.hpp"
+
 namespace uking::ui {
 
 void PauseMenuDataMgr::updateEquippedItemArray() {
     // offset of array: 0x44E70
     mEquippedWeapons.fill({});
-    // Removed lock since we are duplicating the impl anyway. Dangerous
+
+    // since sead::CriticalSection is inlined in 1.6
+    // our own scoped lock implementation is provided
+    botwsavs::util::ScopedLock lock(&mCritSection.mCriticalSectionInner);
     // const auto lock = sead::makeScopedLock(mCritSection);
     for (auto& item : getItems()) {
         if (item.getType() > PouchItemType::Shield)
@@ -16,4 +21,5 @@ void PauseMenuDataMgr::updateEquippedItemArray() {
             mEquippedWeapons[u32(item.getType())] = &item;
     }
 }
+
 }  // namespace uking::ui

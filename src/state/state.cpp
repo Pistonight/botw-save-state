@@ -8,7 +8,7 @@ void State::read_from_game(Reporter& reporter, u32 level) {
             /* mStorageLevel3.ReadFromGame(); */
         // fall through
         case 2:
-            /* mStorageLevel2.ReadFromGame(); */
+            m_lv_2.read_from_game(reporter);
         // fall through
         case 1:
             m_lv_1.read_from_game(reporter);
@@ -22,7 +22,7 @@ void State::write_to_game(Reporter& reporter, u32 level, bool hold) const {
             /* mStorageLevel3.WriteToGame(); */
         // fall through
         case 2:
-            /* mStorageLevel2.WriteToGame(); */
+            m_lv_2.write_to_game(reporter, hold);
         // fall through
         case 1:
             m_lv_1.write_to_game(reporter, hold);
@@ -39,6 +39,7 @@ void State::read_from_file(util::DataReader& reader) {
     }
 
     m_lv_1.read_from_file(reader, static_cast<Version>(version));
+    m_lv_2.read_from_file(reader, static_cast<Version>(version));
 }
 
 void State::write_to_file(util::DataWriter& writer) const {
@@ -46,6 +47,7 @@ void State::write_to_file(util::DataWriter& writer) const {
     writer.write_integer("level", m_level);
 
     m_lv_1.write_to_file(writer);
+    m_lv_2.write_to_file(writer);
 }
 
 }

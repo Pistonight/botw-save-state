@@ -1,23 +1,95 @@
+/**
+ * This is a patch for BOTW 1.6.0 to show custom messages on the screen
+ * This overrides:
+ * - The info overlay message (such as "Your Pot Lid is badly damaged")
+ * - The tip widget message (such as "The area is very cold ...")
+ *
+ * The info overlay message overrides an unused demo version message,
+ * with idx=0x2A and msg_id="0061". When this string is requested,
+ * the overriden message is provided instead.
+ *
+ */
 #pragma once
+#include <cstddef>
 #include <exl/types.h>
 #include <prim/seadSafeString.h>
+#include <prim/seadRuntimeTypeInfo.h>
 #include <stdio.h>
 
-extern "C" u64 botw_get_message_string(void* file, void* msg_id, void* out);
-extern "C" void* botw_show_info_overlay(u64 idx, const sead::SafeString* useless);
-
-namespace botwsavs::util::msg {
-
-constexpr size_t MESSAGE_BUFFER_LEN = 200;
-
-struct WideString {
+struct WideString {// This is probably a eui::MessageString
     char16_t* content = nullptr;
     u64 length = 0;
 };
-/** 
- * Hook to make the game get the custom message instead of the original message
+
+struct RuntimeTip {
+    sead::SafeString m_label;
+    sead::SafeString m_flag;
+};
+static_assert(sizeof(RuntimeTip) == 0x20);
+
+struct ScreenMgr {
+    void* vtable;
+    char disposer[0x20];
+    u32 num_screens;
+    void** screens;
+};
+static_assert(offsetof(ScreenMgr, num_screens) == 0x28);
+static_assert(offsetof(ScreenMgr, screens) == 0x30);
+
+extern "C" {
+// BOTW Symbols
+// These can be replaced with the decomp headers once they are available
+
+// 0x0123DEA0 (1.6.0)
+// 0x00AA248C (1.5.0)
+// Load msg_id from file and put it in out
+// file is 
+//   - "LayoutMsg/MessageTipsRunTime_00" for widgets
+//   - "LayoutMsg/MainScreen_00" for info overlay
+//
+// msg_id is like "0001"
+// return 0 for success
+u64 ksys_ui_getMessage(
+    sead::SafeString* file, sead::SafeString* msg_id, WideString* out);
+
+// 0x01238680 (1.6.0)
+// 0x00A95924 (1.5.0)
+void* ksys_ui_showInfoOverlayWithString(
+    u64 idx, const sead::SafeString* info);
+
+// 0x0119C750 (1.6.0)
+void ScreenMessageTipsRuntime_doShowMessageTip(void* this_, u32 idx, bool);
+
+// 0x00020950 (1.6.0)
+// 0x00A261CC (1.5.0)
+void ksys_ui_initMessageTipsRuntime();
+
+// 0x02CBA3A8 (1.6.0)
+// 0x025EFC08 (1.5.0)
+/* extern u32 ksys_ui_runtime_tip_num; */
+
+// 0x02CBA3B0 (1.6.0)
+// 0x025EFC10 (1.5.0)
+extern RuntimeTip* ksys_ui_runtime_tips;
+
+// 0x02CC2490 (1.6.0)
+// 0x025FCC68 (1.5.0)
+extern ScreenMgr* ksys_ui_screen_mgr_instance;
+}
+
+
+namespace botwsavs::util::msg {
+
+constexpr const char* INFO_OVERLAY_MSG_ID = "0061";
+constexpr const char* WIDGET_MSG_ID = "0025";
+
+/**
+ * Initialize the hook system to override the messages
  */
-u64 get_message_string_hook(void* file, sead::SafeString& msg_id, WideString* out);
+void install_hooks();
+void show_custom_widget(const char* message);
+
+constexpr size_t MESSAGE_BUFFER_LEN = 200;
 
 /**
  * Show a custom message on the screen
@@ -35,17 +107,6 @@ void show_customf(const char* format, T value) {
     show_custom(result);
 }
 
-/**
- * Show an original message by its id
- */
-void show_info_by_idx(u64 idx);
-
-/**
- * Show "Can't do that right now"
- */
-inline void show_cant_do_that_right_now() {
-    show_info_by_idx(0x22);
-}
 
 /**
  * Show message when switching save state level

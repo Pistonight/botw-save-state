@@ -2,11 +2,11 @@
 
 #include <exl/types.h>
 
+#include "state/lv_1.hpp"
+#include "state/lv_2.hpp"
+#include "state/reporter.hpp"
 #include "util/data_reader.hpp"
 #include "util/data_writer.hpp"
-
-#include "./lv_1.hpp"
-#include "./reporter.hpp"
 
 namespace botwsavs::state {
 
@@ -23,6 +23,7 @@ public:
 private:
     u32 m_level = 0;
     Lv1 m_lv_1;
+    Lv2 m_lv_2;
 };
 
 }

@@ -12,6 +12,9 @@ sources = [
 ]
 includes = [
     "src",
+    "libs/botw/src",
+    "libs/botw/lib/agl/include",
+    "libs/botw/lib/gsys/include",
     "libs/exlaunch/source",
     "libs/sead/include",
     "libs/nnheaders/include",
@@ -41,6 +44,9 @@ extra = [
     { DEFINES = [
         "-DEXL_PROGRAM_ID=$(MEGATON_MODULE_TITLE_ID)",
         "-DEXL_MODULE_NAME='\"$(MEGATON_MODULE_NAME)\"'"
+    ]},
+    { CXXFLAGS = [
+        "-Wno-invalid-offsetof",
     ]},
 ]
 

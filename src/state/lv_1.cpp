@@ -1,3 +1,6 @@
+#include <KingSystem/ActorSystem/actBaseProcMgr.h>
+#include <KingSystem/ActorSystem/actBaseProc.h>
+
 #include "raw_ptr.hpp"
 #include "named.h"
 #include "util/data_reader.hpp"
@@ -5,7 +8,6 @@
 
 #include "./lv_1.hpp"
 #include "./reporter.hpp"
-
 
 namespace botwsavs::state {
 
@@ -32,7 +34,24 @@ void Lv1::write_to_game(Reporter& r, bool hold) const {
     r.report("RdBombCD", raw_ptr::round_bomb_cooldown().set(0.0F));
     r.report("SqBombCD", raw_ptr::square_bomb_cooldown().set(0.0F));
     r.report("StasisCD", raw_ptr::stasis_cooldown().set(0.0F));
-    // TODO: despawn bombs
+
+    auto* proc_mgr = ksys::act::BaseProcMgr::instance();
+    if (!proc_mgr) {
+        r.report("DespBomb", false);
+    } else {
+        for (const char* bomb_name: {
+            "RemoteBomb",
+            "RemoteBomb2",
+            "RemoteBombCube",
+            "RemoteBombCube2",
+        }) {
+            auto* bomb = proc_mgr->getProc(bomb_name, {});
+            if (bomb) {
+                bomb->deleteLater(ksys::act::BaseProc::DeleteReason::_0);
+            }
+        }
+    }
+
     // TODO: fall damage cancel
 }
 

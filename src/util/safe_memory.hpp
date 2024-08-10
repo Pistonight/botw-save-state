@@ -2,12 +2,13 @@
 
 #include <exl/types.h>
 
+
+namespace botwsavs::util {
+
 /**
  * Check if the value looks like a pointer
  */
 bool ptr_looks_safe(const void* ptr);
-
-namespace botwsavs::util {
 
 class mem_ptr {
 public:

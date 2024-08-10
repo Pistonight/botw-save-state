@@ -58,7 +58,7 @@ public:
     }
 
     template <typename T, u32 L>
-    void write_named_u64(const char* field_name, const util::NamedValue<T, L>& value) {
+    void write_named_integer(const char* field_name, const util::NamedValue<T, L>& value) {
         write_string("Name of value below", value.name());
         write_integer(field_name, value.value());
     }
