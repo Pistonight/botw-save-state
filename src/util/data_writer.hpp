@@ -1,11 +1,12 @@
 #pragma once
 
-#include "./file.hpp"
-#include "./named_value.hpp"
+#include "util/file.hpp"
+#include "util/named_value.hpp"
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wstrict-aliasing"
-namespace botwsavs::util {
+
+namespace botw::savs {
 class DataWriter {
 public:
     DataWriter(const char* path);
@@ -58,13 +59,13 @@ public:
     }
 
     template <typename T, u32 L>
-    void write_named_integer(const char* field_name, const util::NamedValue<T, L>& value) {
+    void write_named_integer(const char* field_name, const NamedValue<T, L>& value) {
         write_string("Name of value below", value.name());
         write_integer(field_name, value.value());
     }
 
     template <typename T, u32 L>
-    void write_named_float(const char* field_name, const util::NamedValue<T, L>& value) {
+    void write_named_float(const char* field_name, const NamedValue<T, L>& value) {
         write_string("Name of value below", value.name());
         write_float(field_name, value.value());
     }

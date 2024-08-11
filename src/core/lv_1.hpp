@@ -1,24 +1,20 @@
 #pragma once
 
 #include <exl/types.h>
-#include "./version.hpp"
+#include "core/version.hpp"
 
-namespace botwsavs::util {
+namespace botw::savs {
+
 class DataReader;
 class DataWriter;
-}
-
-
-namespace botwsavs::state {
-
 class Reporter;
 
 class Lv1 {
 public:
     void read_from_game(Reporter& reporter);
     void write_to_game(Reporter& reporter, bool hold) const;
-    void read_from_file(util::DataReader& reader, Version version);
-    void write_to_file(util::DataWriter& writer) const;
+    void read_from_file(DataReader& reader, Version version);
+    void write_to_file(DataWriter& writer) const;
 
 private:
     u32 m_health;

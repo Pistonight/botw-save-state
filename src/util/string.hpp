@@ -5,18 +5,19 @@
 
 #include <exl/types.h>
 
-namespace botwsavs::util {
+namespace botw::savs {
 
-template <u32 L>
-class StringBuffer {
+template <typename T, u32 L>
+class StringBufferBase {
 public:
-    StringBuffer() { clear(); }
+    StringBufferBase() { clear(); }
     void clear() {
         m_len = 0;
         ensure_termination();
     }
-    const char* content() const { return m_content; }
-    char* last() { return m_content + m_len; }
+    const T* content() const { return m_content; }
+    T* content() { return m_content; }
+    T* last() { return m_content + m_len; }
     u32 len() const { return m_len; } // may include null byte in the middle
 
     void increase_length(u32 size) {
@@ -29,19 +30,14 @@ public:
         }
     }
 
-    void append(const char* text) {
+    void append(const T* text) {
         strncpy(last(), text, L - m_len);
         increase_length(strlen(text));
     }
 
-    template <typename T>
-    void appendf(const char* format, T value) {
-        increase_length(sprintf(last(), format, value));
-    }
-
     void ensure_termination() { m_content[m_len] = '\0'; }
 
-    bool index_of(char search, u32 from, u32* outIndex) {
+    bool index_of(T search, u32 from, u32* outIndex) {
         for (u32 i = from; i < m_len; i++) {
             if (m_content[i] == search) {
                 *outIndex = i;
@@ -51,7 +47,7 @@ public:
         return false;
     }
 
-    void set(u32 i, char c) {
+    void set(u32 i, T c) {
         if (i < m_len) {
             m_content[i] = c;
         }
@@ -78,9 +74,35 @@ public:
         ensure_termination();
     }
 
-private:
-    char m_content[L + 1];
+protected:
+    T m_content[L + 1];
     u32 m_len;
+};
+
+template<u32 L>
+class StringBuffer : public StringBufferBase<char, L> {
+
+public:
+    template <typename V>
+    void appendf(const char* format, V value) {
+        this->increase_length(sprintf(this->last(), format, value));
+    }
+};
+
+template<u32 L>
+class WStringBuffer : public StringBufferBase<char16_t, L> {
+public:
+    void copy_from(const char* text) {
+        for (u32 i = 0; i < L; i++) {
+            this->m_content[i] = text[i];
+            if (text[i] == '\0') {
+                this->m_len = i;
+                return;
+            }
+        }
+        this->m_len = L;
+        this->ensure_termination();
+    }
 };
 
 }  // namespace botwsavs::util

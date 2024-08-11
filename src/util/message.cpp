@@ -1,28 +1,30 @@
 #include <cstring>
-
 #include <nn/os.h>
 #include <exl/types.h>
 #include <exl/lib.hpp>
+#include "util/string.hpp"
+#include "util/message.hpp"
 
-#include "./message.hpp"
+namespace botw::savs::msg {
 
-namespace botwsavs::util::msg {
-
-static char16_t s_info_buffer[MESSAGE_BUFFER_LEN];
-static u64 s_info_buffer_len = 0;
+static WStringBuffer<40> s_info;
+static u32 s_info_idx = 0;
+/* static char16_t s_info_buffer[MESSAGE_BUFFER_LEN]; */
+/* static u64 s_info_buffer_len = 0; */
 static char16_t s_widget_buffer[MESSAGE_BUFFER_LEN];
 static u64 s_widget_buffer_len = 0;
-static u32 s_info_overlay_idx = 0x2A;
 
 // Hooking the message loader function
 HOOK_DEFINE_TRAMPOLINE(KsysUiGetMessageHook) {
     static bool Callback(sead::SafeString* file, sead::SafeString* msg_id, WideString* out) {
         if (*file == "LayoutMsg/MainScreen_00") {
             // handle info overlay
-            // output the previously set message
+            // 0028 - The Master Sword has returned to the forest
+            // 0061 - In this demo version, you can't advance any farther
             if (*msg_id == "0061" || *msg_id == "0028") {
-                out->content = s_info_buffer;
-                out->length = s_info_buffer_len;
+                // output the previously set message
+                out->content = s_info.content();;
+                out->length = s_info.len();
                 return 0;
             }
 
@@ -42,8 +44,8 @@ HOOK_DEFINE_TRAMPOLINE(KsysUiGetMessageHook) {
 HOOK_DEFINE_TRAMPOLINE(KsysUiInitMessageTipsRuntimeHook) {
     static void Callback() {
         Orig();
-        ksys_ui_runtime_tips[0x0E].m_label = "0025";
-        ksys_ui_runtime_tips[0x0E].m_flag = "";
+        ksys_ui_sRuntimeTips[0x0E].m_label = WIDGET_MSG_ID;
+        ksys_ui_sRuntimeTips[0x0E].m_flag = "";
     }
 };
 
@@ -61,7 +63,7 @@ HOOK_DEFINE_TRAMPOLINE(ScreenMessageTipsRuntimeShowMessageTipHook) {
     }
 };
 
-namespace inst = exl::armv8::inst;
+/* namespace inst = exl::armv8::inst; */
 
 void install_hooks() {
     KsysUiGetMessageHook::InstallAtOffset(0x123DEA0);
@@ -92,33 +94,21 @@ void install_hooks() {
 /* } */
 
 void show_custom(const char* message) {
-    u64 i = 0;
-    for (; i < MESSAGE_BUFFER_LEN; i++) {
-        if (message[i] == '\0') {
-            s_info_buffer[i] = '\0';
-            break;
-        }
-        s_info_buffer[i] = static_cast<char16_t>(message[i]);
-    }
-    s_info_buffer_len = i;
-    s_info_buffer[MESSAGE_BUFFER_LEN - 1] = '\0';
-    if (s_info_overlay_idx == 0x21) {
-        s_info_overlay_idx = 0x2A;
-    } else {
-        s_info_overlay_idx = 0x21;
-    }
-
-    ksys_ui_showInfoOverlayWithString(s_info_overlay_idx, &sead::SafeStringBase<char>::cEmptyString);
+    s_info.copy_from(message);
+    // cycle the message index so the game would clear the previous one
+    s_info_idx = s_info_idx == 0x21 ? 0x2A : 0x21;
+    ksys_ui_showInfoOverlayWithString(s_info_idx, &sead::SafeStringBase<char>::cEmptyString);
 }
 
 static int s_test_idx = 0x17;
 
 void show_custom_widget(const char* message) {
-    if (!ksys_ui_screen_mgr_instance) {
+    if (!ksys_ui_ScreenMgr_sInstance) {
         return;
     }
-    void** screens = ksys_ui_screen_mgr_instance->screens;
-    if (ksys_ui_screen_mgr_instance->num_screens > 0x29) {
+    // idk what this is
+    void** screens = ksys_ui_ScreenMgr_sInstance->screens;
+    if (ksys_ui_ScreenMgr_sInstance->num_screens > 0x29) {
         screens += 0x29;
     }
     void* screen = *screens;

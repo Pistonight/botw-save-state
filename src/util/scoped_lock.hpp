@@ -1,7 +1,7 @@
 #pragma once
 #include <nn/os.h>
 
-namespace botwsavs::util {
+namespace botw::savs {
 class ScopedLock {
 public:
     ScopedLock(nn::os::MutexType* mutex): m_mutex(mutex), m_locked(false) {

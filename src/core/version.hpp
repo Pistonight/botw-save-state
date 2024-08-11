@@ -1,6 +1,6 @@
 #pragma once
 
-namespace botwsavs::state {
+namespace botw::savs {
 enum Version {
     v1 = 1, // level 1 only
     v2 = 2, // add level 2

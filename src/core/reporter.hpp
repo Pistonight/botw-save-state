@@ -3,7 +3,7 @@
 #include <exl/types.h>
 #include <util/string.hpp>
 
-namespace botwsavs::state {
+namespace botw::savs {
 
 class Reporter {
 public:
@@ -14,7 +14,7 @@ public:
     bool has_error() const { return m_error_count > 0; }
 
     template<u32 L>
-    void get_fields_string(util::StringBuffer<L>& out) const {
+    void get_fields_string(StringBuffer<L>& out) const {
         out.clear();
         switch (m_error_count) {
             case 0:
@@ -36,8 +36,8 @@ public:
     }
 private:
     u32 m_error_count;
-    util::StringBuffer<64> m_first_field;
-    util::StringBuffer<64> m_second_field;
+    StringBuffer<64> m_first_field;
+    StringBuffer<64> m_second_field;
 
 
 };

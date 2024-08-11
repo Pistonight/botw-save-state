@@ -4,9 +4,9 @@
  * - The info overlay message (such as "Your Pot Lid is badly damaged")
  * - The tip widget message (such as "The area is very cold ...")
  *
- * The info overlay message overrides an unused demo version message,
- * with idx=0x2A and msg_id="0061". When this string is requested,
- * the overriden message is provided instead.
+ * The basic idea is to hook into the function that loads the actual message
+ * to load the overridden message instead. Then call the functions to display
+ * the message.
  *
  */
 #pragma once
@@ -49,8 +49,8 @@ extern "C" {
 //
 // msg_id is like "0001"
 // return 0 for success
-u64 ksys_ui_getMessage(
-    sead::SafeString* file, sead::SafeString* msg_id, WideString* out);
+/* u64 ksys_ui_getMessage( */
+/*     sead::SafeString* file, sead::SafeString* msg_id, WideString* out); */
 
 // 0x01238680 (1.6.0)
 // 0x00A95924 (1.5.0)
@@ -62,25 +62,24 @@ void ScreenMessageTipsRuntime_doShowMessageTip(void* this_, u32 idx, bool);
 
 // 0x00020950 (1.6.0)
 // 0x00A261CC (1.5.0)
-void ksys_ui_initMessageTipsRuntime();
+/* void ksys_ui_initMessageTipsRuntime(); */
 
 // 0x02CBA3A8 (1.6.0)
 // 0x025EFC08 (1.5.0)
-/* extern u32 ksys_ui_runtime_tip_num; */
+/* extern u32 ksys_ui_sRuntimeTipsNum; */
 
 // 0x02CBA3B0 (1.6.0)
 // 0x025EFC10 (1.5.0)
-extern RuntimeTip* ksys_ui_runtime_tips;
+extern RuntimeTip* ksys_ui_sRuntimeTips;
 
 // 0x02CC2490 (1.6.0)
 // 0x025FCC68 (1.5.0)
-extern ScreenMgr* ksys_ui_screen_mgr_instance;
+extern ScreenMgr* ksys_ui_ScreenMgr_sInstance;
 }
 
 
-namespace botwsavs::util::msg {
+namespace botw::savs::msg {
 
-constexpr const char* INFO_OVERLAY_MSG_ID = "0061";
 constexpr const char* WIDGET_MSG_ID = "0025";
 
 /**

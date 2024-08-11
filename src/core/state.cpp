@@ -1,6 +1,6 @@
-#include "./state.hpp"
+#include "core/state.hpp"
 
-namespace botwsavs::state {
+namespace botw::savs {
 
 void State::read_from_game(Reporter& reporter, u32 level) {
     switch (level) {
@@ -29,7 +29,7 @@ void State::write_to_game(Reporter& reporter, u32 level, bool hold) const {
     }
 }
 
-void State::read_from_file(util::DataReader& reader) {
+void State::read_from_file(DataReader& reader) {
     u32 version = 0;
     reader.read_integer(&version);
     reader.read_integer(&m_level);
@@ -42,7 +42,7 @@ void State::read_from_file(util::DataReader& reader) {
     m_lv_2.read_from_file(reader, static_cast<Version>(version));
 }
 
-void State::write_to_file(util::DataWriter& writer) const {
+void State::write_to_file(DataWriter& writer) const {
     writer.write_integer("version", Version::vLatest);
     writer.write_integer("level", m_level);
 

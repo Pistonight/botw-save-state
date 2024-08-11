@@ -1,24 +1,23 @@
 #include <KingSystem/ActorSystem/actBaseProcMgr.h>
 #include <KingSystem/ActorSystem/actBaseProc.h>
-#include <Game/UI/uiPauseMenuDataMgr.h>
 
-#include "raw_ptr.hpp"
-#include "named.h"
-
-#include "state/lv_2.hpp"
-#include "state/reporter.hpp"
+#include "impl/raw_ptr.hpp"
+#include "impl/uiPauseMenuDataMgr.h"
+#include "core/lv_2.hpp"
+#include "core/reporter.hpp"
 #include "util/data_reader.hpp"
 #include "util/data_writer.hpp"
+#include "util/named.h"
 
-namespace botwsavs::state {
+namespace botw::savs {
 
 void read_inventory_equipment_durability(
     const char* name,
     const uking::ui::PouchItem* item,
-    util::NamedValue<u32, 64>& value,
+    NamedValue<u32, 64>& value,
     Reporter& r
 ) {
-    if (util::ptr_looks_safe(item)) {
+    if (ptr_looks_safe(item)) {
         value.set(item->getName(), item->getValue());
     } else {
         value.clear_name();
@@ -29,10 +28,10 @@ void read_inventory_equipment_durability(
 void write_inventory_equipment_durability(
     const char* name,
     uking::ui::PouchItem* item,
-    const util::NamedValue<u32, 64>& value,
+    const NamedValue<u32, 64>& value,
     Reporter& r
 ) {
-    if (util::ptr_looks_safe(item)) {
+    if (ptr_looks_safe(item)) {
         if (value.name_matches(item->getName())) {
             item->setValue(value.value());
         }
@@ -43,9 +42,9 @@ void write_inventory_equipment_durability(
 
 void read_overworld_equipment_durability(
     const char* name,
-    const util::safe_ptr<ksys::act::BaseProc>& actor,
-    const util::safe_ptr<u32>& durability,
-    util::NamedValue<u32, 64>& value,
+    const safe_ptr<ksys::act::BaseProc>& actor,
+    const safe_ptr<u32>& durability,
+    NamedValue<u32, 64>& value,
     Reporter& r
 ) {
     ksys::act::BaseProc* safe_actor = nullptr;
@@ -65,9 +64,9 @@ void read_overworld_equipment_durability(
 
 void write_overworld_equipment_durability(
     const char* name,
-    const util::safe_ptr<ksys::act::BaseProc>& actor,
-    const util::safe_ptr<u32>& durability,
-    const util::NamedValue<u32, 64>& value,
+    const safe_ptr<ksys::act::BaseProc>& actor,
+    const safe_ptr<u32>& durability,
+    const NamedValue<u32, 64>& value,
     Reporter& r
 ) {
     ksys::act::BaseProc* safe_actor = nullptr;
@@ -92,7 +91,7 @@ void Lv2::read_from_game(Reporter& r) {
         pmdm->updateEquippedItemArray();
 
         // save arrow, weapon, bow, shield
-        auto* arrow = pmdm->getEquippedWeapon(uking::ui::PouchItemType::Arrow);
+        auto* arrow = pmdm->mEquippedWeapons[int(uking::ui::PouchItemType::Arrow)];
         read_inventory_equipment_durability(
             "ArrowCnt", 
             arrow, 
@@ -204,7 +203,7 @@ void Lv2::write_to_game(Reporter& r, bool hold) const {
     );
 }
 
-void Lv2::read_from_file(util::DataReader& r, Version version) {
+void Lv2::read_from_file(DataReader& r, Version version) {
     if (version < Version::v2) {
         return;
     }
@@ -218,7 +217,7 @@ void Lv2::read_from_file(util::DataReader& r, Version version) {
     r.read_named_integer(m_overworld_equipped_shield_durability);
 }
 
-void Lv2::write_to_file(util::DataWriter& w) const {
+void Lv2::write_to_file(DataWriter& w) const {
     w.write_named_integer(_named(m_menu_equipped_arrow_count));
     w.write_named_integer(_named(m_menu_equipped_weapon_durability));
     w.write_named_integer(_named(m_menu_equipped_bow_durability));

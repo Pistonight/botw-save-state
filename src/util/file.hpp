@@ -2,11 +2,11 @@
 #include <nn/fs.h>
 #include <exl/types.h>
 
-#include "./string.hpp"
+#include "util/string.hpp"
 
-namespace botwsavs::util {
+namespace botw::savs {
 
-using FileBuffer = util::StringBuffer<1024>;
+using FileBuffer = StringBuffer<1024>;
 
 class File {
 public:
@@ -28,14 +28,14 @@ public:
     // Read into buffer
     s64 read(FileBuffer& buffer);
 
-    const char* path() const { return mPath; }
-    bool is_opened() const { return mOpen; }
+    const char* path() const { return m_path; }
+    bool is_opened() const { return m_open; }
 
 private:
-    const char* mPath = nullptr;
-    bool mOpen = false;
-    nn::fs::FileHandle mHandle;
-    u64 mOffset = 0;
+    const char* m_path = nullptr;
+    bool m_open = false;
+    nn::fs::FileHandle m_handle;
+    u64 m_offset = 0;
 };
 
 }  // namespace botwsavs

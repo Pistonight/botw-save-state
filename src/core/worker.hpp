@@ -1,10 +1,10 @@
 #pragma once
 
 #include <exl/types.h>
-#include "state/state.hpp"
-#include "./controller.hpp"
+#include "core/state.hpp"
+#include "core/controller.hpp"
 
-namespace botwsavs {
+namespace botw::savs {
 
 constexpr const char* OPTION_FILE_PATH = "sd:/botwsavs/option.txt";
 constexpr const char* STATE_FILE_PATH = "sd:/botwsavs/latest.txt";
@@ -34,7 +34,7 @@ public:
     void execute_save_file();
     void execute_restore_file();
 
-    state::State& get_last_restored_state() {
+    State& get_last_restored_state() {
         if (m_last_restored_is_from_memory) {
             return m_memory_state;
         }
@@ -43,8 +43,8 @@ public:
 
 private:
     Controller m_controller;
-    state::State m_memory_state;
-    state::State m_last_restored_file;
+    State m_memory_state;
+    State m_last_restored_file;
     u32 m_active_level = 1;
     bool m_show_restore_message = true;
     bool m_last_restored_is_from_memory = false;

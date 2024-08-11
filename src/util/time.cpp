@@ -1,8 +1,8 @@
 #include <nn/time.h>
 
-#include "./time.hpp"
+#include "util/time.hpp"
 
-namespace botwsavs::util {
+namespace botw::savs {
 
 void get_current_time(TimeBuffer& out) {
     out.clear();

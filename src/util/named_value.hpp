@@ -2,7 +2,7 @@
 #include <prim/seadSafeString.h>
 #include <exl/types.h>
 
-namespace botwsavs::util {
+namespace botw::savs {
 
 template <typename T, u32 L>
 class NamedValue {

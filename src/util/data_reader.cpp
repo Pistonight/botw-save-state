@@ -1,8 +1,9 @@
 #include <stdlib.h>
 
-#include "./data_reader.hpp"
+#include "util/data_reader.hpp"
 
-namespace botwsavs::util {
+namespace botw::savs {
+
 DataReader::DataReader(const char* path) : m_file(path) {
     if (!m_file.open()) {
         m_success = false;

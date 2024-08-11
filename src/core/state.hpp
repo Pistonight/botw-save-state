@@ -2,20 +2,20 @@
 
 #include <exl/types.h>
 
-#include "state/lv_1.hpp"
-#include "state/lv_2.hpp"
-#include "state/reporter.hpp"
+#include "core/lv_1.hpp"
+#include "core/lv_2.hpp"
+#include "core/reporter.hpp"
 #include "util/data_reader.hpp"
 #include "util/data_writer.hpp"
 
-namespace botwsavs::state {
+namespace botw::savs {
 
 class State {
 public:
     void read_from_game(Reporter& reporter, u32 level);
     void write_to_game(Reporter& reporter, u32 level, bool hold) const;
-    void read_from_file(util::DataReader& reader);
-    void write_to_file(util::DataWriter& writer) const;
+    void read_from_file(DataReader& reader);
+    void write_to_file(DataWriter& writer) const;
 
     u32 get_level() const {
         return m_level;

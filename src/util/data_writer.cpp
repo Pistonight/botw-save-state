@@ -1,8 +1,9 @@
 #include <stdlib.h>
 
-#include "./data_writer.hpp"
+#include "util/data_writer.hpp"
 
-namespace botwsavs::util {
+namespace botw::savs {
+
 DataWriter::DataWriter(const char* path) : m_file(path) {
     if (!m_file.exists()) {
         if (!m_file.create()) {
@@ -28,4 +29,5 @@ bool DataWriter::do_write_string(const char* field_name, const char* string) {
     m_buffer.appendf("# %s\n", field_name);
     return m_file.write(m_buffer);
 }
+
 }

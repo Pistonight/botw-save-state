@@ -1,12 +1,13 @@
 
 #pragma once
 
-#include "./file.hpp"
-#include "./named_value.hpp"
+#include "util/file.hpp"
+#include "util/named_value.hpp"
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wstrict-aliasing"
-namespace botwsavs::util {
+
+namespace botw::savs {
 class DataReader {
 public:
     DataReader(const char* path);
@@ -74,12 +75,12 @@ public:
         }
     }
     template <typename T, u32 L>
-    void read_named_integer(util::NamedValue<T, L>& value) {
+    void read_named_integer(NamedValue<T, L>& value) {
         read_string(value.name(), L);
         read_integer(value.value_ptr());
     }
     template <typename T, u32 L>
-    void read_named_float(const util::NamedValue<T, L>& value) {
+    void read_named_float(const NamedValue<T, L>& value) {
         read_string(value.name(), L);
         read_float(value.value_ptr());
     }

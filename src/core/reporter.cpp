@@ -1,6 +1,6 @@
-#include "./reporter.hpp"
+#include "core/reporter.hpp"
 
-namespace botwsavs::state {
+namespace botw::savs {
 
 void Reporter::report(const char* field, bool success) {
     if (success) {

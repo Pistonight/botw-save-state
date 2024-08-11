@@ -10,7 +10,7 @@ namespace sead {
 struct Controller;
 }
 
-namespace botwsavs {
+namespace botw::savs {
 enum Key : u32 {
     None = 0,
     A = 1,
@@ -39,7 +39,7 @@ constexpr Key KEY_INCREASE_LEVEL = static_cast<Key>(Key::R);
 constexpr Key KEY_DECREASE_LEVEL = static_cast<Key>(L);
 
 template <u32 L>
-void get_key_string(u32 keys, util::StringBuffer<L>& out_buffer) {
+void get_key_string(u32 keys, StringBuffer<L>& out_buffer) {
     static_assert(L >= 100, "Key string buffer length should be at least 100");
     out_buffer.clear();
     if (keys == 0) {
@@ -122,8 +122,8 @@ public:
     bool initialize();
     Command update();
 
-    void save_key_bindings(util::DataWriter& writer) const;
-    void load_key_bindings(util::DataReader& reader);
+    void save_key_bindings(DataWriter& writer) const;
+    void load_key_bindings(DataReader& reader);
 
     Mode get_mode() const { return m_mode; }
 private:
@@ -149,7 +149,7 @@ private:
     bool is_configuring_key() const { return m_key_being_configured != nullptr; }
     void start_configure_key(Key* key);
     ConfigureResult finish_configure_key(Key new_key);
-    void get_key_name(util::StringBuffer<30>& out_buffer, Key* key) const {
+    void get_key_name(StringBuffer<30>& out_buffer, Key* key) const {
         out_buffer.clear();
         if (key == &m_key_save) {
             out_buffer.append("SaveToMem");

@@ -2,8 +2,7 @@
 
 #include <exl/types.h>
 
-
-namespace botwsavs::util {
+namespace botw::savs {
 
 /**
  * Check if the value looks like a pointer

@@ -1,21 +1,21 @@
 
-#include "./file.hpp"
+#include "util/file.hpp"
 
-namespace botwsavs::util {
+namespace botw::savs {
 
 File::File(const char* path) {
-    mPath = path;
+    m_path = path;
 }
 
 File::~File() {
-    if (mOpen) {
+    if (m_open) {
         close();
     }
 }
 
 bool File::exists() {
     nn::fs::DirectoryEntryType type;
-    nn::Result result = nn::fs::GetEntryType(&type, mPath);
+    nn::Result result = nn::fs::GetEntryType(&type, m_path);
 
     if (result.IsFailure()) {
         return false;
@@ -29,13 +29,13 @@ bool File::create() {
         return false;
     }
 
-    nn::Result result = nn::fs::CreateFile(mPath, 0);
+    nn::Result result = nn::fs::CreateFile(m_path, 0);
 
     return result.IsSuccess();
 }
 
 bool File::open() {
-    if (mOpen) {
+    if (m_open) {
         return false;
     }
 
@@ -44,59 +44,59 @@ bool File::open() {
     }
 
     nn::Result result =
-        nn::fs::OpenFile(&mHandle, mPath, nn::fs::OpenMode_ReadWrite | nn::fs::OpenMode_Append);
+        nn::fs::OpenFile(&m_handle, m_path, nn::fs::OpenMode_ReadWrite | nn::fs::OpenMode_Append);
 
-    mOpen = result.IsSuccess();
-    return mOpen;
+    m_open = result.IsSuccess();
+    return m_open;
 }
 
 bool File::close() {
-    if (!mOpen) {
+    if (!m_open) {
         return false;
     }
-    nn::fs::CloseFile(mHandle);
-    mOpen = false;
+    nn::fs::CloseFile(m_handle);
+    m_open = false;
     return true;
 }
 
 bool File::clear() {
-    if (!mOpen) {
+    if (!m_open) {
         return false;
     }
-    nn::Result result = nn::fs::SetFileSize(mHandle, 0);
-    mOffset = 0;
+    nn::Result result = nn::fs::SetFileSize(m_handle, 0);
+    m_offset = 0;
 
     return result.IsSuccess();
 }
 
 bool File::write(const FileBuffer& buffer) {
-    if (!mOpen) {
+    if (!m_open) {
         return false;
     }
-    nn::Result result = nn::fs::SetFileSize(mHandle, mOffset + buffer.len());
+    nn::Result result = nn::fs::SetFileSize(m_handle, m_offset + buffer.len());
     if (result.IsFailure()) {
         return false;
     }
 
-    result = nn::fs::WriteFile(mHandle, mOffset, buffer.content(), buffer.len(),
+    result = nn::fs::WriteFile(m_handle, m_offset, buffer.content(), buffer.len(),
                                nn::fs::WriteOption::CreateOption(nn::fs::WriteOptionFlag_Flush));
     if (result.IsFailure()) {
         return false;
     }
 
-    mOffset += buffer.len();
+    m_offset += buffer.len();
 
     return true;
 }
 s64 File::read(FileBuffer& buffer) {
-    if (!mOpen) {
+    if (!m_open) {
         return -1;
     }
 
     u64 readSize = 0;
 
     nn::Result result =
-        nn::fs::ReadFile(&readSize, mHandle, mOffset, buffer.last(), 1024 - buffer.len());
+        nn::fs::ReadFile(&readSize, m_handle, m_offset, buffer.last(), 1024 - buffer.len());
     if (result.IsFailure()) {
         return -1;
     }
@@ -106,7 +106,7 @@ s64 File::read(FileBuffer& buffer) {
     }
 
     buffer.increase_length(readSize);
-    mOffset += readSize;
+    m_offset += readSize;
 
     return static_cast<s64>(readSize);
 }

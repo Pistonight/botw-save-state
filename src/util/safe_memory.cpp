@@ -1,8 +1,6 @@
 #include <exl/types.h>
 
-#include "util/safe_memory.hpp"
-
-namespace botwsavs::util {
+namespace botw::savs {
 
 bool ptr_looks_safe(const void* ptr) {
     u64 raw = reinterpret_cast<u64>(ptr);

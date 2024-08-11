@@ -1,16 +1,15 @@
 #include <nn/os.h>
 #include <nn/time.h>
 
-#include "mem.h"
-#include "named.h"
-#include "state/reporter.hpp"
+#include "core/worker.hpp"
+#include "core/reporter.hpp"
+#include "util/mem.h"
+#include "util/named.h"
 #include "util/data_reader.hpp"
 #include "util/data_writer.hpp"
 #include "util/message.hpp"
 
-#include "./worker.hpp"
-
-namespace botwsavs {
+namespace botw::savs {
 
 static nn::os::ThreadType s_thread;
 
@@ -61,7 +60,7 @@ void Worker::do_work() {
             break;
         case Command::PostRestoreHold:
             if (m_last_restored_ok) {
-                state::Reporter reporter;
+                Reporter reporter;
                 get_last_restored_state().write_to_game(reporter, m_active_level, true);
             }
             break;
@@ -69,9 +68,9 @@ void Worker::do_work() {
             if (m_last_restored_ok) {
                 if (m_show_restore_message) {
                     if (m_last_restored_is_from_memory) {
-                        util::msg::show_customf("Restored state from memory (level %d)", m_active_level);
+                        msg::show_customf("Restored state from memory (level %d)", m_active_level);
                     } else {
-                        util::msg::show_customf("Restored state from file (level %d)", m_active_level);
+                        msg::show_customf("Restored state from file (level %d)", m_active_level);
                     }
                 }
                 m_last_restored_ok = false;
@@ -79,9 +78,9 @@ void Worker::do_work() {
             break;
         case Command::SwitchMode:
             if (m_controller.get_mode() == Controller::Mode::Active) {
-                util::msg::show_custom("Save State: Active Mode");
+                msg::show_custom("Save State: Active Mode");
             } else {
-                util::msg::show_custom("Save State: Setting Mode");
+                msg::show_custom("Save State: Setting Mode");
             }
             break;
         case Command::IncreaseLevel:
@@ -89,14 +88,14 @@ void Worker::do_work() {
                 m_active_level++;
                 save_options();
             }
-            util::msg::show_set_level(m_active_level);
+            msg::show_set_level(m_active_level);
             break;
         case Command::DecreaseLevel:
             if (m_active_level > 0) {
                 m_active_level--;
                 save_options();
             }
-            util::msg::show_set_level(m_active_level);
+            msg::show_set_level(m_active_level);
             break;
         case Command::SaveOption:
             save_options();
@@ -107,7 +106,7 @@ void Worker::do_work() {
 }
 
 void Worker::save_options() const {
-    util::DataWriter writer(OPTION_FILE_PATH);
+    DataWriter writer(OPTION_FILE_PATH);
 
     writer.write_integer(_named(m_active_level));
     u32 show_restore_message = m_show_restore_message ? 1 : 0;
@@ -117,7 +116,7 @@ void Worker::save_options() const {
 }
 
 void Worker::load_options() {
-    util::DataReader reader(OPTION_FILE_PATH);
+    DataReader reader(OPTION_FILE_PATH);
 
     u32 active_level = 1;
     reader.read_integer(&active_level);
@@ -140,16 +139,16 @@ void Worker::execute_save() {
         return;
     }
 
-    state::Reporter reporter;
+    Reporter reporter;
     m_memory_state.read_from_game(reporter, m_active_level);
     if (reporter.has_error()) {
-        util::StringBuffer<160> fields;
+        StringBuffer<160> fields;
         reporter.get_fields_string(fields);
-        util::msg::show_customf("Failed to access %s!", fields.content());
+        msg::show_customf("Failed to access %s!", fields.content());
         return;
     }
 
-    util::msg::show_customf("Saved state to memory (level %d)", m_active_level);
+    msg::show_customf("Saved state to memory (level %d)", m_active_level);
 }
 
 void Worker::execute_save_file() {
@@ -157,22 +156,22 @@ void Worker::execute_save_file() {
         return;
     }
 
-    state::State temp_state;
-    state::Reporter reporter;
+    State temp_state;
+    Reporter reporter;
     temp_state.read_from_game(reporter, m_active_level);
     if (reporter.has_error()) {
-        util::StringBuffer<160> fields;
+        StringBuffer<160> fields;
         reporter.get_fields_string(fields);
-        util::msg::show_customf("Failed to access %s!", fields.content());
+        msg::show_customf("Failed to access %s!", fields.content());
         return;
     }
 
-    util::DataWriter writer(STATE_FILE_PATH);
+    DataWriter writer(STATE_FILE_PATH);
     temp_state.write_to_file(writer);
     if (writer.is_successful()) {
-        util::msg::show_customf("Saved state to file (level %d)", m_active_level);
+        msg::show_customf("Saved state to file (level %d)", m_active_level);
     } else {
-        util::msg::show_custom("Failed to save state: file operation failed!");
+        msg::show_custom("Failed to save state: file operation failed!");
     }
 }
 
@@ -182,16 +181,16 @@ void Worker::execute_restore() {
         return;
     }
     if (m_memory_state.get_level() == 0) {
-        util::msg::show_custom("No state saved in memory yet!");
+        msg::show_custom("No state saved in memory yet!");
         return;
     }
 
-    state::Reporter reporter;
+    Reporter reporter;
     m_memory_state.write_to_game(reporter, m_active_level, false);
     if (reporter.has_error()) {
-        util::StringBuffer<160> fields;
+        StringBuffer<160> fields;
         reporter.get_fields_string(fields);
-        util::msg::show_customf("Failed to write %s!", fields.content());
+        msg::show_customf("Failed to write %s!", fields.content());
         return;
     }
     m_last_restored_ok = true;
@@ -204,25 +203,25 @@ void Worker::execute_restore_file() {
         return;
     }
 
-    util::File file(STATE_FILE_PATH);
+    File file(STATE_FILE_PATH);
     if (!file.exists()) {
-        util::msg::show_custom("No restore.txt found!");
+        msg::show_custom("No restore.txt found!");
         return;
     }
 
-    util::DataReader reader(STATE_FILE_PATH);
+    DataReader reader(STATE_FILE_PATH);
     m_last_restored_file.read_from_file(reader);
     if (!reader.is_successful()) {
-        util::msg::show_custom("Error reading restore.txt! The file could be corrupted.");
+        msg::show_custom("Error reading restore.txt! The file could be corrupted.");
         return;
     }
 
-    state::Reporter reporter;
+    Reporter reporter;
     m_last_restored_file.write_to_game(reporter, m_active_level, false);
     if (reporter.has_error()) {
-        util::StringBuffer<160> fields;
+        StringBuffer<160> fields;
         reporter.get_fields_string(fields);
-        util::msg::show_customf("Failed to write %s!", fields.content());
+        msg::show_customf("Failed to write %s!", fields.content());
         return;
     }
 

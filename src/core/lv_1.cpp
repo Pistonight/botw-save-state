@@ -1,15 +1,14 @@
 #include <KingSystem/ActorSystem/actBaseProcMgr.h>
 #include <KingSystem/ActorSystem/actBaseProc.h>
 
-#include "raw_ptr.hpp"
-#include "named.h"
+#include "core/lv_1.hpp"
+#include "core/reporter.hpp"
+#include "impl/raw_ptr.hpp"
+#include "util/named.h"
 #include "util/data_reader.hpp"
 #include "util/data_writer.hpp"
 
-#include "./lv_1.hpp"
-#include "./reporter.hpp"
-
-namespace botwsavs::state {
+namespace botw::savs {
 
 void Lv1::read_from_game(Reporter& r) {
     r.report("Health", raw_ptr::health().get(&m_health));
@@ -55,7 +54,7 @@ void Lv1::write_to_game(Reporter& r, bool hold) const {
     // TODO: fall damage cancel
 }
 
-void Lv1::read_from_file(util::DataReader& r, Version version) {
+void Lv1::read_from_file(DataReader& r, Version version) {
     if (version < Version::v1) {
         return;
     }
@@ -68,7 +67,7 @@ void Lv1::read_from_file(util::DataReader& r, Version version) {
     r.read_float(&m_camera_tilt);
 }
 
-void Lv1::write_to_file(util::DataWriter& w) const {
+void Lv1::write_to_file(DataWriter& w) const {
     w.write_integer(_named(m_health));
     w.write_float(_named(m_stamina));
     w.write_float_array(_named(m_havok_position), 3);

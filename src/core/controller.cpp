@@ -1,13 +1,11 @@
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Winvalid-offsetof"
 #include <controller/seadController.h>
 #include <controller/seadControllerMgr.h>
-#pragma GCC diagnostic pop
-#include "util/message.hpp"
-#include "named.h"
-#include "./controller.hpp"
 
-namespace botwsavs {
+#include "core/controller.hpp"
+#include "util/message.hpp"
+#include "util/named.h"
+
+namespace botw::savs {
 
 bool Controller::initialize() {
     if (m_controller) {
@@ -27,14 +25,14 @@ bool Controller::initialize() {
     return true;
 }
 
-void Controller::save_key_bindings(util::DataWriter& w) const {
+void Controller::save_key_bindings(DataWriter& w) const {
     w.write_integer(_named(m_key_save));
     w.write_integer(_named(m_key_save_file));
     w.write_integer(_named(m_key_restore));
     w.write_integer(_named(m_key_restore_file));
 }
 
-void Controller::load_key_bindings(util::DataReader& r) {
+void Controller::load_key_bindings(DataReader& r) {
     u32 key_save = 0;
     u32 key_save_file = 0;
     u32 key_restore = 0;
@@ -79,9 +77,9 @@ bool Controller::has_held_keys_for(Key keys, u32 seconds) {
 
 void Controller::start_configure_key(Key* key) {
     clear_hold();
-    util::StringBuffer<30> key_name;
+    StringBuffer<30> key_name;
     get_key_name(key_name, key);
-    util::msg::show_customf("Hold new %s key for 3 seconds", key_name.content());
+    msg::show_customf("Hold new %s key for 3 seconds", key_name.content());
     m_key_being_configured = key;
     m_configure_hold_counter = 0;
 }
@@ -140,19 +138,19 @@ Command Controller::update_setting_mode() {
         Key new_key = get_hold_keys();
         switch (finish_configure_key(new_key)) {
             case Controller::ConfigureResult::Success: {
-                util::StringBuffer<30> key_name;
+                StringBuffer<30> key_name;
                 get_key_name(key_name, m_key_being_configured);
-                util::StringBuffer<120> buffer;
+                StringBuffer<120> buffer;
                 get_key_string(new_key, buffer);
-                util::StringBuffer<200> msg;
+                StringBuffer<200> msg;
                 msg.appendf("%s key is now set to ", key_name.content());
                 msg.append(buffer.content());
-                util::msg::show_custom(msg.content());
+                msg::show_custom(msg.content());
                 m_key_being_configured = nullptr;
                 return Command::SaveOption;
             }
             case Controller::ConfigureResult::FailEmpty:
-                util::msg::show_custom("Key binding cannot be updated to none!");
+                msg::show_custom("Key binding cannot be updated to none!");
                 return Command::None;
             default:
                 return Command::None;

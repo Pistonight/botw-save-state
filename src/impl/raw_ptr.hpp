@@ -4,7 +4,7 @@
 
 extern "C" void* main_memory;
 
-#define _main (util::mem_ptr(&main_memory))
+#define _main (mem_ptr(&main_memory))
 
 namespace ksys::act{
 struct BaseProc;
@@ -14,12 +14,12 @@ namespace uking::ui{
 struct PouchItem;
 }
 
-namespace botwsavs::raw_ptr {
+namespace botw::savs::raw_ptr {
 // Health and Stam
-inline util::safe_ptr<u32> health() {
+inline safe_ptr<u32> health() {
     return _main[0x2CA1A78][0x80] + 0x848;
 }
-inline util::safe_ptr<float> stamina() {
+inline safe_ptr<float> stamina() {
     return _main[0x2c9fd70][0x38] + 0x2ac;
 }
 // Max Stam Amount (unused):	[[main+2c9fd70]+38]+2b0
@@ -27,60 +27,60 @@ inline util::safe_ptr<float> stamina() {
 // Runes
 // Set Bomb cool down to 360 in float (43350000)
 // Set Stasis cool down to 1 in float (3F800000)
-inline util::safe_ptr<float> round_bomb_cooldown() {
+inline safe_ptr<float> round_bomb_cooldown() {
     return _main[0x2CA3AD8][0x30] + 0x80;
 }
-inline util::safe_ptr<float> square_bomb_cooldown() {
+inline safe_ptr<float> square_bomb_cooldown() {
     return _main[0x2CA3AD8][0x30] + 0x98;
 }
-inline util::safe_ptr<float> stasis_cooldown() {
+inline safe_ptr<float> stasis_cooldown() {
     return _main[0x2CA3AD8][0x30] + 0x144;
 }
 
 // Position and Camera
-inline util::safe_ptr<float> havok_position() {
+inline safe_ptr<float> havok_position() {
     return _main[0x2D37AF0][0xF0][0xD28] + 0x5E0;
 }
-inline util::safe_ptr<float> main_position_matrix() {
+inline safe_ptr<float> main_position_matrix() {
     return _main[0x2CA1140][0x60] + 0x398;
 }
-inline util::safe_ptr<float> camera_pan_matrix() {
+inline safe_ptr<float> camera_pan_matrix() {
     return _main[0x2CE1090][0x60] + 0x20;
 }
-inline util::safe_ptr<float> camera_zoom() {
+inline safe_ptr<float> camera_zoom() {
     return _main[0x2CA5520][0x20][0x558] + 0xD48;
 }
-inline util::safe_ptr<float> camera_tilt() {
+inline safe_ptr<float> camera_tilt() {
     return _main[0x2CA5520][0x20][0x558] + 0xD14;
 }
 
 // Fall Damage (need to figure out how to make FDC work)
-inline util::safe_ptr<float> fall_damage_y() {
+inline safe_ptr<float> fall_damage_y() {
     return _main[0x2CA1140][0x60] + 0x20D0;
 }
 
 // Overworld Durability
-inline util::safe_ptr<ksys::act::BaseProc> overworld_weapon_actor() {
+inline safe_ptr<ksys::act::BaseProc> overworld_weapon_actor() {
     return _main[0x2CC4768][0xc0][-0xA0][0x48];
 }
 
-inline util::safe_ptr<ksys::act::BaseProc> overworld_bow_actor() {
+inline safe_ptr<ksys::act::BaseProc> overworld_bow_actor() {
     return _main[0x2CC4768][0xc0][-0x70][0x48];
 }
 
-inline util::safe_ptr<ksys::act::BaseProc> overworld_shield_actor() {
+inline safe_ptr<ksys::act::BaseProc> overworld_shield_actor() {
     return _main[0x2CC4768][0xc0][-0x88][0x48];
 }
 
-inline util::safe_ptr<u32> overworld_weapon_durability() {
+inline safe_ptr<u32> overworld_weapon_durability() {
     return _main[0x2CC4768][0xc0][-0xA0][0x48] + 0xD4C;
 }
 
-inline util::safe_ptr<u32> overworld_bow_durability() {
+inline safe_ptr<u32> overworld_bow_durability() {
     return _main[0x2CC4768][0xc0][-0x70][0x48] + 0xD4C;
 }
 
-inline util::safe_ptr<u32> overworld_shield_durability() {
+inline safe_ptr<u32> overworld_shield_durability() {
     return _main[0x2CC4768][0xc0][-0x88][0x48] + 0xD4C;
 }
 
