@@ -66,6 +66,9 @@ void Worker::do_work() {
             Reporter reporter;
             get_last_restored_state().write_to_game(reporter, m_config, true);
             // we don't report here to reduce spam
+            // restore every 2 frames so the game has a chance to update
+            nn::os::YieldThread();
+            nn::os::SleepThread(nn::TimeSpan::FromNanoSeconds(60 * 1000 * 1000));
         }
         break;
     case Command::RestoreDone:
@@ -249,8 +252,8 @@ void Worker::welcome() {
         return;
     }
     if (m_pos_diff_ticks > 0) {
+        // y is not checked because of elevator cutscene
         if (std::abs(new_pos[0] - m_player_pos[0]) < 0.0001F ||
-            std::abs(new_pos[1] - m_player_pos[1]) < 0.0001F ||
             std::abs(new_pos[2] - m_player_pos[2]) < 0.0001F) {
             m_pos_diff_ticks = 0;
             return;

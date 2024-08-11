@@ -205,8 +205,8 @@ void State::write_to_game(Reporter& r, const StateConfig& config, bool hold) con
         r.report("CamTilt", raw_ptr::camera_tilt().set(m_camera_tilt));
 
         // extras
-        r.report("RdBombCD", raw_ptr::round_bomb_cooldown().set(0.0F));
-        r.report("SqBombCD", raw_ptr::square_bomb_cooldown().set(0.0F));
+        r.report("RdBombCD", raw_ptr::round_bomb_cooldown().set(360.0F));
+        r.report("SqBombCD", raw_ptr::square_bomb_cooldown().set(360.0F));
         r.report("StasisCD", raw_ptr::stasis_cooldown().set(0.0F));
 
         auto* proc_mgr = ksys::act::BaseProcMgr::instance();
