@@ -2,6 +2,7 @@
 A BOTW 1.6.0 Switch save state mod for speedrun practices
 
 ## Install
+**Migration from 1.x - See [here](./migrate-1.x.md)**
 First, download and extract the zip from [latest release](https://github.com/Pistonight/botw-save-state/releases/latest). There should be 2 folders `mods` and `botwsavs`.
 
 I recommend using [Simple Mod Manager](https://github.com/nadrino/SimpleModManager) for installing the mod. It will allow you easily disable/enable it.
@@ -22,6 +23,8 @@ If you use Simple Mod Manager, you can disable it within the tool. It will allow
 
 Otherwise, delete or rename `/atmosphere/contents/01007EF00011E000` from the SD card.
 To fully delete the mod from existence from your device, also delete the `/botwsavs` folder from the SD card. This will remove config files, etc.
+
+You can also hold `L` while launching the game to disable all mods. (SS2.0 has fixed the crash issue.)
 
 ## Tutorial
 Launch the game with the mod installed. You should the version in the title screen change to `1.6.0-SSx.y` where `x.y` is the version of the mod.
@@ -46,7 +49,7 @@ For example, with the default restore combo, I typically release the other 3 key
 
 ### Settings
 Hold all triggers (`ZL + L + ZR + R`) and the whistle button (`Dpad Down`) for 3 seconds to enter setting mode. You should see the setting menu pop up in the top-right corner.
-Use the dpad to navigate the menu and `A` to select. Use `B` to go back and exit the settings.
+Use the dpad to navigate the menu and `A` to select. Use `B` to go back a level or exit the settings.
 
 #### Key Binding
 You can change the key bindings for save/restore. Follow these steps:
@@ -64,6 +67,7 @@ Since 2.0, you can now toggle individually what you want to save/restore. Open t
 - Keep `Timers` enabled as they don't have negative effects
 - If you don't need to track durability during practice (i.e. Any%), you can disable `Overworld Durability` and `Inventory` to avoid accidental durability transfer
 
+**Full List**:
 1. `Restore Message`
     - When disabled, there will be no message displayed upon restoring. Useful for grinding BTT or if you think the message is annoying.
 2. `Timers` enables
