@@ -1,12 +1,16 @@
+#include <Game/UI/uiPauseMenuDataMgr.h>
+#include <KingSystem/ActorSystem/actBaseProcMgr.h>
+#include <cstdlib>
 #include <nn/os.h>
 #include <nn/time.h>
 
-#include "core/worker.hpp"
 #include "core/reporter.hpp"
-#include "util/mem.h"
-#include "util/named.h"
+#include "core/version.hpp"
+#include "core/worker.hpp"
+#include "impl/raw_ptr.hpp"
 #include "util/data_reader.hpp"
 #include "util/data_writer.hpp"
+#include "util/mem.h"
 #include "util/message.hpp"
 
 namespace botw::savs {
@@ -31,12 +35,10 @@ void worker_main(void*) {
 
 void start_worker_thread() {
     const u64 STACK_SIZE = 0x80000;
-    void* thread_stack= memalign(0x1000, STACK_SIZE);
+    void* thread_stack = memalign(0x1000, STACK_SIZE);
 
     nn::Result result =
-        nn::os::CreateThread(
-        &s_thread, 
-        worker_main, nullptr, thread_stack, STACK_SIZE, 16);
+        nn::os::CreateThread(&s_thread, worker_main, nullptr, thread_stack, STACK_SIZE, 16);
     if (result.IsFailure()) {
         return;
     }
@@ -44,153 +46,128 @@ void start_worker_thread() {
 }
 
 void Worker::do_work() {
+    welcome();
     Command command = m_controller.update();
     switch (command) {
-        case Command::Save:
-            execute_save();
-            break;
-        case Command::SaveFile:
-            execute_save_file();
-            break;
-        case Command::Restore:
-            execute_restore();
-            break;
-        case Command::RestoreFile:
-            execute_restore_file();
-            break;
-        case Command::PostRestoreHold:
-            if (m_last_restored_ok) {
-                Reporter reporter;
-                get_last_restored_state().write_to_game(reporter, m_active_level, true);
-            }
-            break;
-        case Command::RestoreDone:
-            if (m_last_restored_ok) {
-                if (m_show_restore_message) {
-                    if (m_last_restored_is_from_memory) {
-                        msg::show_customf("Restored state from memory (level %d)", m_active_level);
-                    } else {
-                        msg::show_customf("Restored state from file (level %d)", m_active_level);
-                    }
+    case Command::Save:
+        execute_save();
+        break;
+    case Command::SaveFile:
+        execute_save_file();
+        break;
+    case Command::Restore:
+        execute_restore();
+        break;
+    case Command::RestoreFile:
+        execute_restore_file();
+        break;
+    case Command::PostRestoreHold:
+        if (m_last_restored_ok) {
+            Reporter reporter;
+            get_last_restored_state().write_to_game(reporter, m_config, true);
+            // we don't report here to reduce spam
+        }
+        break;
+    case Command::RestoreDone:
+        if (m_last_restored_ok) {
+            if (m_config.m_show_restore_message) {
+                if (m_last_restored_is_from_memory) {
+                    msg::show_info("Restored state from memory");
+                } else {
+                    msg::show_info("Restored state from file");
                 }
-                m_last_restored_ok = false;
             }
-            break;
-        case Command::SwitchMode:
-            if (m_controller.get_mode() == Controller::Mode::Active) {
-                msg::show_custom("Save State: Active Mode");
-            } else {
-                msg::show_custom("Save State: Setting Mode");
-            }
-            break;
-        case Command::IncreaseLevel:
-            if (m_active_level < 3) {
-                m_active_level++;
-                save_options();
-            }
-            msg::show_set_level(m_active_level);
-            break;
-        case Command::DecreaseLevel:
-            if (m_active_level > 0) {
-                m_active_level--;
-                save_options();
-            }
-            msg::show_set_level(m_active_level);
-            break;
-        case Command::SaveOption:
-            save_options();
-            break;
-        case Command::None:
-            break;
+            m_last_restored_ok = false;
+        }
+        break;
+    case Command::SwitchMode:
+        m_showed_welcome = true;
+        if (m_controller.get_mode() == Controller::Mode::Active) {
+            show_active_mode_message();
+        }
+        break;
+    case Command::SaveOption:
+        save_options();
+        break;
+    case Command::None:
+        break;
     }
 }
 
 void Worker::save_options() const {
     DataWriter writer(OPTION_FILE_PATH);
 
-    writer.write_integer(_named(m_active_level));
-    u32 show_restore_message = m_show_restore_message ? 1 : 0;
-    writer.write_integer(_named(show_restore_message));
-
+    writer.write_integer("version", Version::vLatest);
+    m_config.save_config(writer);
     m_controller.save_key_bindings(writer);
 }
 
 void Worker::load_options() {
     DataReader reader(OPTION_FILE_PATH);
 
-    u32 active_level = 1;
-    reader.read_integer(&active_level);
-    u32 show_restore_message = 1;
-    reader.read_integer(&show_restore_message);
-
-    if (reader.is_successful()) {
-        m_active_level = active_level;
-        m_show_restore_message = show_restore_message != 0;
-    } else {
+    u32 version = 0;
+    reader.read_integer(&version);
+    if (version <= vLegacy || version > Version::vLatest) {
         return;
     }
 
+    StateConfig temp_config;
+    temp_config.read_config(reader);
+    if (reader.is_successful()) {
+        m_config = temp_config;
+    }
     m_controller.load_key_bindings(reader);
+}
 
+static void report_fail_read(Reporter& reporter) {
+    StringBuffer<280> report;
+    report.append("Error! Failed to read game memory\n");
+    reporter.append_fields_to(report);
+    msg::show_widget(report.content());
+}
+
+static void report_fail_write(Reporter& reporter) {
+    StringBuffer<280> report;
+    report.append("Error! Failed to write game memory\n");
+    reporter.append_fields_to(report);
+    msg::show_widget(report.content());
 }
 
 void Worker::execute_save() {
-    if (m_active_level == 0) {
-        return;
-    }
-
     Reporter reporter;
-    m_memory_state.read_from_game(reporter, m_active_level);
+    m_memory_state.read_from_game(reporter, m_config);
     if (reporter.has_error()) {
-        StringBuffer<160> fields;
-        reporter.get_fields_string(fields);
-        msg::show_customf("Failed to access %s!", fields.content());
-        return;
+        report_fail_read(reporter);
     }
 
-    msg::show_customf("Saved state to memory (level %d)", m_active_level);
+    msg::show_info("Saved state to memory");
 }
 
 void Worker::execute_save_file() {
-    if (m_active_level == 0) {
-        return;
-    }
-
     State temp_state;
     Reporter reporter;
-    temp_state.read_from_game(reporter, m_active_level);
+    temp_state.read_from_game(reporter, m_config);
     if (reporter.has_error()) {
-        StringBuffer<160> fields;
-        reporter.get_fields_string(fields);
-        msg::show_customf("Failed to access %s!", fields.content());
+        report_fail_read(reporter);
         return;
     }
 
     DataWriter writer(STATE_FILE_PATH);
-    temp_state.write_to_file(writer);
-    if (writer.is_successful()) {
-        msg::show_customf("Saved state to file (level %d)", m_active_level);
-    } else {
-        msg::show_custom("Failed to save state: file operation failed!");
+    StateFileResult result = temp_state.write_to_file(writer);
+    if (result != StateFileResult::Ok || !writer.is_successful()) {
+        msg::show_widget("Error!\nIO Error while writing state file");
+        return;
     }
+    msg::show_info("Saved state to file");
 }
 
 void Worker::execute_restore() {
     m_last_restored_ok = false;
-    if (m_active_level == 0) {
-        return;
-    }
-    if (m_memory_state.get_level() == 0) {
-        msg::show_custom("No state saved in memory yet!");
-        return;
-    }
 
     Reporter reporter;
-    m_memory_state.write_to_game(reporter, m_active_level, false);
+    m_memory_state.write_to_game(reporter, m_config, false);
     if (reporter.has_error()) {
-        StringBuffer<160> fields;
-        reporter.get_fields_string(fields);
-        msg::show_customf("Failed to write %s!", fields.content());
+        report_fail_write(reporter);
         return;
     }
     m_last_restored_ok = true;
@@ -199,29 +176,38 @@ void Worker::execute_restore() {
 
 void Worker::execute_restore_file() {
     m_last_restored_ok = false;
-    if (m_active_level == 0) {
-        return;
-    }
 
     File file(STATE_FILE_PATH);
     if (!file.exists()) {
-        msg::show_custom("No restore.txt found!");
+        msg::show_info("No restore.txt found!");
         return;
     }
 
     DataReader reader(STATE_FILE_PATH);
-    m_last_restored_file.read_from_file(reader);
+    StateFileResult result = m_last_restored_file.read_from_file(reader);
+    switch (result) {
+    case StateFileResult::UnsupportedVersion:
+        msg::show_widget("The state file restore.txt\nhas an unsupported version.");
+        return;
+    case StateFileResult::InvalidVersion:
+        msg::show_widget(
+            "The state file restore.txt\nhas an invalid version. It could\nbe corrupted.");
+        return;
+    case StateFileResult::IOError:
+        msg::show_widget("IO Error reading restore.txt!");
+        return;
+    case StateFileResult::Ok:
+        break;
+    }
     if (!reader.is_successful()) {
-        msg::show_custom("Error reading restore.txt! The file could be corrupted.");
+        msg::show_widget("IO Error reading restore.txt!");
         return;
     }
 
     Reporter reporter;
-    m_last_restored_file.write_to_game(reporter, m_active_level, false);
+    m_last_restored_file.write_to_game(reporter, m_config, false);
     if (reporter.has_error()) {
-        StringBuffer<160> fields;
-        reporter.get_fields_string(fields);
-        msg::show_customf("Failed to write %s!", fields.content());
+        report_fail_write(reporter);
         return;
     }
 
@@ -229,4 +215,59 @@ void Worker::execute_restore_file() {
     m_last_restored_is_from_memory = false;
 }
 
+bool Worker::show_active_mode_message() const {
+    return msg::show_widgetf("\
+Settings exited.\n\
+You can use the save state now\n\
+Hold All Triggers + Dpad Down\n\
+to open Settings again");
 }
+
+void Worker::welcome() {
+    if (m_showed_welcome) {
+        return;
+    }
+    // probe to see if it's probably safe to deref havok position
+    if (!ksys_ui_ScreenMgr_sInstance) {
+        m_pos_diff_ticks = 0;
+        return;
+    }
+    auto* pmdm = uking::ui::PauseMenuDataMgr::instance();
+    if (!pmdm) {
+        m_pos_diff_ticks = 0;
+        return;
+    }
+    auto* proc_mgr = ksys::act::BaseProcMgr::instance();
+    if (!proc_mgr) {
+        m_pos_diff_ticks = 0;
+        return;
+    }
+
+    float new_pos[3];
+    if (!raw_ptr::havok_position().get_array(new_pos, 3)) {
+        m_pos_diff_ticks = 0;
+        return;
+    }
+    if (m_pos_diff_ticks > 0) {
+        if (std::abs(new_pos[0] - m_player_pos[0]) < 0.0001F ||
+            std::abs(new_pos[1] - m_player_pos[1]) < 0.0001F ||
+            std::abs(new_pos[2] - m_player_pos[2]) < 0.0001F) {
+            m_pos_diff_ticks = 0;
+            return;
+        }
+    }
+    m_pos_diff_ticks++;
+    if (m_pos_diff_ticks >= 4) {
+        bool showed = msg::show_widget("Save State is active\n\nHold All Triggers + Dpad Down\nto "
+                                       "open Settings, or see README\non GitHub for more info.");
+        if (showed) {
+            m_showed_welcome = true;
+            return;
+        }
+    }
+    m_player_pos[0] = new_pos[0];
+    m_player_pos[1] = new_pos[1];
+    m_player_pos[2] = new_pos[2];
+}
+
+}  // namespace botw::savs

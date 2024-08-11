@@ -11,17 +11,36 @@ tasks:
     cmds:
       - megaton
 
+  check:
+    desc: Check code for errors
+    cmds:
+      - clang-format -n -Werror src/**/*.cpp
+      - clang-format -n -Werror src/**/*.hpp
+      - clang-format -n -Werror src/**/*.h
+
+  fix:
+    desc: Fix errors in code
+    cmds:
+      - clang-format -i src/**/*.cpp
+      - clang-format -i src/**/*.hpp
+      - clang-format -i src/**/*.h
+
   package:
     desc: Package the build for release
     deps: [build]
     vars:
+      VERSION: "SS2.0"
       MOD_DIR: "target/package/mods/The Legend of Zelda - Breath of the Wild/Save State/contents/01007EF00011E000"
     cmds:
+      - rm -rf target/package/mods
       - mkdir -p "{{.MOD_DIR}}/exefs"
+      - mkdir -p "{{.MOD_DIR}}/romfs/System"
       - cp target/megaton/none/main.npdm "{{.MOD_DIR}}/exefs/main.npdm"
       - cp target/megaton/none/make/botwsavs.nso "{{.MOD_DIR}}/exefs/subsdk9"
       - mkdir -p target/package/botwsavs
       - echo "" > target/package/botwsavs/latest.txt
+      - echo -n "1.6.0-{{.VERSION}}" > "{{.MOD_DIR}}/romfs/System/Version.txt"
+      - cd target/package && zip -r ../botw-save-state-{{.VERSION}}.zip .
 
   upload:
     aliases: [u]

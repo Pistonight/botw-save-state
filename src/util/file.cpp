@@ -111,4 +111,4 @@ s64 File::read(FileBuffer& buffer) {
     return static_cast<s64>(readSize);
 }
 
-}  // namespace botwsavs::fs
+}  // namespace botw::savs

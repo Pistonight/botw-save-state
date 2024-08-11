@@ -1,6 +1,6 @@
 #pragma once
-#include <nn/fs.h>
 #include <exl/types.h>
+#include <nn/fs.h>
 
 #include "util/string.hpp"
 
@@ -38,4 +38,4 @@ private:
     u64 m_offset = 0;
 };
 
-}  // namespace botwsavs
+}  // namespace botw::savs

@@ -1,6 +1,6 @@
 #pragma once
-#include <prim/seadSafeString.h>
 #include <exl/types.h>
+#include <prim/seadSafeString.h>
 
 namespace botw::savs {
 
@@ -35,4 +35,4 @@ private:
     char m_name[L];
     T m_value;
 };
-}  // namespace botwsavs::util
+}  // namespace botw::savs

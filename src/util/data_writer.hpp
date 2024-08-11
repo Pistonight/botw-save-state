@@ -12,8 +12,12 @@ public:
     DataWriter(const char* path);
     ~DataWriter() = default;
 
-    bool is_successful() const {
-        return m_success;
+    bool is_successful() const { return m_success; }
+
+    void write_bool(const char* field_name, const bool value) {
+        if (m_success) {
+            m_success = do_write_number(field_name, value ? 1 : 0);
+        }
     }
 
     void write_integer(const char* field_name, const u64 value) {
@@ -69,6 +73,7 @@ public:
         write_string("Name of value below", value.name());
         write_float(field_name, value.value());
     }
+
 private:
     bool m_success = true;
     File m_file;
@@ -78,5 +83,5 @@ private:
     bool do_write_string(const char* field_name, const char* string);
 };
 
-}
+}  // namespace botw::savs
 #pragma GCC diagnostic pop

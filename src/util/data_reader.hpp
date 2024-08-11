@@ -13,8 +13,15 @@ public:
     DataReader(const char* path);
     ~DataReader() = default;
 
-    bool is_successful() const {
-        return m_success;
+    bool is_successful() const { return m_success; }
+
+    void read_bool(bool* out) {
+        u64 i_value;
+        read_integer(&i_value);
+        if (!m_success) {
+            return;
+        }
+        *out = i_value != 0;
     }
 
     void read_integer(u64* out) {
@@ -51,12 +58,12 @@ public:
     }
     template <typename T>
     void read_integer_array(T* out_array, u32 size) {
-        ReadInteger(out_array);
+        read_integer(out_array);
         if (!m_success) {
             return;
         }
         for (u32 i = 1; i < size; i++) {
-            ReadInteger(out_array + i);
+            read_integer(out_array + i);
             if (!m_success) {
                 return;
             }
@@ -94,5 +101,5 @@ private:
     bool do_read_integer(u64* out_value);
     bool do_read_string(char* out_string, const u32 max_length);
 };
-}
+}  // namespace botw::savs
 #pragma GCC diagnostic pop

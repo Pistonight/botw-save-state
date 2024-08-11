@@ -2,9 +2,10 @@
 
 #include <exl/types.h>
 
-#include "util/string.hpp"
-#include "util/data_writer.hpp"
+#include "core/state.hpp"
 #include "util/data_reader.hpp"
+#include "util/data_writer.hpp"
+#include "util/string.hpp"
 
 namespace sead {
 struct Controller;
@@ -32,15 +33,19 @@ enum Key : u32 {
     DpadDown = 1 << 17,
     DpadLeft = 1 << 18,
     DpadRight = 1 << 19
+
 };
 
-constexpr Key KEY_SWITCH_MODE = static_cast<Key>(Key::DpadDown | Key::ZL | Key::ZR | Key::L | Key::R);
-constexpr Key KEY_INCREASE_LEVEL = static_cast<Key>(Key::R);
-constexpr Key KEY_DECREASE_LEVEL = static_cast<Key>(L);
+inline constexpr Key operator|(Key a, Key b) {
+    return static_cast<Key>(static_cast<u32>(a) | static_cast<u32>(b));
+}
+
+constexpr Key KEY_SETTINGS = Key::DpadDown | Key::ZL | Key::ZR | Key::L | Key::R;
+constexpr Key KEY_INCREASE_LEVEL = Key::R;
+constexpr Key KEY_DECREASE_LEVEL = Key::L;
 
 template <u32 L>
 void get_key_string(u32 keys, StringBuffer<L>& out_buffer) {
-    static_assert(L >= 100, "Key string buffer length should be at least 100");
     out_buffer.clear();
     if (keys == 0) {
         return;
@@ -70,10 +75,10 @@ void get_key_string(u32 keys, StringBuffer<L>& out_buffer) {
         out_buffer.append("Y+");
     }
     if (keys & Key::LStick) {
-        out_buffer.append("LStick+");
+        out_buffer.append("L3+");
     }
     if (keys & Key::RStick) {
-        out_buffer.append("RStick+");
+        out_buffer.append("R3+");
     }
     if (keys & Key::DpadUp) {
         out_buffer.append("DpadUp+");
@@ -104,19 +109,22 @@ enum class Command {
     RestoreFile,
     PostRestoreHold,
     RestoreDone,
+
     SwitchMode,
-    IncreaseLevel,
-    DecreaseLevel,
     SaveOption,
 };
 
+constexpr size_t MENU_BUFFER_LEN = 40;
+constexpr u32 MENU_REFRESH_TICKS = 60;  // refresh menu after this time if there is no input
+constexpr u32 MENU_INPUT_INTERVAL = 3;
+
 class Controller {
 public:
-    enum class Mode : u32 { Active, Setting };
-    enum class ConfigureResult : u32 {
-        Success = 0,
-        Pending = 1,
-        FailEmpty = 2,
+    enum class Mode : u32 {
+        Active,
+        SettingHome,
+        SettingKeyBinding,
+        SettingStateOption,
     };
 
     bool initialize();
@@ -126,18 +134,31 @@ public:
     void load_key_bindings(DataReader& reader);
 
     Mode get_mode() const { return m_mode; }
+
+public:
+    StateConfig* m_config = nullptr;
+
 private:
     sead::Controller* m_controller = nullptr;
+
     Mode m_mode = Mode::Active;
     Key m_holding_keys = Key::None;
     u32 m_hold_counter = 0;
     Key* m_key_being_configured = nullptr;
     u32 m_configure_hold_counter = 0;
-    Key m_key_save = static_cast<Key>(Key::ZL | Key::L | Key::Plus | Key::DpadLeft);
-    Key m_key_save_file = static_cast<Key>(Key::ZL | Key::L | Key::Plus | Key::DpadLeft | Key::RStick);
-    Key m_key_restore = static_cast<Key>(Key::ZL | Key::L | Key::Plus | Key::DpadRight);
-    Key m_key_restore_file = static_cast<Key>(Key::ZL | Key::L | Key::Plus | Key::DpadRight | Key::RStick);
+    Key m_key_save = Key::ZL | Key::L | Key::Plus | Key::DpadLeft;
+    Key m_key_save_file = Key::ZL | Key::L | Key::DpadLeft | Key::RStick;
+    Key m_key_restore = Key::ZL | Key::L | Key::Plus | Key::DpadRight;
+    Key m_key_restore_file = Key::ZL | Key::L | Key::DpadRight | Key::RStick;
     bool m_restore_fired = false;
+
+    u32 m_tick_since_last_menu_input = MENU_REFRESH_TICKS + 1;
+    StringBuffer<MENU_BUFFER_LEN> m_menu_title;
+    StringBuffer<MENU_BUFFER_LEN> m_menu_subtitle;
+    StringBuffer<MENU_BUFFER_LEN> m_menu_options[4];
+    u32 m_menu_options_count = 0;
+    u32 m_menu_current_option = 0;
+    bool m_menu_showing_explain_message = false;
 
     bool is_only_holding(Key keys) const;
     Key get_hold_keys() const;
@@ -148,8 +169,8 @@ private:
     }
     bool is_configuring_key() const { return m_key_being_configured != nullptr; }
     void start_configure_key(Key* key);
-    ConfigureResult finish_configure_key(Key new_key);
-    void get_key_name(StringBuffer<30>& out_buffer, Key* key) const {
+    bool finish_configure_key(Key new_key);
+    void get_key_name(StringBuffer<16>& out_buffer, Key* key) const {
         out_buffer.clear();
         if (key == &m_key_save) {
             out_buffer.append("SaveToMem");
@@ -164,5 +185,7 @@ private:
 
     Command update_active_mode();
     Command update_setting_mode();
+    void refresh_menu();
+    void show_configuring_key_message();
 };
-}  // namespace botwsavs::core
+}  // namespace botw::savs

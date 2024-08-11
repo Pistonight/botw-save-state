@@ -15,4 +15,4 @@ bool ptr_looks_safe(const void* ptr) {
     return true;
 }
 
-}
+}  // namespace botw::savs

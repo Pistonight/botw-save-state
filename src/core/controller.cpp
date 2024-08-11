@@ -77,112 +77,235 @@ bool Controller::has_held_keys_for(Key keys, u32 seconds) {
 
 void Controller::start_configure_key(Key* key) {
     clear_hold();
-    StringBuffer<30> key_name;
-    get_key_name(key_name, key);
-    msg::show_customf("Hold new %s key for 3 seconds", key_name.content());
     m_key_being_configured = key;
+    show_configuring_key_message();
     m_configure_hold_counter = 0;
 }
 
-Controller::ConfigureResult Controller::finish_configure_key(Key new_key) {
+bool Controller::finish_configure_key(Key new_key) {
     if (m_configure_hold_counter == 0) {
         m_holding_keys = new_key;
     } else {
         if (m_holding_keys != new_key) {
             m_configure_hold_counter = 0;
-            return ConfigureResult::Pending;
+            return false;
         }
     }
     if (new_key == 0) {
         m_configure_hold_counter = 0;
-        return ConfigureResult::Pending;
+        return false;
     }
     if (m_configure_hold_counter < 30) {
         m_configure_hold_counter++;
-        return ConfigureResult::Pending;
+        if (m_configure_hold_counter % 10 == 0) {
+            StringBuffer<120> buffer;
+            get_key_string(new_key, buffer);
+            msg::show_infof("Keep holding %s", buffer.content());
+        }
+        return false;
     }
 
     clear_hold();
-    if (new_key == 0) {
-        m_key_being_configured = nullptr;
-        return ConfigureResult::FailEmpty;
-    }
     *m_key_being_configured = new_key;
-    return ConfigureResult::Success;
+    return true;
 }
 
 Command Controller::update() {
     // handle mode switch input
-    if (is_only_holding(KEY_SWITCH_MODE)) {
-        if (has_held_keys_for(KEY_SWITCH_MODE, 3)) {
-            if (m_mode == Mode::Active) {
-                m_mode = Mode::Setting;
-            } else {
-                m_mode = Mode::Active;
-            }
+    if (is_only_holding(KEY_SETTINGS)) {
+        if (has_held_keys_for(KEY_SETTINGS, 2)) {
+            m_mode = Mode::SettingHome;
+            m_menu_current_option = 0;
+            m_tick_since_last_menu_input = MENU_REFRESH_TICKS + 1;
             clear_hold();
             return Command::SwitchMode;
         }
         return Command::None;
     }
 
-    if (m_mode == Mode::Setting) {
-        return update_setting_mode();
+    if (m_mode == Mode::Active) {
+        return update_active_mode();
     }
+    return update_setting_mode();
+}
 
-    return update_active_mode();
+static const char* get_enabled_text(bool value) {
+    return value ? "Enabled" : "Disabled";
+}
+
+static const char* get_toggle_text(bool value) {
+    return value ? "On" : "Off";
 }
 
 Command Controller::update_setting_mode() {
-    if (is_configuring_key()) {
-        Key new_key = get_hold_keys();
-        switch (finish_configure_key(new_key)) {
-            case Controller::ConfigureResult::Success: {
-                StringBuffer<30> key_name;
+    m_tick_since_last_menu_input++;
+    // show the menu again after the widget has (approximately) disappeared
+    if (m_tick_since_last_menu_input >= MENU_REFRESH_TICKS) {
+        refresh_menu();
+    }
+    // throttle menu input
+    if (m_tick_since_last_menu_input < MENU_INPUT_INTERVAL) {
+        return Command::None;
+    }
+    // explain message
+    if (m_menu_showing_explain_message) {
+        // pressing B can close the explain message
+        if (is_only_holding(Key::B)) {
+            m_menu_showing_explain_message = false;
+            refresh_menu();
+            return Command::None;
+        }
+    }
+    // menu option selection
+    if (is_only_holding(Key::DpadUp)) {
+        if (m_menu_current_option > 0) {
+            m_menu_current_option--;
+        } else {
+            m_menu_current_option = m_menu_options_count - 1;
+        }
+        refresh_menu();
+        return Command::None;
+    } else if (is_only_holding(Key::DpadDown)) {
+        if (m_menu_current_option < m_menu_options_count - 1) {
+            m_menu_current_option++;
+        } else {
+            m_menu_current_option = 0;
+        }
+        refresh_menu();
+        return Command::None;
+    }
+    switch (m_mode) {
+    case Mode::Active:
+        return Command::None;
+    case Mode::SettingHome:
+        if (is_only_holding(Key::B)) {
+            m_mode = Mode::Active;
+            clear_hold();
+            return Command::SwitchMode;
+        }
+        if (is_only_holding(Key::A)) {
+            switch (m_menu_current_option) {
+            case 0:
+                m_mode = Mode::SettingKeyBinding;
+                m_menu_current_option = 0;
+                break;
+            case 1:
+                m_mode = Mode::SettingStateOption;
+                m_menu_current_option = 0;
+                break;
+            }
+            refresh_menu();
+            return Command::None;
+        }
+        break;
+    case Mode::SettingKeyBinding:
+        if (is_configuring_key()) {
+            if (is_only_holding(Key::ZL)) {
+                if (has_held_keys_for(Key::ZL, 3)) {
+                    m_key_being_configured = nullptr;
+                    m_tick_since_last_menu_input = 0;
+                    refresh_menu();
+                    return Command::None;
+                }
+            }
+            Key new_key = get_hold_keys();
+            if (finish_configure_key(new_key)) {
+                StringBuffer<16> key_name;
                 get_key_name(key_name, m_key_being_configured);
                 StringBuffer<120> buffer;
                 get_key_string(new_key, buffer);
-                StringBuffer<200> msg;
-                msg.appendf("%s key is now set to ", key_name.content());
-                msg.append(buffer.content());
-                msg::show_custom(msg.content());
+                msg::show_widgetf("Changed %s key\n to: %s", key_name.content(), buffer.content());
+
                 m_key_being_configured = nullptr;
+                m_tick_since_last_menu_input = 0;
+                m_menu_showing_explain_message = true;
                 return Command::SaveOption;
             }
-            case Controller::ConfigureResult::FailEmpty:
-                msg::show_custom("Key binding cannot be updated to none!");
-                return Command::None;
-            default:
-                return Command::None;
+            return Command::None;
         }
-    }
-
-    if (is_only_holding(KEY_INCREASE_LEVEL)) {
-        if (has_held_keys_for(KEY_INCREASE_LEVEL, 1)) {
-            return Command::IncreaseLevel;
+        if (is_only_holding(Key::B)) {
+            m_mode = Mode::SettingHome;
+            m_menu_current_option = 0;
+            refresh_menu();
+            return Command::None;
         }
-    } else if (is_only_holding(KEY_DECREASE_LEVEL)) {
-        if (has_held_keys_for(KEY_DECREASE_LEVEL, 1)) {
-            return Command::DecreaseLevel;
+        if (is_only_holding(Key::A)) {
+            switch (m_menu_current_option) {
+            case 0:
+                start_configure_key(&m_key_save);
+                break;
+            case 1:
+                start_configure_key(&m_key_restore);
+                break;
+            case 2:
+                start_configure_key(&m_key_save_file);
+                break;
+            case 3:
+                start_configure_key(&m_key_restore_file);
+                break;
+            }
+            return Command::None;
         }
-    } else if (is_only_holding(m_key_save)) {
-        if (has_held_keys_for(m_key_save, 3)) {
-            start_configure_key(&m_key_save);
+        break;
+    case Mode::SettingStateOption:
+        if (is_only_holding(Key::B)) {
+            m_mode = Mode::SettingHome;
+            m_menu_current_option = 1;
+            refresh_menu();
+            return Command::None;
         }
-    } else if (is_only_holding(m_key_save_file)) {
-        if (has_held_keys_for(m_key_save_file, 3)) {
-            start_configure_key(&m_key_save_file);
+        if (is_only_holding(Key::X)) {
+            m_menu_showing_explain_message = true;
+            m_tick_since_last_menu_input = 0;
+            switch (m_menu_current_option) {
+            case 0:
+                msg::show_widget(
+                    "Restore Message\n\nWhen disabled, there will be no\nmessage shown when "
+                    "executing a\nstate restore. Useful for grinding\nBTT segments.");
+                break;
+            case 1:
+                msg::show_widget("Timers\n\nEnable save/restore TOD, Bloodmoon,\nChampion Ability, "
+                                 "Master Sword,\nPotion, and Weather Damage Timers.");
+                break;
+            case 2:
+                msg::show_widget("Overworld Durability\n\nEnable save/restore durability of "
+                                 "the\nequipped Weapon/Bow/Shield in the\noverworld if the same "
+                                 "item by name\nis equipped when restoring.");
+                break;
+            case 3:
+                msg::show_widget("Inventory\n\nEnable save/restore the inventory\nstate. See "
+                                 "GitHub for more details.");
+                break;
+            }
         }
-    } else if (is_only_holding(m_key_restore)) {
-        if (has_held_keys_for(m_key_restore, 3)) {
-            start_configure_key(&m_key_restore);
+        if (is_only_holding(Key::A)) {
+            bool value;
+            switch (m_menu_current_option) {
+            case 0:
+                value = !m_config->m_show_restore_message;
+                msg::show_infof("Restore Message: %s", get_enabled_text(value));
+                m_config->m_show_restore_message = value;
+                break;
+            case 1:
+                value = !m_config->m_enable_timers;
+                msg::show_infof("Timers: %s", get_enabled_text(value));
+                m_config->m_enable_timers = value;
+                break;
+            case 2:
+                value = !m_config->m_enable_overworld_durability;
+                msg::show_infof("Overworld Durability: %s", get_enabled_text(value));
+                m_config->m_enable_overworld_durability = value;
+                break;
+            case 3:
+                value = !m_config->m_enable_inventory;
+                msg::show_infof("Inventory: %s", get_enabled_text(value));
+                m_config->m_enable_inventory = value;
+                break;
+            }
+            refresh_menu();
+            return Command::SaveOption;
         }
-    } else if (is_only_holding(m_key_restore_file)) {
-        if (has_held_keys_for(m_key_restore_file, 3)) {
-            start_configure_key(&m_key_restore_file);
-        }
-    } else {
-        clear_hold();
+        break;
     }
 
     return Command::None;
@@ -212,5 +335,76 @@ Command Controller::update_active_mode() {
     return Command::None;
 }
 
-
+void Controller::refresh_menu() {
+    m_menu_showing_explain_message = false;
+    m_tick_since_last_menu_input = 0;
+    switch (m_mode) {
+    case Mode::Active:
+        return;
+    case Mode::SettingHome:
+        m_menu_title.copy("Save State Settings");
+        m_menu_subtitle.copy("What do you want to do?");
+        m_menu_options_count = 2;
+        m_menu_options[0].copy("Change Key Binding");
+        m_menu_options[1].copy("Change State Options");
+        break;
+    case Mode::SettingKeyBinding:
+        if (is_configuring_key()) {
+            show_configuring_key_message();
+            return;
+        }
+        m_menu_title.copy("Change Key Binding");
+        m_menu_subtitle.copy("Which key to change?");
+        m_menu_options_count = 4;
+        m_menu_options[0].copy("Save To Mem");
+        m_menu_options[1].copy("Restore From Mem");
+        m_menu_options[2].copy("Save To File");
+        m_menu_options[3].copy("Restore From File");
+        break;
+    case Mode::SettingStateOption:
+        m_menu_title.copy("Change State Options");
+        m_menu_subtitle.copy("[A] Toggle; [X] Explain");
+        m_menu_options_count = 4;
+        m_menu_options[0].clear();
+        m_menu_options[0].appendf("[%s] Restore Message",
+                                  get_toggle_text(m_config->m_show_restore_message));
+        m_menu_options[1].clear();
+        m_menu_options[1].appendf("[%s] Timers", get_toggle_text(m_config->m_enable_timers));
+        m_menu_options[2].clear();
+        m_menu_options[2].appendf("[%s] Overworld Durability",
+                                  get_toggle_text(m_config->m_enable_overworld_durability));
+        m_menu_options[3].clear();
+        m_menu_options[3].appendf("[%s] Inventory", get_toggle_text(m_config->m_enable_inventory));
+        break;
+    }
+    if (m_menu_current_option >= m_menu_options_count) {
+        m_menu_current_option = 0;
+    }
+    StringBuffer<MENU_BUFFER_LEN * 7> buffer;
+    buffer.appendf("%s\n%s", m_menu_title.content(), m_menu_subtitle.content());
+    for (u32 i = 0; i < m_menu_options_count; i++) {
+        buffer.append("\n");
+        if (m_menu_current_option == i) {
+            buffer.appendf("-> ");
+        } else {
+            buffer.appendf("      ");
+        }
+        buffer.appendf("%s", m_menu_options[i].content());
+    }
+    msg::show_widget(buffer.content());
 }
+
+void Controller::show_configuring_key_message() {
+    if (!m_key_being_configured) {
+        return;
+    }
+    StringBuffer<16> key_name;
+    get_key_name(key_name, m_key_being_configured);
+    StringBuffer<50> current_combo;
+    get_key_string(*m_key_being_configured, current_combo);
+    msg::show_widgetf(
+        "Changing: %s\nCurrent:\n%s\nHold new combo for 3 seconds.\nHold ZL to cancel",
+        key_name.content(), current_combo.content());
+}
+
+}  // namespace botw::savs

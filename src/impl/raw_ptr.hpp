@@ -1,3 +1,9 @@
+/**
+ * Credit to Bloom (Swiffy22) for finding the pointers
+ *
+ * Some pointers are not used. See data/raw_ptr.txt for the original list
+ * from the research.
+ */
 #pragma once
 #include <exl/types.h>
 #include "util/safe_memory.hpp"
@@ -6,11 +12,11 @@ extern "C" void* main_memory;
 
 #define _main (mem_ptr(&main_memory))
 
-namespace ksys::act{
+namespace ksys::act {
 struct BaseProc;
 }
 
-namespace uking::ui{
+namespace uking::ui {
 struct PouchItem;
 }
 
@@ -85,35 +91,77 @@ inline safe_ptr<u32> overworld_shield_durability() {
 }
 
 // Time
-/* GamePtrDefine(f32, TimeOfDayPaused, main[0x2CC5FE0][0xBE0][0x30][0xF8] + 0x18) // [[[[main+2CC5FE0]+BE0]+30]+F8]+18 */
-/* GamePtrDefine(f32, TimeOfDayUnpaused, main[0x2CD18C8][0x17630] + 0x468) // [[main+2CD18C8]+17630]+468 */
-/* GamePtrDefine(f32, BloodMoonTimer, main[0x2CD18D0][0x30][0x398] + 0x2D0) // [[[main+2CD18D0]+30]+398]+2D0 */
+inline safe_ptr<float> time_of_day_paused() {
+    return _main[0x2CC5FE0][0xBE0][0x30][0xF8] + 0x18;
+}
+inline safe_ptr<float> time_of_day_unpaused() {
+    return _main[0x2CD18C8][0x17630] + 0x468;
+}
+inline safe_ptr<float> blood_moon() {
+    return _main[0x2CD18D0][0x30][0x398] + 0x2D0;
+}
 
 // Climate Damage
-/* GamePtrDefine(f32, TemperatureDamageTimer, main[0x2CA1140][0x60] + 0x268C) // [[main+2CA1140]+60]+268C */
-/* GamePtrDefine(f32, FlameTimer, main[0x2CA3A68][0x1438][0xB0] + 0x258) // [[[main+2CA3A68]+1438]+B0]+258 */
+inline safe_ptr<float> temperature_damage_timer() {
+    return _main[0x2CA1140][0x60] + 0x268C;
+}
+inline safe_ptr<float> flame_timer() {
+    return _main[0x2CA3A68][0x1438][0xB0] + 0x258;
+}
 
 // Champion Abilities
-/* GamePtrDefine(f32, GaleTimer, main[0x2CA1140][0x60] + 0x1DF4) // [[main+2CA1140]+60]+1DF4 */
-/* GamePtrDefine(f32, FuryTimer, main[0x2CA1140][0x60] + 0x1E00) // [[main+2CA1140]+60]+1E00 */
-/* GamePtrDefine(f32, ProtectionTimer, main[0x2CA1140][0x60] + 0x1E0C) // [[main+2CA1140]+60]+1E0C */
-/* GamePtrDefine(f32, GraceTimer, main[0x2CA1140][0x60] + 0x1E18) // [[main+2CA1140]+60]+1E18 */
-/* GamePtrDefine(u32, AbilityUses, main[0x2CA1A78][0x80] + 0x1CC8) // [[main+2ca1a78]+80]+1CC8 length = 3 */
+inline safe_ptr<float> gale_timer() {
+    return _main[0x2CA1140][0x60] + 0x1DF4;
+}
+inline safe_ptr<float> fury_timer() {
+    return _main[0x2CA1140][0x60] + 0x1E00;
+}
+inline safe_ptr<float> protection_timer() {
+    return _main[0x2CA1140][0x60] + 0x1E0C;
+}
+inline safe_ptr<float> grace_timer() {
+    return _main[0x2CA1140][0x60] + 0x1E18;
+}
+inline safe_ptr<u32> ability_uses() {
+    return _main[0x2CA1A78][0x80] + 0x1CC8;
+}
 
 // Master Sword
-/* GamePtrDefine(f32, MasterSwordCooldown, main[0x2CA1140][0x60] + 0x1E24) // [[main+2CA1140]+60]+1E24 */
+inline safe_ptr<float> master_sword_cooldown() {
+    return _main[0x2CA1140][0x60] + 0x1E24;
+}
 
 // Potion
-/* GamePtrDefine(f32, SpeedPotionTimer1, main[0x2CC4768][0xC0] + 0x12A0) // [[main+2CC4768]+C0]+12A0 */
-/* GamePtrDefine(f32, SpeedPotionTimer2, main[0x2CC4768][0xC0] + 0x12AC) // [[main+2CC4768]+C0]+12AC */
-/* GamePtrDefine(f32, SpeedPotionTimer3, main[0x2CC4768][0xC0] + 0x12B8) // [[main+2CC4768]+C0]+12B8 */
-/* GamePtrDefine(f32, AttackPotionTimer, main[0x2CC4768][0xC0] + 0x12DC) // [[main+2CC4768]+C0]+12DC */
-/* GamePtrDefine(f32, DefensePotionTimer, main[0x2CC4768][0xC0] + 0x12E8) // [[main+2CC4768]+C0]+12E8 */
-/* GamePtrDefine(f32, HeatResistPotionTimer, main[0x2CC4768][0xC0] + 0x12F4) // [[main+2CC4768]+C0]+12F4 */
-/* GamePtrDefine(f32, ColdResistPotionTimer, main[0x2CC4768][0xC0] + 0x1300) // [[main+2CC4768]+C0]+1300 */
-/* GamePtrDefine(f32, FlameResistPotionTimer, main[0x2CC4768][0xC0] + 0x130C) // [[main+2CC4768]+C0]+130C */
-/* GamePtrDefine(f32, ShockResistPotionTimer, main[0x2CC4768][0xC0] + 0x1324) // [[main+2CC4768]+C0]+1324 */
-/* GamePtrDefine(f32, StealthPotionTimer, main[0x2CC4768][0xC0] + 0x133C) // [[main+2CC4768]+C0]+133C */
+inline safe_ptr<float> speed_potion_timer1() {
+    return _main[0x2CC4768][0xC0] + 0x12A0;
+}
+inline safe_ptr<float> speed_potion_timer2() {
+    return _main[0x2CC4768][0xC0] + 0x12AC;
+}
+inline safe_ptr<float> speed_potion_timer3() {
+    return _main[0x2CC4768][0xC0] + 0x12B8;
+}
+inline safe_ptr<float> attack_potion_timer() {
+    return _main[0x2CC4768][0xC0] + 0x12DC;
+}
+inline safe_ptr<float> defense_potion_timer() {
+    return _main[0x2CC4768][0xC0] + 0x12E8;
+}
+inline safe_ptr<float> heat_resist_potion_timer() {
+    return _main[0x2CC4768][0xC0] + 0x12F4;
+}
+inline safe_ptr<float> cold_resist_potion_timer() {
+    return _main[0x2CC4768][0xC0] + 0x1300;
+}
+inline safe_ptr<float> flame_resist_potion_timer() {
+    return _main[0x2CC4768][0xC0] + 0x130C;
+}
+inline safe_ptr<float> shock_resist_potion_timer() {
+    return _main[0x2CC4768][0xC0] + 0x1324;
+}
+inline safe_ptr<float> stealth_potion_timer() {
+    return _main[0x2CC4768][0xC0] + 0x133C;
+}
 
-}  // namespace botwsavs::core::ptr
+}  // namespace botw::savs::raw_ptr
 #undef _main

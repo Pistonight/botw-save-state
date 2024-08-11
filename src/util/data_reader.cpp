@@ -64,4 +64,4 @@ bool DataReader::do_read_string(char* out_string, const u32 buffer_length) {
     return true;
 }
 
-}
+}  // namespace botw::savs

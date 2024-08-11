@@ -4,59 +4,18 @@ on:
   push:
     branches:
       - main
-    tags:
-      - "v*.*.*"
   pull_request:
     branches: 
       - main
 
 jobs:
-  lint:
-    name: "Lint"
+  check:
+    name: Check
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-    - name: Setup | just
-      uses: extractions/setup-just@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - name: Setup | Python 3.10
-      uses: actions/setup-python@v3.0.0
+    - uses: actions/checkout@v4
+    - uses: arduino/setup-task@v2
       with:
-        python-version: '3.10'
-    - name: Setup | Pip Install
-      uses: BSFishy/pip-action@v1
-      with:
-        packages: |
-          toml
-          pylint
-          pylint-quotes
-    - name: Lint Universal
-      run: just lintpy
-    - name: Lint Cpp
-      run: | 
-        just lintc
-        if [[ $? -ne 0 ]]; then echo "Run just format to fix"; fi
-  release:
-    name: "Release"
-    runs-on: ubuntu-latest
-    if: github.event_name != 'pull_request' && startsWith(github.ref, 'refs/tags/v')
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-    - name: Setup | just
-      uses: extractions/setup-just@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - name: Release | Draft Release Notes
-      run: |
-        just draft-release > RELEASE_NOTES.txt
-        cp standalone_ftp.py ftp.py
-    - name: Release | Create Draft Release
-      uses: softprops/action-gh-release@v1
-      with:
-        draft: true
-        body_path: RELEASE_NOTES.txt
-        files: |
-          ftp.py
+        version: 3.x
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+    - run: task check

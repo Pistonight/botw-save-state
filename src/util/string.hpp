@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstring>
+#include <stdarg.h>
 #include <stdio.h>
 
 #include <exl/types.h>
@@ -18,7 +19,7 @@ public:
     const T* content() const { return m_content; }
     T* content() { return m_content; }
     T* last() { return m_content + m_len; }
-    u32 len() const { return m_len; } // may include null byte in the middle
+    u32 len() const { return m_len; }  // may include null byte in the middle
 
     void increase_length(u32 size) {
         if (size > 0) {
@@ -26,13 +27,18 @@ public:
             if (m_len > L) {
                 m_len = L;
             }
-            ensure_termination();
         }
+        ensure_termination();
     }
 
     void append(const T* text) {
         strncpy(last(), text, L - m_len);
         increase_length(strlen(text));
+    }
+
+    void copy(const T* text) {
+        clear();
+        append(text);
     }
 
     void ensure_termination() { m_content[m_len] = '\0'; }
@@ -79,17 +85,19 @@ protected:
     u32 m_len;
 };
 
-template<u32 L>
+template <u32 L>
 class StringBuffer : public StringBufferBase<char, L> {
-
 public:
-    template <typename V>
-    void appendf(const char* format, V value) {
-        this->increase_length(sprintf(this->last(), format, value));
+    void appendf(const char* format, ...) {
+        va_list args;
+        va_start(args, format);
+        int size = vsnprintf(this->last(), L - this->m_len, format, args);
+        va_end(args);
+        this->increase_length(size);
     }
 };
 
-template<u32 L>
+template <u32 L>
 class WStringBuffer : public StringBufferBase<char16_t, L> {
 public:
     void copy_from(const char* text) {
@@ -105,4 +113,4 @@ public:
     }
 };
 
-}  // namespace botwsavs::util
+}  // namespace botw::savs

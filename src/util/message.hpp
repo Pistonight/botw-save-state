@@ -12,11 +12,10 @@
 #pragma once
 #include <cstddef>
 #include <exl/types.h>
-#include <prim/seadSafeString.h>
 #include <prim/seadRuntimeTypeInfo.h>
-#include <stdio.h>
+#include <prim/seadSafeString.h>
 
-struct WideString {// This is probably a eui::MessageString
+struct WideString {  // This is probably a eui::MessageString
     char16_t* content = nullptr;
     u64 length = 0;
 };
@@ -43,7 +42,7 @@ extern "C" {
 // 0x0123DEA0 (1.6.0)
 // 0x00AA248C (1.5.0)
 // Load msg_id from file and put it in out
-// file is 
+// file is
 //   - "LayoutMsg/MessageTipsRunTime_00" for widgets
 //   - "LayoutMsg/MainScreen_00" for info overlay
 //
@@ -54,8 +53,7 @@ extern "C" {
 
 // 0x01238680 (1.6.0)
 // 0x00A95924 (1.5.0)
-void* ksys_ui_showInfoOverlayWithString(
-    u64 idx, const sead::SafeString* info);
+void* ksys_ui_showInfoOverlayWithString(u64 idx, const sead::SafeString* info);
 
 // 0x0119C750 (1.6.0)
 void ScreenMessageTipsRuntime_doShowMessageTip(void* this_, u32 idx, bool);
@@ -77,39 +75,31 @@ extern RuntimeTip* ksys_ui_sRuntimeTips;
 extern ScreenMgr* ksys_ui_ScreenMgr_sInstance;
 }
 
-
 namespace botw::savs::msg {
-
-constexpr const char* WIDGET_MSG_ID = "0025";
 
 /**
  * Initialize the hook system to override the messages
  */
 void install_hooks();
-void show_custom_widget(const char* message);
-
-constexpr size_t MESSAGE_BUFFER_LEN = 200;
 
 /**
- * Show a custom message on the screen
+ * Show a custom info message on the screen
  */
-void show_custom(const char* message);
+void show_info(const char* message);
 
 /**
- * Show a custom formatted message on the screen
+ * Show a custom formatted info message on the screen
  */
-template <typename T>
-void show_customf(const char* format, T value) {
-    char result[MESSAGE_BUFFER_LEN];
-    snprintf(result, MESSAGE_BUFFER_LEN, format, value);
-    result[MESSAGE_BUFFER_LEN - 1] = '\0';
-    show_custom(result);
-}
-
+void show_infof(const char* format, ...);
 
 /**
- * Show message when switching save state level
+ * Show a custom widget message on the top-right corner of the screen
  */
-void show_set_level(u32 level);
+bool show_widget(const char* message);
 
-}  // namespace botwsavs::util
+/**
+ * Show a custom formatted widget message on the top-right corner of the screen
+ */
+bool show_widgetf(const char* message, ...);
+
+}  // namespace botw::savs::msg

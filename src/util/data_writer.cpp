@@ -30,4 +30,4 @@ bool DataWriter::do_write_string(const char* field_name, const char* string) {
     return m_file.write(m_buffer);
 }
 
-}
+}  // namespace botw::savs

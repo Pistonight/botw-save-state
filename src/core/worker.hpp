@@ -1,8 +1,8 @@
 #pragma once
 
 #include <exl/types.h>
-#include "core/state.hpp"
 #include "core/controller.hpp"
+#include "core/state.hpp"
 
 namespace botw::savs {
 
@@ -15,6 +15,7 @@ void start_worker_thread();
 
 class Worker {
 public:
+    Worker() { m_controller.m_config = &m_config; }
 
     bool initialize() {
         if (!m_controller.initialize()) {
@@ -43,13 +44,19 @@ public:
 
 private:
     Controller m_controller;
+    bool m_showed_welcome = false;
+    float m_player_pos[3]{0, 0, 0};
+    u32 m_pos_diff_ticks = 0;
+
     State m_memory_state;
     State m_last_restored_file;
-    u32 m_active_level = 1;
-    bool m_show_restore_message = true;
     bool m_last_restored_is_from_memory = false;
     bool m_last_restored_ok = false;
 
+    StateConfig m_config;
+
+    bool show_active_mode_message() const;
+    void welcome();
 };
 
-}
+}  // namespace botw::savs

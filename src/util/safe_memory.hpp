@@ -54,9 +54,7 @@ class safe_ptr {
 public:
     safe_ptr(T* ptr) : m_ptr(ptr) {}
     safe_ptr(const safe_ptr& other) : m_ptr(other.m_ptr) {}
-    safe_ptr(const mem_ptr& p) {
-        m_ptr = p.m_error ? nullptr : reinterpret_cast<T*>(p.m_ptr);
-    }
+    safe_ptr(const mem_ptr& p) { m_ptr = p.m_error ? nullptr : reinterpret_cast<T*>(p.m_ptr); }
 
     bool take_ptr(T** out) const {
         if (!looks_safe()) {
@@ -118,13 +116,10 @@ public:
         return true;
     }
 
-    bool looks_safe() const { 
-        return ptr_looks_safe(m_ptr);
-    }
+    bool looks_safe() const { return ptr_looks_safe(m_ptr); }
 
 private:
     T* m_ptr;
 };
 
-
-}  // namespace botwsavs::mem
+}  // namespace botw::savs

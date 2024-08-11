@@ -1,6 +1,13 @@
 # CHANGELOG
 
-### `1.6.0-SS1.1` `2022-09-10` `LATEST`
+### `SS2.0` `2024-08-11`
+- Rewrite the mod to use Megaton + exlaunch
+- Use widget UI experience for setting mod and more
+- Bombs are deleted upon restoring
+- **Previous config and state files are no longer compatible**. You might need to re-configure your key bindings if they were changed
+- PauseMenuDataMgr access is now thread-safe
+
+### `1.6.0-SS1.1` `2022-09-10`
 - Add save and restore offset between pouch item list count (i.e. `mCount`) and actual inventory size to level 3
 - Make save and restore key binding configurable
   - In setting mode, hold the current key binding for 3 seconds, then hold the new key binding for 3 seconds.

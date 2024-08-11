@@ -24,4 +24,4 @@ void get_current_time(TimeBuffer& out) {
     out.appendf("%02hu", calendarTime.second);
 }
 
-}  // namespace botwsavs::util
+}  // namespace botw::savs
