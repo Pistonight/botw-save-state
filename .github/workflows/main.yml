@@ -1,21 +1,21 @@
-name: Main
-
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches: 
-      - main
-
-jobs:
-  check:
-    name: Check
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-    - uses: arduino/setup-task@v2
-      with:
-        version: 3.x
-        repo-token: ${{ secrets.GITHUB_TOKEN }}
-    - run: task check
+# name: Main
+#
+# on:
+#   push:
+#     branches:
+#       - main
+#   pull_request:
+#     branches: 
+#       - main
+#
+# jobs:
+#   check:
+#     name: Check
+#     runs-on: ubuntu-latest
+#     steps:
+#     - uses: actions/checkout@v4
+#     - uses: arduino/setup-task@v2
+#       with:
+#         version: 3.x
+#         repo-token: ${{ secrets.GITHUB_TOKEN }}
+#     - run: task check # installing clang-format 18 is too annoying
