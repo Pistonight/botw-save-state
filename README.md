@@ -1,201 +1,142 @@
 # botw-save-state
 A BOTW 1.6.0 Switch save state mod for speedrun practices
 
-## Install and Uninstall
-### Install
-1. Download and extract the zip from [latest release](https://github.com/iTNTPiston/botw-save-state/releases/latest). There should be 2 folders `atmosphere` and `botwsavs`
-2. Copy both folders to the root of your SD card. It's safe to overwrite existing files if the only mod you have is the save state. There's no guarantee that other mods work with this
+## Install
+First, download and extract the zip from [latest release](https://github.com/Pistonight/botw-save-state/releases/latest). There should be 2 folders `mods` and `botwsavs`.
 
-### Uninstall
-Remove these folders from the SD card if they exist
-  - `/atmosphere/contents/01007EF00011E000/exefs`
-  - `/atmosphere/contents/01007EF00011E000/romfs`
-  - `/atmosphere/exefs_patches/botwsavs`
-  - `/botwsavs`
+I recommend using [Simple Mod Manager](https://github.com/nadrino/SimpleModManager) for installing the mod. It will allow you easily disable/enable it.
+The downloaded package is already formatted and tested with Simple Mod Manager.
 
-## Usage (Key Combos)
+1. Install Simple Mod Manager.
+2. Copy the `mods` and `botwsavs` folders to the root of your SD card.
+3. Launch Simple Mod Manager, Select BOTW.
+4. There should be a `Save State` mod in the mod list. Enable it.
 
+You can also install it without SMM: Navigate to the `atmosphere` folder inside the `mods` folder and copy it to the root of the SD card.
+The mod will be automatically active.
+
+In either case, make sure all other mods are uninstalled/disabled, as there is practically no way this mod will work with other mods.
+
+## Disable/Uninstall
+If you use Simple Mod Manager, you can disable it within the tool. It will allow you to easily enable it again.
+
+Otherwise, delete or rename `/atmosphere/contents/01007EF00011E000` from the SD card.
+To fully delete the mod from existence from your device, also delete the `/botwsavs` folder from the SD card. This will remove config files, etc.
+
+## Tutorial
+Launch the game with the mod installed. You should the version in the title screen change to `1.6.0-SSx.y` where `x.y` is the version of the mod.
+There will also be a welcome message displayed when you load into a save. This way you can verify the mod is active.
+
+### Save and Restore
+Now you can press `ZL + L + Dpad Left + Plus` to save the state. I typically hold `ZL + L + Dpad Left` then press `Plus` and then release all buttons.
+You should see a message like this
+```
+Saved state to memory
+```
+
+Then you can move around, and when you want to restore to the saved state, press `ZL + L + Dpad Right + Plus`.
+You should teleport to the saved position with the message
+```
+Restored state from memory
+```
 **Make sure you are only activating the key combos while having control of Link. The game may behave weirdly or even crash if you press them in loading screen or title screen**
 
-### Active and Setting Mode
-There are 2 modes in the save state mod, the Active Mode and the Setting Mode.
-- Active Mode: Can save and restore state
-- Setting Mode: Can change the level of save state
+**New in 2.0**: As long as you don't release all the keys, the mod will keep resetting Link's position, allowing for a more accurate restore while in ragdoll state.
+For example, with the default restore combo, I typically release the other 3 keys and hold `Plus` for slightly longer until position is fully restored.
 
-To switch between the 2 modes. Hold `Dpad Down` (whistle) and all 4 triggers for 3 seconds. You will see a message displayed like this when the mode is switched
-```
-Save state: Active Mode
-```
+### Settings
+Hold all triggers (`ZL + L + ZR + R`) and the whistle button (`Dpad Down`) for 3 seconds to enter setting mode. You should see the setting menu pop up in the top-right corner.
+Use the dpad to navigate the menu and `A` to select. Use `B` to go back and exit the settings.
 
-### Active Mode Combos
-You can use these key combos in the Active Mode.
+#### Key Binding
+You can change the key bindings for save/restore. Follow these steps:
+1. Open setting menu (see above), then select `Change Key Binding`
+2. Use dpad to select the key you want to change, then press `A`
+3. Hold the new combo for 3 seconds, or hold `ZL` to cancel.
+   - If you combo includes dpad or plus/minus, open the menu (plus) or map (minus) first, then hold the dpad direction, and then press and hold plus/minus to unpause and hold the other keys.
+4. You should see a confirmation message when the new binding is set
 
-- `ZL + L + PLUS + Dpad Left`: Save state to memory
-- `ZL + L + PLUS + R3 + Dpad Left`: Save state to `/botwsavs/latest.txt` on sd card
-- `ZL + L + PLUS + Dpad Right`: Restore state from memory
-- `ZL + L + PLUS + R3 + Dpad Right`: Restore state from `/botwsavs/restore.txt` on sd card
+#### State Options
 
-Note that for save to/restore from file, you can't press `R3` last. Otherwise you would trigger save to/restore from memory instead. I usually prefer holding `Triggers + Dpad + R3`, then hit `PLUS` to trigger.
+Since 2.0, you can now toggle individually what you want to save/restore. Open the setting menu and select `Change State Options`.
 
-Also note that the mod has a logging function that will block reading the `/botwsavs` folder when the game is running, if you read it from a ftp client like FileZilla. If you use the [script](#save-state-transfer-script) it will be fine.
+**Recommended (TL;DR)**:
+- Keep `Timers` enabled as they don't have negative effects
+- If you don't need to track durability during practice (i.e. Any%), you can disable `Overworld Durability` and `Inventory` to avoid accidental durability transfer
 
-If you try to restore without saving, or without the right file on sd card. You will see a message like this
-```
-You can't do that right now
-```
+1. `Restore Message`
+    - When disabled, there will be no message displayed upon restoring. Useful for grinding BTT or if you think the message is annoying.
+2. `Timers` enables
+    - Time of day values:
+      - Including the current time of day and blood moon timer
+    - Climate damage timers:
+      - Time until next heat/cold damage
+      - Time until Link starts burning
+    - Champion abilities:
+      - Cool down for all abilities
+      - Uses left for gale, fury, and protection
+      - Master Sword cool down
+    - Potion timer:
+      - Speed
+      - Attack
+      - Defense
+      - Heat Resist
+      - Cold Resist
+      - Flame Resist
+      - Shock Resist
+      - Stealth
+3. `Overworld Durability`
+   - When enabled, the name and durability of equipped Weapon, Bow and Shield will be saved.
+   - When restoring, the durability of equipped Weapon/Bow/Shield will only be restored if the same item by name is equipped (not necessarily the same one).
+   - Note that the inventory durability is not restored unless you also enable `Inventory`
+4. `Inventory` enables:
+   - Equipped durability of Weapon, Bow, Shield and Arrow (similar to `Overworld Durability`, only restored if the same item is equipped)
+   - Number of offset slots for IST
 
-If you see a message like this:
-```
-Pointer error!
-```
-This means one or more of the values cannot be accessed. Mostly likely due to invalid memory pointer. Currently it's known that there's a small chance that Link's havok coordinates point to invalid memory. Try again or restart the game if this happens.
+The following will always be enabled, and you cannot turn them off:
+- Current Health
+- Current Stamina
+- Position (Havok Position and Main Position Matrix)
+- Camera Matrix
 
-### Setting Mode Combos
+Additionally, the following will happen when you restore, regardless of the setting:
+- Runes will finish cooldown
+- Bombs will be deleted
+    
+### Save/Restore from File
+In additional to saving the state to memory, you can also save it to a file. The default save key combo is `ZL + L + Dpad Left + R3` and restore is `ZL + L + Dpad Right + R3`.
 
-In setting mode. You can switch between levels of save state. 
+When saving, the file will be saved to `/botwsavs/latest.txt`. When restoring, the `/botwsavs/restore.txt` file is read.
+This is intentional, so you can't overwrite `restore.txt` by accident.
 
-- Hold `L` for 1 second: Decrease level
-- Hold `R` for 1 second: Increase level
-- Hold save/restore to memory/file key binding for 3 seconds: Change the key binding (Hold the new keys for 3 seconds to change)
-
-The settings are preserved through restarts. For example, if you close the game on a level, you will be on the same level when you boot up the game again.
-
-If you somehow messed up the settings and want to reset them, you can do so by deleting `/botwsavs/worker.txt` file on your sd card.
-
-### Levels
-
-There are currently 4 levels:
-
-#### Level 0: Disabled 
-The key combos in Active Mode will be disabled in this level
-
-#### Level 1: Basic
-Level 1 save state includes:
-- Health
-- Stamina
-- Position: Coordinate, Facing Angle, Camera Angle
-- Runes (finishes cooldown on restore)
-#### Level 2: Basic + Durability
-Level 2 save state includes everything in Level 1 and equipped Arrow count + Weapon/Bow/Shield Durability
-
-You will see a warning like below if you don't have something equipped, but the ones you do have equipped will still save/restore fine
-```
-Warning: Something not equipped?
-```
-When restoring, the values will only be restored if you are equipping the same item as when you saved. Otherwise you will see a warning message like below. The items that do match will still restore fine.
-```
-Warning: Some equipped items are different!
-```
-#### Level 3: All
-Level 3 save state includes everything available, which includes all from Level 1 and 2, plus:
-- Time of day values:
-  - Including the current time of day and blood moon timer
-- Climate damage timers:
-  - Time until next heat/cold damage
-  - Time until Link starts burning
-- Champion abilities:
-  - Cool down for all abilities
-  - Uses left for gale, fury, and protection
-  - Master sword cool down
-- Potion timer:
-  - Speed
-  - Attack
-  - Defense
-  - Heat Resist
-  - Cold Resist
-  - Flame Resist
-  - Shock Resist
-  - Stealth
-- Inventory offset:
-  - i.e. the number of broken slots
-
-### Save/Restore with Different Levels
-If you save a state with a high level (for example, level 3), then switch to a lower level (for example, level 1) and restore, only the lower level values will be restored. However, the state still contains the higher level data. You can switch back to the higher level and be able to restore all the values
-
-If you save a state with a low level (for example, level 1), then switch to a higher level (for example, level 3) and restore, you will see an error message like:
-```
-You need to lower the setting level to restore!
-```
-
-### Change Key Binding
-
-You can change the key binding for save/restore following these steps:
-1. Hold all triggers + whistle for 3 seconds to enter setting mode
-2. Hold the current key binding for the one you want to change for 3 seconds
-3. Let go of all buttons. You will see a message telling you to hold the new binding for 3 seconds
-4. Hold the new binding for 3 seconds and you will see a confirmation message
-5. Hold all triggers + whistle for 3 seconds to exit setting mode
-
-### FTP Transfer Script
-A python script `ftp.py` is also included for transfering save state files over FTP (with the `ftpd` homebrew app). Run `python3 ftp.py` to see how to use. 
+The saved state file is human-readable, so you can also use this feature to edit the state manually (like breaking slots for IST practice quickly).
+You can use this [python script](./scripts/ftp.py) to transfer save state files over FTP (with the `ftpd` homebrew app). Run `python3 ftp.py` to see how to use. 
 
 (This has nothing to do in game, just makes managing the save state files generated by the mod easier)
 
 ## Developer
-**This section is intented for developers**
+**This section is intended for developers**
 
 ### Environment
-#### Pre-requisites
 Only Linux environment is tested.
 
 Install these tools:
 - [`DevKitPro`](https://devkitpro.org/wiki/Getting_Started) for switch development. Distros with `pacman` can use the commands at [vmsetup](https://vmsetup.pistonite.org/tool/devkitpro)
-- [`megaton`](https://github.com/Pistonight/megaton) for building
+- [`megaton`](https://github.com/Pistonight/megaton) for building - Rust toolchain required
+- `clang-format` for code formatting
 
 These tools are (very strongly) recommended but optional:
 - This project has out-of-the-box support for `clangd`. Make sure `/usr/bin/g++` is available or you can change the compiler manually in `.clangd`
 - [`magoo`](https://github.com/Pistonite/magoo) for git submodule management
+- `lftp` for FTP transfer - install it with your package manager
+- [`task`](https://taskfile.dev/) for running scripts
 
-Clone the repo, then run `magoo install` to clone the submodules
+Clone the repo, then run `magoo install` to clone the submodules. Or clone the repo with `--recursive`
 
-#### Just
-Just is used to run command shortcuts. https://github.com/casey/just
+### Build
+Run `megaton` (set it up first, see the link above) to build the project. This will build the nso and validate it with symbols from BOTW.
 
-Cargo install is recommended:
-```
-cargo install just
-```
-If you don't have rust installed: https://rustup.rs/
-#### Python 
-Need Python 3. (3.10 is preferred but other version probably works as well).
+`task upload` will send the binary to your console over FTP.
+Use `CONSOLE_ADDR` environment variable to specify the IP address of your console.
 
-Install these packages
-```
-python3 -m pip install toml pylint pylint-quotes keystone-engine
-```
-#### clang-format
-clang-format-12 is required. Run this on linux or the mac-equivalent on mac
-```
-sudo apt install clang-format-12
-```
-
-### Commands
-
-Run `just --list` for a full list of commands.
-
-Command workflows:
-- `just build` to build the (debug) mod files
-- `just ftp` to send the debug build to your switch over FTP
-  - One time setup: Run `just set-ip <IP>` to set your console IP
-- `just lint` before PR/push
-
-Release workflow:
-- Make sure `CHANGELOG.md` is up to date
-- `just release` to build for release configuration and produce the release zip
-  - `just release-gold-rush` to build for gold rush configuration
-- `just publish` to tag the current commit with latest version
-- Upload the built release zip to GitHub manually
-- `just clean`
-
-### Linking BOTW
-Follow these steps to statically link a botw symbol
-- Include the symbol in the project
-  - If the symbol is in decomp project, copy over the headers to `lib/botw`
-  - Otherwise, declare the symbol (data or function) in `mem/KingPtr.hpp`. Put the address in a comment
-- Use the symbol as normal (i.e. call the function or access the data)
-- Build with `just build`
-- Find the mangled symbol with `just find-symbol <symbol>`
-  - `<symbol>` is a search string that will be used to `grep` the symbol table
-- If the symbol is not in decomp project, copy the mangled symbol and put in in a comment in `mem/KingPtr.hpp`
-- Add the symbol `just add-symbol <symbol> <address>`
-- Verify that `just find-symbol <symbol>` cannot find the symbol
+`task download` will download crash reports from the console (and delete them from the console).
