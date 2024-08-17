@@ -9,6 +9,7 @@ extern "C" void exl_main(void* x0, void* x1) {
     nn::fs::MountSdCardForDebug("sd");
 
     botw::savs::msg::install_hooks();
+
     botw::savs::start_worker_thread();
 }
 

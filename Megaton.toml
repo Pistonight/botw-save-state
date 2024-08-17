@@ -3,9 +3,8 @@ name = "botwsavs"
 title-id = 0x01007ef00011e000
 
 # make configuration
-[make]
+[build]
 entry = "exl_module_init"
-
 sources = [
     "src",
     "libs/exlaunch/source"
@@ -19,49 +18,40 @@ includes = [
     "libs/sead/include",
     "libs/nnheaders/include",
 ]
-defines = [
-    "NNSDK",
-    "SWITCH",
-    "__SWITCH__",
-    "EXL_DEBUG",
-    "EXL_LOAD_KIND_ENUM=2",
-    "EXL_LOAD_KIND=Module",
-    "NN_SDK_MAJOR=7",
-    "NN_SDK_MINOR=3",
-    "NN_SDK_PATCH=2",
-    "NN_WARE_MAJOR=7",
-    "NN_WARE_MINOR=3",
-    "NN_WARE_PATCH=2",
-]
-# linker scripts (relative to project root)
-ld-scripts = [
+ldscripts = [
     "libs/exlaunch/misc/link.ld",
     "libs/botw-symbols/ld/ld160.ld",
     "link.ld",
 ]
-# extra macros to define. The macros can be a string or a list of strings, which are joined with a space
-extra = [
-    { DEFINES = [
-        "-DEXL_PROGRAM_ID=$(MEGATON_MODULE_TITLE_ID)",
-        "-DEXL_MODULE_NAME='\"$(MEGATON_MODULE_NAME)\"'"
-    ]},
-    { CXXFLAGS = [
-        "-Wno-invalid-offsetof",
-    ]},
+
+[build.flags]
+c = [
+    "<default>",
+    "-DNNSDK",
+    "-DSWITCH",
+    "-D__SWITCH__",
+    "-DEXL_DEBUG",
+    "-DEXL_LOAD_KIND_ENUM=2",
+    "-DEXL_LOAD_KIND=Module",
+    "-DEXL_PROGRAM_ID=0x01007ef00011e000",
+    "-DEXL_MODULE_NAME=\"botwsavs\"",
+    "-DNN_SDK_MAJOR=7",
+    "-DNN_SDK_MINOR=3",
+    "-DNN_SDK_PATCH=2",
+    "-DNN_WARE_MAJOR=7",
+    "-DNN_WARE_MINOR=3",
+    "-DNN_WARE_PATCH=2",
+    "-DBOTW_VERSION=160",
+]
+cxx = [
+    "<default>",
+    "-Wno-invalid-offsetof",
 ]
 
 [check]
 ignore = [
     ".data",
     ".text",
-]
-disallowed-instructions = [
-    '^msr\s*spsel',
-    '^msr\s*daifset',
-    '^mrs\.*daif',
-    '^mrs\.*tpidr_el1',
-    '^msr\s*tpidr_el1',
-    '^hlt',
 ]
 symbols = [
     "libs/botw-symbols/symbols/160/main.syms",
