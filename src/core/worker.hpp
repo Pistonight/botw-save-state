@@ -1,13 +1,14 @@
 #pragma once
 
-#include <exl/types.h>
 #include "core/controller.hpp"
 #include "core/state.hpp"
+#include <exl/types.h>
 
 namespace botw::savs {
 
 constexpr const char* OPTION_FILE_PATH = "sd:/botwsavs/option.txt";
 constexpr const char* STATE_FILE_PATH = "sd:/botwsavs/latest.txt";
+constexpr const char* RESTORE_FILE_PATH = "sd:/botwsavs/restore.txt";
 
 void worker_main(void*);
 
@@ -59,4 +60,4 @@ private:
     void welcome();
 };
 
-}  // namespace botw::savs
+} // namespace botw::savs

@@ -1,21 +1,25 @@
-# name: Main
-#
-# on:
-#   push:
-#     branches:
-#       - main
-#   pull_request:
-#     branches: 
-#       - main
-#
-# jobs:
-#   check:
-#     name: Check
-#     runs-on: ubuntu-latest
-#     steps:
-#     - uses: actions/checkout@v4
-#     - uses: arduino/setup-task@v2
-#       with:
-#         version: 3.x
-#         repo-token: ${{ secrets.GITHUB_TOKEN }}
-#     - run: task check # installing clang-format 18 is too annoying
+name: Main
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches: 
+      - main
+
+jobs:
+  check:
+    name: Check
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        recursive: true
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    - uses: DoozyX/clang-format-lint-action@v0.18
+      with:
+        source: 'src'
+        clangFormatVersion: 18

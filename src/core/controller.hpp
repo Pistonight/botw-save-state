@@ -1,11 +1,11 @@
 #pragma once
 
 #include <exl/types.h>
+#include <toolkit/io/data_reader.hpp>
+#include <toolkit/io/data_writer.hpp>
+#include <toolkit/mem/string.hpp>
 
 #include "core/state.hpp"
-#include "util/data_reader.hpp"
-#include "util/data_writer.hpp"
-#include "util/string.hpp"
 
 namespace sead {
 struct Controller;
@@ -40,12 +40,13 @@ inline constexpr Key operator|(Key a, Key b) {
     return static_cast<Key>(static_cast<u32>(a) | static_cast<u32>(b));
 }
 
-constexpr Key KEY_SETTINGS = Key::DpadDown | Key::ZL | Key::ZR | Key::L | Key::R;
+constexpr Key KEY_SETTINGS =
+    Key::DpadDown | Key::ZL | Key::ZR | Key::L | Key::R;
 constexpr Key KEY_INCREASE_LEVEL = Key::R;
 constexpr Key KEY_DECREASE_LEVEL = Key::L;
 
 template <u32 L>
-void get_key_string(u32 keys, StringBuffer<L>& out_buffer) {
+void get_key_string(u32 keys, mem::StringBuffer<L>& out_buffer) {
     out_buffer.clear();
     if (keys == 0) {
         return;
@@ -115,7 +116,8 @@ enum class Command {
 };
 
 constexpr size_t MENU_BUFFER_LEN = 40;
-constexpr u32 MENU_REFRESH_TICKS = 60;  // refresh menu after this time if there is no input
+constexpr u32 MENU_REFRESH_TICKS =
+    60; // refresh menu after this time if there is no input
 constexpr u32 MENU_INPUT_INTERVAL = 3;
 
 class Controller {
@@ -130,8 +132,8 @@ public:
     bool initialize();
     Command update();
 
-    void save_key_bindings(DataWriter& writer) const;
-    void load_key_bindings(DataReader& reader);
+    void save_key_bindings(io::DataWriter& writer) const;
+    void load_key_bindings(io::DataReader& reader);
 
     Mode get_mode() const { return m_mode; }
 
@@ -153,9 +155,9 @@ private:
     bool m_restore_fired = false;
 
     u32 m_tick_since_last_menu_input = MENU_REFRESH_TICKS + 1;
-    StringBuffer<MENU_BUFFER_LEN> m_menu_title;
-    StringBuffer<MENU_BUFFER_LEN> m_menu_subtitle;
-    StringBuffer<MENU_BUFFER_LEN> m_menu_options[4];
+    mem::StringBuffer<MENU_BUFFER_LEN> m_menu_title;
+    mem::StringBuffer<MENU_BUFFER_LEN> m_menu_subtitle;
+    mem::StringBuffer<MENU_BUFFER_LEN> m_menu_options[4];
     u32 m_menu_options_count = 0;
     u32 m_menu_current_option = 0;
     bool m_menu_showing_explain_message = false;
@@ -167,10 +169,12 @@ private:
         m_holding_keys = Key::None;
         m_hold_counter = 0;
     }
-    bool is_configuring_key() const { return m_key_being_configured != nullptr; }
+    bool is_configuring_key() const {
+        return m_key_being_configured != nullptr;
+    }
     void start_configure_key(Key* key);
     bool finish_configure_key(Key new_key);
-    void get_key_name(StringBuffer<16>& out_buffer, Key* key) const {
+    void get_key_name(mem::StringBuffer<16>& out_buffer, Key* key) const {
         out_buffer.clear();
         if (key == &m_key_save) {
             out_buffer.append("SaveToMem");
@@ -188,4 +192,4 @@ private:
     void refresh_menu();
     void show_configuring_key_message();
 };
-}  // namespace botw::savs
+} // namespace botw::savs

@@ -1,9 +1,11 @@
 #pragma once
 
 #include <exl/types.h>
+#include <toolkit/io/data_reader.hpp>
+#include <toolkit/io/data_writer.hpp>
+#include <toolkit/pmdm.hpp>
+
 #include "core/reporter.hpp"
-#include "util/data_reader.hpp"
-#include "util/data_writer.hpp"
 
 namespace botw::savs {
 
@@ -16,33 +18,32 @@ enum class StateFileResult {
 
 class StateConfig {
 public:
-    void save_config(DataWriter& w) const;
-    void read_config(DataReader& r);
+    void save_config(io::DataWriter& w) const;
+    void read_config(io::DataReader& r);
     // show info message when restoring
     bool m_show_restore_message = true;
-    // enable TOD, bloodmoon, ability, master sword, potion, and climate damage timers
+    // enable TOD, bloodmoon, ability, master sword, potion, and climate damage
+    // timers
     bool m_enable_timers = true;
-    // enable restoring overworld equipment durability, if the same equipment is equipped
-    bool m_enable_overworld_durability = false;
-    // enable restoring inventory state
+    // enable restoring inventory state, including full pmdm and num offset
+    // slots
     bool m_enable_inventory = false;
 };
 
 class State {
 public:
     void read_from_game(Reporter& reporter, const StateConfig& config);
-    void write_to_game(Reporter& reporter, const StateConfig& config, bool hold) const;
-    StateFileResult read_from_file(DataReader& reader);
-    StateFileResult write_to_file(DataWriter& writer) const;
+    void write_to_game(Reporter& reporter, const StateConfig& config,
+                       bool hold) const;
+    StateFileResult read_from_file(io::DataReader& reader);
+    StateFileResult write_to_file(io::DataWriter& writer) const;
 
     bool is_stored() const {
-        return m_stored_essentials || m_stored_timers || m_stored_overworld_durability ||
-               m_stored_inventory;
+        return m_stored_essentials || m_stored_timers || m_stored_inventory;
     }
     void clear() {
         m_stored_essentials = false;
         m_stored_timers = false;
-        m_stored_overworld_durability = false;
         m_stored_inventory = false;
     }
 
@@ -50,7 +51,6 @@ private:
     // config
     bool m_stored_essentials = false;
     bool m_stored_timers = false;
-    bool m_stored_overworld_durability = false;
     bool m_stored_inventory = false;
     // always enabled
     u32 m_health;
@@ -91,17 +91,13 @@ private:
     float m_shock_resist_potion_timer;
     float m_stealth_potion_timer;
 
-    // durability
-    NamedValue<u32, 64> m_overworld_equipped_weapon_durability{0};
-    NamedValue<u32, 64> m_overworld_equipped_bow_durability{0};
-    NamedValue<u32, 64> m_overworld_equipped_shield_durability{0};
+    // inventory
 
-    // inventory (TODO - save and restore entire PMDM
-    NamedValue<u32, 64> m_menu_equipped_arrow_count{0};
-    NamedValue<u32, 64> m_menu_equipped_weapon_durability{0};
-    NamedValue<u32, 64> m_menu_equipped_bow_durability{0};
-    NamedValue<u32, 64> m_menu_equipped_shield_durability{0};
+    // even though the pmdm state covers this
+    // this field still exists to allow people to change the state manually
+    // to easily break slots
     s32 m_num_inventory_count_offset;
+    toolkit::PmdmSaveState m_pmdm_state;
 };
 
-}  // namespace botw::savs
+} // namespace botw::savs

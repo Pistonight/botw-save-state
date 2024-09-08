@@ -7,13 +7,15 @@ title-id = 0x01007ef00011e000
 entry = "exl_module_init"
 sources = [
     "src",
-    "libs/exlaunch/source"
+    "libs/exlaunch/source",
+    "libs/botw-symbols/src",
 ]
 includes = [
     "src",
     "libs/botw/src",
     "libs/botw/lib/agl/include",
     "libs/botw/lib/gsys/include",
+    "libs/botw-symbols/src",
     "libs/exlaunch/source",
     "libs/sead/include",
     "libs/nnheaders/include",
@@ -21,7 +23,7 @@ includes = [
 ldscripts = [
     "libs/exlaunch/misc/link.ld",
     "libs/botw-symbols/ld/ld160.ld",
-    "link.ld",
+    "libs/botw-symbols/ld/toolkit160.ld",
 ]
 
 [build.flags]
@@ -46,6 +48,11 @@ c = [
 cxx = [
     "<default>",
     "-Wno-invalid-offsetof",
+]
+
+[build.profiles.debug.flags]
+c = [
+    "-DBOTWTOOLKIT_TCP_SEND",
 ]
 
 [check]

@@ -1,6 +1,6 @@
 CompileFlags:
   Compiler: /usr/bin/g++
-  CompilationDatabase: ./target/megaton/none/
+  CompilationDatabase: ./target/megaton/debug/
   Remove: [ -march=*, -mtune=*, -mtp=* ]
 Diagnostics:
   Suppress: 

@@ -2,8 +2,9 @@
 
 namespace botw::savs {
 enum Version {
-    vLegacy = 4,  // 1-4 are no longer supported
+    vLegacy = 4, // no longer supported
     v5 = 5,
-    vLatest = v5
+    v6 = 6,
+    vLatest = v6
 };
 }
