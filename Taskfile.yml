@@ -40,7 +40,7 @@ tasks:
       - mkdir -p "{{.MOD_DIR}}/exefs"
       - mkdir -p "{{.MOD_DIR}}/romfs/System"
       - cp target/megaton/none/main.npdm "{{.MOD_DIR}}/exefs/main.npdm"
-      - cp target/megaton/none/make/botwsavs.nso "{{.MOD_DIR}}/exefs/subsdk9"
+      - cp target/megaton/none/botwsavs.nso "{{.MOD_DIR}}/exefs/subsdk9"
       - mkdir -p target/package/botwsavs
       - echo "" > target/package/botwsavs/latest.txt
       - echo -n "1.6.0-{{.VERSION}}" > "{{.MOD_DIR}}/romfs/System/Version.txt"

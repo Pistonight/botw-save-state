@@ -71,7 +71,8 @@ Since 2.0, you can now toggle individually what you want to save/restore. Open t
 
 **Recommended (TL;DR)**:
 - Keep `Timers` enabled as they don't have negative effects
-- If you don't need to track inventory during practice (i.e. Any%), you can disable `Inventory` to avoid issues.
+- If you don't need to track inventory during practice, you can disable `Inventory` to avoid issues.
+  - Having it on can still have benefits, for example you don't need to swap equipments after restoring for Any%
 
 **Full List**:
 1. `Restore Message`
