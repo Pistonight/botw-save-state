@@ -1,9 +1,9 @@
 #include <exl/lib.hpp>
 #include <nn/fs.h>
-#include <toolkit/tcp.hpp>
 #include <toolkit/equipment.hpp>
 #include <toolkit/msg/info.hpp>
 #include <toolkit/msg/widget.hpp>
+#include <toolkit/tcp.hpp>
 
 #include "core/worker.hpp"
 
@@ -19,6 +19,4 @@ extern "C" void exl_main(void* x0, void* x1) {
     botw::savs::start_worker_thread();
 }
 
-extern "C" NORETURN void exl_exception_entry() {
-    EXL_ABORT(0x420);
-}
+extern "C" NORETURN void exl_exception_entry() { EXL_ABORT(0x420); }

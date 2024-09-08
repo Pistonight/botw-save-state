@@ -1,9 +1,9 @@
 #pragma once
 
 #include <exl/types.h>
-#include <toolkit/pmdm.hpp>
 #include <toolkit/io/data_reader.hpp>
 #include <toolkit/io/data_writer.hpp>
+#include <toolkit/pmdm.hpp>
 
 #include "core/reporter.hpp"
 
@@ -22,16 +22,19 @@ public:
     void read_config(io::DataReader& r);
     // show info message when restoring
     bool m_show_restore_message = true;
-    // enable TOD, bloodmoon, ability, master sword, potion, and climate damage timers
+    // enable TOD, bloodmoon, ability, master sword, potion, and climate damage
+    // timers
     bool m_enable_timers = true;
-    // enable restoring inventory state, including full pmdm and num offset slots
+    // enable restoring inventory state, including full pmdm and num offset
+    // slots
     bool m_enable_inventory = false;
 };
 
 class State {
 public:
     void read_from_game(Reporter& reporter, const StateConfig& config);
-    void write_to_game(Reporter& reporter, const StateConfig& config, bool hold) const;
+    void write_to_game(Reporter& reporter, const StateConfig& config,
+                       bool hold) const;
     StateFileResult read_from_file(io::DataReader& reader);
     StateFileResult write_to_file(io::DataWriter& writer) const;
 
@@ -93,8 +96,8 @@ private:
     // even though the pmdm state covers this
     // this field still exists to allow people to change the state manually
     // to easily break slots
-    s32 m_num_inventory_count_offset; 
+    s32 m_num_inventory_count_offset;
     toolkit::PmdmSaveState m_pmdm_state;
 };
 
-}  // namespace botw::savs
+} // namespace botw::savs

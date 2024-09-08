@@ -21,12 +21,8 @@ struct PouchItem;
 
 namespace botw::savs::raw_ptr {
 // Health and Stam
-inline mem::safe_ptr<u32> health() {
-    return _main[0x2CA1A78][0x80] + 0x848;
-}
-inline mem::safe_ptr<float> stamina() {
-    return _main[0x2c9fd70][0x38] + 0x2ac;
-}
+inline mem::safe_ptr<u32> health() { return _main[0x2CA1A78][0x80] + 0x848; }
+inline mem::safe_ptr<float> stamina() { return _main[0x2c9fd70][0x38] + 0x2ac; }
 // Max Stam Amount (unused):	[[main+2c9fd70]+38]+2b0
 
 // Runes
@@ -162,5 +158,5 @@ inline mem::safe_ptr<float> stealth_potion_timer() {
     return _main[0x2CC4768][0xC0] + 0x133C;
 }
 
-}  // namespace botw::savs::raw_ptr
+} // namespace botw::savs::raw_ptr
 #undef _main

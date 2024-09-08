@@ -135,9 +135,7 @@ static const char* get_enabled_text(bool value) {
     return value ? "Enabled" : "Disabled";
 }
 
-static const char* get_toggle_text(bool value) {
-    return value ? "On" : "Off";
-}
+static const char* get_toggle_text(bool value) { return value ? "On" : "Off"; }
 
 Command Controller::update_setting_mode() {
     m_tick_since_last_menu_input++;
@@ -212,11 +210,12 @@ Command Controller::update_setting_mode() {
             }
             Key new_key = get_hold_keys();
             if (finish_configure_key(new_key)) {
-                    mem::StringBuffer<16> key_name;
+                mem::StringBuffer<16> key_name;
                 get_key_name(key_name, m_key_being_configured);
-                    mem::StringBuffer<120> buffer;
+                mem::StringBuffer<120> buffer;
                 get_key_string(new_key, buffer);
-                msg::widget::printf("Changed %s key\n to: %s", key_name.content(), buffer.content());
+                msg::widget::printf("Changed %s key\n to: %s",
+                                    key_name.content(), buffer.content());
 
                 m_key_being_configured = nullptr;
                 m_tick_since_last_menu_input = 0;
@@ -261,16 +260,21 @@ Command Controller::update_setting_mode() {
             m_tick_since_last_menu_input = 0;
             switch (m_menu_current_option) {
             case 0:
-                msg::widget::print(
-                    "Restore Message\n\nWhen disabled, there will be no\nmessage shown when "
-                    "executing a\nstate restore. Useful for grinding\nBTT segments.");
+                msg::widget::print("Restore Message\n\nWhen disabled, there "
+                                   "will be no\nmessage shown when "
+                                   "executing a\nstate restore. Useful for "
+                                   "grinding\nBTT segments.");
                 break;
             case 1:
-                msg::widget::print("Timers\n\nEnable save/restore TOD, Bloodmoon,\nChampion Ability, "
-                                 "Master Sword,\nPotion, and Weather Damage Timers.");
+                msg::widget::print(
+                    "Timers\n\nEnable save/restore TOD, Bloodmoon,\nChampion "
+                    "Ability, "
+                    "Master Sword,\nPotion, and Weather Damage Timers.");
                 break;
             case 2:
-                msg::widget::print("Inventory\n\nEnable save/restore the inventory\nstate. Equipments will be synced.");
+                msg::widget::print(
+                    "Inventory\n\nEnable save/restore the inventory\nstate. "
+                    "Equipments will be synced.");
                 break;
             }
         }
@@ -279,7 +283,8 @@ Command Controller::update_setting_mode() {
             switch (m_menu_current_option) {
             case 0:
                 value = !m_config->m_show_restore_message;
-                msg::info::printf("Restore Message: %s", get_enabled_text(value));
+                msg::info::printf("Restore Message: %s",
+                                  get_enabled_text(value));
                 m_config->m_show_restore_message = value;
                 break;
             case 1:
@@ -357,12 +362,15 @@ void Controller::refresh_menu() {
         m_menu_subtitle.copy("[A] Toggle; [X] Explain");
         m_menu_options_count = 3;
         m_menu_options[0].clear();
-        m_menu_options[0].appendf("[%s] Restore Message",
-                                  get_toggle_text(m_config->m_show_restore_message));
+        m_menu_options[0].appendf(
+            "[%s] Restore Message",
+            get_toggle_text(m_config->m_show_restore_message));
         m_menu_options[1].clear();
-        m_menu_options[1].appendf("[%s] Timers", get_toggle_text(m_config->m_enable_timers));
+        m_menu_options[1].appendf("[%s] Timers",
+                                  get_toggle_text(m_config->m_enable_timers));
         m_menu_options[2].clear();
-        m_menu_options[2].appendf("[%s] Inventory", get_toggle_text(m_config->m_enable_inventory));
+        m_menu_options[2].appendf(
+            "[%s] Inventory", get_toggle_text(m_config->m_enable_inventory));
         break;
     }
     if (m_menu_current_option >= m_menu_options_count) {
@@ -390,9 +398,9 @@ void Controller::show_configuring_key_message() {
     get_key_name(key_name, m_key_being_configured);
     mem::StringBuffer<50> current_combo;
     get_key_string(*m_key_being_configured, current_combo);
-    msg::widget::printf(
-        "Changing: %s\nCurrent:\n%s\nHold new combo for 3 seconds.\nHold ZL to cancel",
-        key_name.content(), current_combo.content());
+    msg::widget::printf("Changing: %s\nCurrent:\n%s\nHold new combo for 3 "
+                        "seconds.\nHold ZL to cancel",
+                        key_name.content(), current_combo.content());
 }
 
-}  // namespace botw::savs
+} // namespace botw::savs

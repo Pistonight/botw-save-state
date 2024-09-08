@@ -17,4 +17,4 @@ void Reporter::report(const char* field, bool success) {
     }
     return;
 }
-}  // namespace botw::savs
+} // namespace botw::savs

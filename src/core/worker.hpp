@@ -1,8 +1,8 @@
 #pragma once
 
-#include <exl/types.h>
 #include "core/controller.hpp"
 #include "core/state.hpp"
+#include <exl/types.h>
 
 namespace botw::savs {
 
@@ -60,4 +60,4 @@ private:
     void welcome();
 };
 
-}  // namespace botw::savs
+} // namespace botw::savs

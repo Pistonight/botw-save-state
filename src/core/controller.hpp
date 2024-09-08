@@ -1,9 +1,9 @@
 #pragma once
 
 #include <exl/types.h>
-#include <toolkit/mem/string.hpp>
 #include <toolkit/io/data_reader.hpp>
 #include <toolkit/io/data_writer.hpp>
+#include <toolkit/mem/string.hpp>
 
 #include "core/state.hpp"
 
@@ -40,7 +40,8 @@ inline constexpr Key operator|(Key a, Key b) {
     return static_cast<Key>(static_cast<u32>(a) | static_cast<u32>(b));
 }
 
-constexpr Key KEY_SETTINGS = Key::DpadDown | Key::ZL | Key::ZR | Key::L | Key::R;
+constexpr Key KEY_SETTINGS =
+    Key::DpadDown | Key::ZL | Key::ZR | Key::L | Key::R;
 constexpr Key KEY_INCREASE_LEVEL = Key::R;
 constexpr Key KEY_DECREASE_LEVEL = Key::L;
 
@@ -115,7 +116,8 @@ enum class Command {
 };
 
 constexpr size_t MENU_BUFFER_LEN = 40;
-constexpr u32 MENU_REFRESH_TICKS = 60;  // refresh menu after this time if there is no input
+constexpr u32 MENU_REFRESH_TICKS =
+    60; // refresh menu after this time if there is no input
 constexpr u32 MENU_INPUT_INTERVAL = 3;
 
 class Controller {
@@ -167,7 +169,9 @@ private:
         m_holding_keys = Key::None;
         m_hold_counter = 0;
     }
-    bool is_configuring_key() const { return m_key_being_configured != nullptr; }
+    bool is_configuring_key() const {
+        return m_key_being_configured != nullptr;
+    }
     void start_configure_key(Key* key);
     bool finish_configure_key(Key new_key);
     void get_key_name(mem::StringBuffer<16>& out_buffer, Key* key) const {
@@ -188,4 +192,4 @@ private:
     void refresh_menu();
     void show_configuring_key_message();
 };
-}  // namespace botw::savs
+} // namespace botw::savs

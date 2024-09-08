@@ -3,12 +3,12 @@
 #include <cstdlib>
 #include <nn/os.h>
 #include <nn/time.h>
-#include <toolkit/tcp.hpp>
 #include <toolkit/io/data_reader.hpp>
 #include <toolkit/io/data_writer.hpp>
+#include <toolkit/mem/unique_ptr.hpp>
 #include <toolkit/msg/info.hpp>
 #include <toolkit/msg/widget.hpp>
-#include <toolkit/mem/unique_ptr.hpp>
+#include <toolkit/tcp.hpp>
 
 #include "core/reporter.hpp"
 #include "core/version.hpp"
@@ -44,8 +44,8 @@ void start_worker_thread() {
     const u64 STACK_SIZE = 0x80000;
     void* thread_stack = memalign(0x1000, STACK_SIZE);
 
-    nn::Result result =
-        nn::os::CreateThread(&s_thread, worker_main, nullptr, thread_stack, STACK_SIZE, 16);
+    nn::Result result = nn::os::CreateThread(&s_thread, worker_main, nullptr,
+                                             thread_stack, STACK_SIZE, 16);
     if (result.IsFailure()) {
         return;
     }
@@ -75,7 +75,8 @@ void Worker::do_work() {
             // we don't report here to reduce spam
             // restore every 2 frames so the game has a chance to update
             nn::os::YieldThread();
-            nn::os::SleepThread(nn::TimeSpan::FromNanoSeconds(60 * 1000 * 1000));
+            nn::os::SleepThread(
+                nn::TimeSpan::FromNanoSeconds(60 * 1000 * 1000));
         }
         break;
     case Command::RestoreDone:
@@ -207,11 +208,12 @@ void Worker::execute_restore_file() {
     StateFileResult result = m_last_restored_file.read_from_file(reader);
     switch (result) {
     case StateFileResult::UnsupportedVersion:
-        msg::widget::print("The state file restore.txt\nhas an unsupported version.");
+        msg::widget::print(
+            "The state file restore.txt\nhas an unsupported version.");
         return;
     case StateFileResult::InvalidVersion:
-        msg::widget::print(
-            "The state file restore.txt\nhas an invalid version. It could\nbe corrupted.");
+        msg::widget::print("The state file restore.txt\nhas an invalid "
+                           "version. It could\nbe corrupted.");
         return;
     case StateFileResult::IOError:
         msg::widget::print("IO Error reading restore.txt!");
@@ -278,8 +280,9 @@ void Worker::welcome() {
     }
     m_pos_diff_ticks++;
     if (m_pos_diff_ticks >= 4) {
-        bool showed = msg::widget::print("Save State is active\n\nHold All Triggers + Dpad Down\nto "
-                                       "open Settings, or see README\non GitHub for more info.");
+        bool showed = msg::widget::print(
+            "Save State is active\n\nHold All Triggers + Dpad Down\nto "
+            "open Settings, or see README\non GitHub for more info.");
         if (showed) {
             m_showed_welcome = true;
             tcp::start_server(5001);
@@ -291,4 +294,4 @@ void Worker::welcome() {
     m_player_pos[2] = new_pos[2];
 }
 
-}  // namespace botw::savs
+} // namespace botw::savs

@@ -2,16 +2,16 @@
 #include <Game/UI/uiPauseMenuDataMgr.h>
 #include <KingSystem/ActorSystem/actBaseProc.h>
 #include <KingSystem/ActorSystem/actBaseProcMgr.h>
-#include <toolkit/pmdm.hpp>
 #include <toolkit/equipment.hpp>
-#include <toolkit/tcp.hpp>
 #include <toolkit/io/data_reader.hpp>
 #include <toolkit/io/data_writer.hpp>
 #include <toolkit/mem/named_value.hpp>
+#include <toolkit/pmdm.hpp>
 #include <toolkit/sead/list.hpp>
+#include <toolkit/tcp.hpp>
 
-#include "core/version.hpp"
 #include "core/state.hpp"
+#include "core/version.hpp"
 #include "impl/raw_ptr.hpp"
 
 namespace botw::savs {
@@ -40,10 +40,12 @@ void State::read_from_game(Reporter& r, const StateConfig& config) {
     m_stored_essentials = false;
     r.report("Health", raw_ptr::health().get(&m_health));
     r.report("Stamina", raw_ptr::stamina().get(&m_stamina));
-    r.report("HavokPosition", raw_ptr::havok_position().get_array(m_havok_position, 3));
-    r.report("MainPositionMatrix",
-             raw_ptr::main_position_matrix().get_array(m_main_position_matrix, 12));
-    r.report("CamPanMatrix", raw_ptr::camera_pan_matrix().get_array(m_camera_pan_matrix, 12));
+    r.report("HavokPosition",
+             raw_ptr::havok_position().get_array(m_havok_position, 3));
+    r.report("MainPositionMatrix", raw_ptr::main_position_matrix().get_array(
+                                       m_main_position_matrix, 12));
+    r.report("CamPanMatrix",
+             raw_ptr::camera_pan_matrix().get_array(m_camera_pan_matrix, 12));
     r.report("CamZoom", raw_ptr::camera_zoom().get(&m_camera_zoom));
     r.report("CamTilt", raw_ptr::camera_tilt().get(&m_camera_tilt));
     if (!r.has_error()) {
@@ -55,28 +57,41 @@ void State::read_from_game(Reporter& r, const StateConfig& config) {
     m_stored_timers = false;
     if (config.m_enable_timers) {
         r.report("TODPaused", raw_ptr::time_of_day_paused().get(&m_tod_paused));
-        r.report("TODUnpause", raw_ptr::time_of_day_unpaused().get(&m_tod_unpaused));
+        r.report("TODUnpause",
+                 raw_ptr::time_of_day_unpaused().get(&m_tod_unpaused));
         r.report("BMTimer", raw_ptr::blood_moon().get(&m_blood_moon_timer));
-        r.report("TempDmg", raw_ptr::temperature_damage_timer().get(&m_temperature_damage_timer));
+        r.report("TempDmg", raw_ptr::temperature_damage_timer().get(
+                                &m_temperature_damage_timer));
         r.report("FlameDmg", raw_ptr::flame_timer().get(&m_flame_timer));
         r.report("Gale", raw_ptr::gale_timer().get(&m_gale_timer));
         r.report("Fury", raw_ptr::fury_timer().get(&m_fury_timer));
-        r.report("DarukP", raw_ptr::protection_timer().get(&m_protection_timer));
+        r.report("DarukP",
+                 raw_ptr::protection_timer().get(&m_protection_timer));
         r.report("Grace", raw_ptr::grace_timer().get(&m_grace_timer));
-        r.report("ChampUse", raw_ptr::ability_uses().get_array(m_ability_uses, 3));
-        r.report("MS", raw_ptr::master_sword_cooldown().get(&m_master_sword_cooldown));
-        r.report("Speed1", raw_ptr::speed_potion_timer1().get(&m_speed_potion_timer_1));
-        r.report("Speed2", raw_ptr::speed_potion_timer2().get(&m_speed_potion_timer_2));
-        r.report("Speed3", raw_ptr::speed_potion_timer3().get(&m_speed_potion_timer_3));
-        r.report("AtkTime", raw_ptr::attack_potion_timer().get(&m_attack_potion_timer));
-        r.report("DefTime", raw_ptr::defense_potion_timer().get(&m_defense_potion_timer));
-        r.report("HeatResT", raw_ptr::heat_resist_potion_timer().get(&m_heat_resist_potion_timer));
-        r.report("ColdResT", raw_ptr::cold_resist_potion_timer().get(&m_cold_resist_potion_timer));
-        r.report("FireResT",
-                 raw_ptr::flame_resist_potion_timer().get(&m_flame_resist_potion_timer));
-        r.report("ElecResT",
-                 raw_ptr::shock_resist_potion_timer().get(&m_shock_resist_potion_timer));
-        r.report("StealthT", raw_ptr::stealth_potion_timer().get(&m_stealth_potion_timer));
+        r.report("ChampUse",
+                 raw_ptr::ability_uses().get_array(m_ability_uses, 3));
+        r.report("MS", raw_ptr::master_sword_cooldown().get(
+                           &m_master_sword_cooldown));
+        r.report("Speed1",
+                 raw_ptr::speed_potion_timer1().get(&m_speed_potion_timer_1));
+        r.report("Speed2",
+                 raw_ptr::speed_potion_timer2().get(&m_speed_potion_timer_2));
+        r.report("Speed3",
+                 raw_ptr::speed_potion_timer3().get(&m_speed_potion_timer_3));
+        r.report("AtkTime",
+                 raw_ptr::attack_potion_timer().get(&m_attack_potion_timer));
+        r.report("DefTime",
+                 raw_ptr::defense_potion_timer().get(&m_defense_potion_timer));
+        r.report("HeatResT", raw_ptr::heat_resist_potion_timer().get(
+                                 &m_heat_resist_potion_timer));
+        r.report("ColdResT", raw_ptr::cold_resist_potion_timer().get(
+                                 &m_cold_resist_potion_timer));
+        r.report("FireResT", raw_ptr::flame_resist_potion_timer().get(
+                                 &m_flame_resist_potion_timer));
+        r.report("ElecResT", raw_ptr::shock_resist_potion_timer().get(
+                                 &m_shock_resist_potion_timer));
+        r.report("StealthT",
+                 raw_ptr::stealth_potion_timer().get(&m_stealth_potion_timer));
         if (!r.has_more_errors()) {
             m_stored_timers = true;
         }
@@ -99,15 +114,19 @@ void State::read_from_game(Reporter& r, const StateConfig& config) {
     }
 }
 
-void State::write_to_game(Reporter& r, const StateConfig& config, bool hold) const {
+void State::write_to_game(Reporter& r, const StateConfig& config,
+                          bool hold) const {
     // essentials
     if (m_stored_essentials) {
         r.report("Health", raw_ptr::health().set(m_health));
         r.report("Stamina", raw_ptr::stamina().set(m_stamina));
-        r.report("HavokPosition", raw_ptr::havok_position().set_array(m_havok_position, 3));
+        r.report("HavokPosition",
+                 raw_ptr::havok_position().set_array(m_havok_position, 3));
         r.report("MainPositionMatrix",
-                 raw_ptr::main_position_matrix().set_array(m_main_position_matrix, 12));
-        r.report("CamPanMatrix", raw_ptr::camera_pan_matrix().set_array(m_camera_pan_matrix, 12));
+                 raw_ptr::main_position_matrix().set_array(
+                     m_main_position_matrix, 12));
+        r.report("CamPanMatrix", raw_ptr::camera_pan_matrix().set_array(
+                                     m_camera_pan_matrix, 12));
         r.report("CamZoom", raw_ptr::camera_zoom().set(m_camera_zoom));
         r.report("CamTilt", raw_ptr::camera_tilt().set(m_camera_tilt));
 
@@ -137,26 +156,40 @@ void State::write_to_game(Reporter& r, const StateConfig& config, bool hold) con
     // timers
     if (m_stored_timers && config.m_enable_timers) {
         r.report("TODPaused", raw_ptr::time_of_day_paused().set(m_tod_paused));
-        r.report("TODUnpause", raw_ptr::time_of_day_unpaused().set(m_tod_unpaused));
+        r.report("TODUnpause",
+                 raw_ptr::time_of_day_unpaused().set(m_tod_unpaused));
         r.report("BMTimer", raw_ptr::blood_moon().set(m_blood_moon_timer));
-        r.report("TempDmg", raw_ptr::temperature_damage_timer().set(m_temperature_damage_timer));
+        r.report("TempDmg", raw_ptr::temperature_damage_timer().set(
+                                m_temperature_damage_timer));
         r.report("FlameDmg", raw_ptr::flame_timer().set(m_flame_timer));
         r.report("Gale", raw_ptr::gale_timer().set(m_gale_timer));
         r.report("Fury", raw_ptr::fury_timer().set(m_fury_timer));
         r.report("DarukP", raw_ptr::protection_timer().set(m_protection_timer));
         r.report("Grace", raw_ptr::grace_timer().set(m_grace_timer));
-        r.report("ChampUse", raw_ptr::ability_uses().set_array(m_ability_uses, 3));
-        r.report("MS", raw_ptr::master_sword_cooldown().set(m_master_sword_cooldown));
-        r.report("Speed1", raw_ptr::speed_potion_timer1().set(m_speed_potion_timer_1));
-        r.report("Speed2", raw_ptr::speed_potion_timer2().set(m_speed_potion_timer_2));
-        r.report("Speed3", raw_ptr::speed_potion_timer3().set(m_speed_potion_timer_3));
-        r.report("AtkTime", raw_ptr::attack_potion_timer().set(m_attack_potion_timer));
-        r.report("DefTime", raw_ptr::defense_potion_timer().set(m_defense_potion_timer));
-        r.report("HeatResT", raw_ptr::heat_resist_potion_timer().set(m_heat_resist_potion_timer));
-        r.report("ColdResT", raw_ptr::cold_resist_potion_timer().set(m_cold_resist_potion_timer));
-        r.report("FireResT", raw_ptr::flame_resist_potion_timer().set(m_flame_resist_potion_timer));
-        r.report("ElecResT", raw_ptr::shock_resist_potion_timer().set(m_shock_resist_potion_timer));
-        r.report("StealthT", raw_ptr::stealth_potion_timer().set(m_stealth_potion_timer));
+        r.report("ChampUse",
+                 raw_ptr::ability_uses().set_array(m_ability_uses, 3));
+        r.report("MS",
+                 raw_ptr::master_sword_cooldown().set(m_master_sword_cooldown));
+        r.report("Speed1",
+                 raw_ptr::speed_potion_timer1().set(m_speed_potion_timer_1));
+        r.report("Speed2",
+                 raw_ptr::speed_potion_timer2().set(m_speed_potion_timer_2));
+        r.report("Speed3",
+                 raw_ptr::speed_potion_timer3().set(m_speed_potion_timer_3));
+        r.report("AtkTime",
+                 raw_ptr::attack_potion_timer().set(m_attack_potion_timer));
+        r.report("DefTime",
+                 raw_ptr::defense_potion_timer().set(m_defense_potion_timer));
+        r.report("HeatResT", raw_ptr::heat_resist_potion_timer().set(
+                                 m_heat_resist_potion_timer));
+        r.report("ColdResT", raw_ptr::cold_resist_potion_timer().set(
+                                 m_cold_resist_potion_timer));
+        r.report("FireResT", raw_ptr::flame_resist_potion_timer().set(
+                                 m_flame_resist_potion_timer));
+        r.report("ElecResT", raw_ptr::shock_resist_potion_timer().set(
+                                 m_shock_resist_potion_timer));
+        r.report("StealthT",
+                 raw_ptr::stealth_potion_timer().set(m_stealth_potion_timer));
     }
 
     // inventory
@@ -293,4 +326,4 @@ StateFileResult State::write_to_file(io::DataWriter& w) const {
     return StateFileResult::Ok;
 }
 
-}  // namespace botw::savs
+} // namespace botw::savs
