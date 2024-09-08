@@ -127,6 +127,7 @@ public:
         SettingHome,
         SettingKeyBinding,
         SettingStateOption,
+        SettingOtherFunction,
     };
 
     bool initialize();
@@ -136,6 +137,7 @@ public:
     void load_key_bindings(io::DataReader& reader);
 
     Mode get_mode() const { return m_mode; }
+    bool is_in_settings() const { return m_mode != Mode::Active; }
 
 public:
     StateConfig* m_config = nullptr;
