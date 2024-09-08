@@ -8,6 +8,7 @@ namespace botw::savs {
 
 constexpr const char* OPTION_FILE_PATH = "sd:/botwsavs/option.txt";
 constexpr const char* STATE_FILE_PATH = "sd:/botwsavs/latest.txt";
+constexpr const char* RESTORE_FILE_PATH = "sd:/botwsavs/restore.txt";
 
 void worker_main(void*);
 

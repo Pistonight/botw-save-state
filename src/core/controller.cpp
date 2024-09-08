@@ -1,9 +1,11 @@
 #include <controller/seadController.h>
 #include <controller/seadControllerMgr.h>
+#include <toolkit/mem/named_value.hpp>
+#include <toolkit/msg/info.hpp>
+#include <toolkit/msg/widget.hpp>
+#include <toolkit/tcp.hpp>
 
 #include "core/controller.hpp"
-#include "util/message.hpp"
-#include "util/named.h"
 
 namespace botw::savs {
 
@@ -25,14 +27,14 @@ bool Controller::initialize() {
     return true;
 }
 
-void Controller::save_key_bindings(DataWriter& w) const {
+void Controller::save_key_bindings(io::DataWriter& w) const {
     w.write_integer(_named(m_key_save));
     w.write_integer(_named(m_key_save_file));
     w.write_integer(_named(m_key_restore));
     w.write_integer(_named(m_key_restore_file));
 }
 
-void Controller::load_key_bindings(DataReader& r) {
+void Controller::load_key_bindings(io::DataReader& r) {
     u32 key_save = 0;
     u32 key_save_file = 0;
     u32 key_restore = 0;
@@ -98,9 +100,9 @@ bool Controller::finish_configure_key(Key new_key) {
     if (m_configure_hold_counter < 30) {
         m_configure_hold_counter++;
         if (m_configure_hold_counter % 10 == 0) {
-            StringBuffer<120> buffer;
+            mem::StringBuffer<120> buffer;
             get_key_string(new_key, buffer);
-            msg::show_infof("Keep holding %s", buffer.content());
+            msg::info::printf("Keep holding %s", buffer.content());
         }
         return false;
     }
@@ -210,11 +212,11 @@ Command Controller::update_setting_mode() {
             }
             Key new_key = get_hold_keys();
             if (finish_configure_key(new_key)) {
-                StringBuffer<16> key_name;
+                    mem::StringBuffer<16> key_name;
                 get_key_name(key_name, m_key_being_configured);
-                StringBuffer<120> buffer;
+                    mem::StringBuffer<120> buffer;
                 get_key_string(new_key, buffer);
-                msg::show_widgetf("Changed %s key\n to: %s", key_name.content(), buffer.content());
+                msg::widget::printf("Changed %s key\n to: %s", key_name.content(), buffer.content());
 
                 m_key_being_configured = nullptr;
                 m_tick_since_last_menu_input = 0;
@@ -259,22 +261,16 @@ Command Controller::update_setting_mode() {
             m_tick_since_last_menu_input = 0;
             switch (m_menu_current_option) {
             case 0:
-                msg::show_widget(
+                msg::widget::print(
                     "Restore Message\n\nWhen disabled, there will be no\nmessage shown when "
                     "executing a\nstate restore. Useful for grinding\nBTT segments.");
                 break;
             case 1:
-                msg::show_widget("Timers\n\nEnable save/restore TOD, Bloodmoon,\nChampion Ability, "
+                msg::widget::print("Timers\n\nEnable save/restore TOD, Bloodmoon,\nChampion Ability, "
                                  "Master Sword,\nPotion, and Weather Damage Timers.");
                 break;
             case 2:
-                msg::show_widget("Overworld Durability\n\nEnable save/restore durability of "
-                                 "the\nequipped Weapon/Bow/Shield in the\noverworld if the same "
-                                 "item by name\nis equipped when restoring.");
-                break;
-            case 3:
-                msg::show_widget("Inventory\n\nEnable save/restore the inventory\nstate. See "
-                                 "GitHub for more details.");
+                msg::widget::print("Inventory\n\nEnable save/restore the inventory\nstate. Equipments will be synced.");
                 break;
             }
         }
@@ -283,22 +279,17 @@ Command Controller::update_setting_mode() {
             switch (m_menu_current_option) {
             case 0:
                 value = !m_config->m_show_restore_message;
-                msg::show_infof("Restore Message: %s", get_enabled_text(value));
+                msg::info::printf("Restore Message: %s", get_enabled_text(value));
                 m_config->m_show_restore_message = value;
                 break;
             case 1:
                 value = !m_config->m_enable_timers;
-                msg::show_infof("Timers: %s", get_enabled_text(value));
+                msg::info::printf("Timers: %s", get_enabled_text(value));
                 m_config->m_enable_timers = value;
                 break;
             case 2:
-                value = !m_config->m_enable_overworld_durability;
-                msg::show_infof("Overworld Durability: %s", get_enabled_text(value));
-                m_config->m_enable_overworld_durability = value;
-                break;
-            case 3:
                 value = !m_config->m_enable_inventory;
-                msg::show_infof("Inventory: %s", get_enabled_text(value));
+                msg::info::printf("Inventory: %s", get_enabled_text(value));
                 m_config->m_enable_inventory = value;
                 break;
             }
@@ -364,23 +355,20 @@ void Controller::refresh_menu() {
     case Mode::SettingStateOption:
         m_menu_title.copy("Change State Options");
         m_menu_subtitle.copy("[A] Toggle; [X] Explain");
-        m_menu_options_count = 4;
+        m_menu_options_count = 3;
         m_menu_options[0].clear();
         m_menu_options[0].appendf("[%s] Restore Message",
                                   get_toggle_text(m_config->m_show_restore_message));
         m_menu_options[1].clear();
         m_menu_options[1].appendf("[%s] Timers", get_toggle_text(m_config->m_enable_timers));
         m_menu_options[2].clear();
-        m_menu_options[2].appendf("[%s] Overworld Durability",
-                                  get_toggle_text(m_config->m_enable_overworld_durability));
-        m_menu_options[3].clear();
-        m_menu_options[3].appendf("[%s] Inventory", get_toggle_text(m_config->m_enable_inventory));
+        m_menu_options[2].appendf("[%s] Inventory", get_toggle_text(m_config->m_enable_inventory));
         break;
     }
     if (m_menu_current_option >= m_menu_options_count) {
         m_menu_current_option = 0;
     }
-    StringBuffer<MENU_BUFFER_LEN * 7> buffer;
+    mem::StringBuffer<MENU_BUFFER_LEN * 7> buffer;
     buffer.appendf("%s\n%s", m_menu_title.content(), m_menu_subtitle.content());
     for (u32 i = 0; i < m_menu_options_count; i++) {
         buffer.append("\n");
@@ -391,18 +379,18 @@ void Controller::refresh_menu() {
         }
         buffer.appendf("%s", m_menu_options[i].content());
     }
-    msg::show_widget(buffer.content());
+    msg::widget::print(buffer.content());
 }
 
 void Controller::show_configuring_key_message() {
     if (!m_key_being_configured) {
         return;
     }
-    StringBuffer<16> key_name;
+    mem::StringBuffer<16> key_name;
     get_key_name(key_name, m_key_being_configured);
-    StringBuffer<50> current_combo;
+    mem::StringBuffer<50> current_combo;
     get_key_string(*m_key_being_configured, current_combo);
-    msg::show_widgetf(
+    msg::widget::printf(
         "Changing: %s\nCurrent:\n%s\nHold new combo for 3 seconds.\nHold ZL to cancel",
         key_name.content(), current_combo.content());
 }

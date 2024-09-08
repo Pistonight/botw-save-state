@@ -3,31 +3,38 @@
 #include <cstdlib>
 #include <nn/os.h>
 #include <nn/time.h>
+#include <toolkit/tcp.hpp>
+#include <toolkit/io/data_reader.hpp>
+#include <toolkit/io/data_writer.hpp>
+#include <toolkit/msg/info.hpp>
+#include <toolkit/msg/widget.hpp>
+#include <toolkit/mem/unique_ptr.hpp>
 
 #include "core/reporter.hpp"
 #include "core/version.hpp"
 #include "core/worker.hpp"
 #include "impl/raw_ptr.hpp"
-#include "util/data_reader.hpp"
-#include "util/data_writer.hpp"
-#include "util/mem.h"
-#include "util/message.hpp"
+
+extern "C" {
+void* memalign(size_t alignment, size_t size);
+}
 
 namespace botw::savs {
 
 static nn::os::ThreadType s_thread;
 
 void worker_main(void*) {
-    Worker worker;
+    auto worker = mem::make_unique<Worker>();
     while (true) {
-        if (worker.initialize()) {
+        // we need to trap the thread here if alloc fails
+        if (worker && worker->initialize()) {
             break;
         }
         nn::os::YieldThread();
         nn::os::SleepThread(nn::TimeSpan::FromSeconds(5));
     }
     while (true) {
-        worker.do_work();
+        worker->do_work();
         nn::os::YieldThread();
         nn::os::SleepThread(nn::TimeSpan::FromNanoSeconds(100000000));
     }
@@ -75,9 +82,9 @@ void Worker::do_work() {
         if (m_last_restored_ok) {
             if (m_config.m_show_restore_message) {
                 if (m_last_restored_is_from_memory) {
-                    msg::show_info("Restored state from memory");
+                    msg::info::print("Restored state from memory");
                 } else {
-                    msg::show_info("Restored state from file");
+                    msg::info::print("Restored state from file");
                 }
             }
             m_last_restored_ok = false;
@@ -98,15 +105,16 @@ void Worker::do_work() {
 }
 
 void Worker::save_options() const {
-    DataWriter writer(OPTION_FILE_PATH);
+    io::DataWriter writer(OPTION_FILE_PATH);
 
     writer.write_integer("version", Version::vLatest);
     m_config.save_config(writer);
     m_controller.save_key_bindings(writer);
+    writer.flush();
 }
 
 void Worker::load_options() {
-    DataReader reader(OPTION_FILE_PATH);
+    io::DataReader reader(OPTION_FILE_PATH);
 
     u32 version = 0;
     reader.read_integer(&version);
@@ -123,45 +131,54 @@ void Worker::load_options() {
 }
 
 static void report_fail_read(Reporter& reporter) {
-    StringBuffer<280> report;
+    mem::StringBuffer<280> report;
     report.append("Error! Failed to read game memory\n");
     reporter.append_fields_to(report);
-    msg::show_widget(report.content());
+    msg::widget::print(report.content());
 }
 
 static void report_fail_write(Reporter& reporter) {
-    StringBuffer<280> report;
+    mem::StringBuffer<280> report;
     report.append("Error! Failed to write game memory\n");
     reporter.append_fields_to(report);
-    msg::show_widget(report.content());
+    msg::widget::print(report.content());
 }
 
 void Worker::execute_save() {
+    tcp::sendf("save to memory\n");
     Reporter reporter;
     m_memory_state.read_from_game(reporter, m_config);
     if (reporter.has_error()) {
         report_fail_read(reporter);
     }
 
-    msg::show_info("Saved state to memory");
+    msg::info::print("Saved state to memory");
 }
 
 void Worker::execute_save_file() {
-    State temp_state;
+    tcp::sendf("save to file\n");
+    mem::unique_ptr<State> temp_state = mem::make_unique<State>();
+    if (!temp_state) {
+        msg::widget::print("Error!\nFailed to allocate memory for state");
+        return;
+    }
+
     Reporter reporter;
-    temp_state.read_from_game(reporter, m_config);
+    temp_state->read_from_game(reporter, m_config);
     if (reporter.has_error()) {
         report_fail_read(reporter);
         return;
     }
 
-    DataWriter writer(STATE_FILE_PATH);
-    StateFileResult result = temp_state.write_to_file(writer);
+    tcp::sendf("writing latest.txt\n");
+    io::DataWriter writer(STATE_FILE_PATH);
+    StateFileResult result = temp_state->write_to_file(writer);
+    writer.flush();
     if (result != StateFileResult::Ok || !writer.is_successful()) {
-        msg::show_widget("Error!\nIO Error while writing state file");
+        msg::widget::print("Error!\nIO Error while writing state file");
         return;
     }
-    msg::show_info("Saved state to file");
+    msg::info::print("Saved state to file");
 }
 
 void Worker::execute_restore() {
@@ -180,30 +197,30 @@ void Worker::execute_restore() {
 void Worker::execute_restore_file() {
     m_last_restored_ok = false;
 
-    File file(STATE_FILE_PATH);
+    io::File file(RESTORE_FILE_PATH);
     if (!file.exists()) {
-        msg::show_info("No restore.txt found!");
+        msg::info::print("No restore.txt found!");
         return;
     }
 
-    DataReader reader(STATE_FILE_PATH);
+    io::DataReader reader(RESTORE_FILE_PATH);
     StateFileResult result = m_last_restored_file.read_from_file(reader);
     switch (result) {
     case StateFileResult::UnsupportedVersion:
-        msg::show_widget("The state file restore.txt\nhas an unsupported version.");
+        msg::widget::print("The state file restore.txt\nhas an unsupported version.");
         return;
     case StateFileResult::InvalidVersion:
-        msg::show_widget(
+        msg::widget::print(
             "The state file restore.txt\nhas an invalid version. It could\nbe corrupted.");
         return;
     case StateFileResult::IOError:
-        msg::show_widget("IO Error reading restore.txt!");
+        msg::widget::print("IO Error reading restore.txt!");
         return;
     case StateFileResult::Ok:
         break;
     }
     if (!reader.is_successful()) {
-        msg::show_widget("IO Error reading restore.txt!");
+        msg::widget::print("IO Error reading restore.txt!");
         return;
     }
 
@@ -219,7 +236,7 @@ void Worker::execute_restore_file() {
 }
 
 bool Worker::show_active_mode_message() const {
-    return msg::show_widgetf("\
+    return msg::widget::printf("\
 Settings exited.\n\
 You can use the save state now\n\
 Hold All Triggers + Dpad Down\n\
@@ -231,7 +248,7 @@ void Worker::welcome() {
         return;
     }
     // probe to see if it's probably safe to deref havok position
-    if (!ksys_ui_ScreenMgr_sInstance) {
+    if (!msg::widget::is_ready()) {
         m_pos_diff_ticks = 0;
         return;
     }
@@ -261,10 +278,11 @@ void Worker::welcome() {
     }
     m_pos_diff_ticks++;
     if (m_pos_diff_ticks >= 4) {
-        bool showed = msg::show_widget("Save State is active\n\nHold All Triggers + Dpad Down\nto "
+        bool showed = msg::widget::print("Save State is active\n\nHold All Triggers + Dpad Down\nto "
                                        "open Settings, or see README\non GitHub for more info.");
         if (showed) {
             m_showed_welcome = true;
+            tcp::start_server(5001);
             return;
         }
     }
