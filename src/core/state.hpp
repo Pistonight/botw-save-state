@@ -19,7 +19,7 @@ enum class StateFileResult {
 class StateConfig {
 public:
     void save_config(io::DataWriter& w) const;
-    void read_config(io::DataReader& r);
+    void read_config(io::DataReader& r, u32 version);
     // show info message when restoring
     bool m_show_restore_message = true;
     // enable TOD, bloodmoon, ability, master sword, potion, and climate damage
@@ -28,6 +28,8 @@ public:
     // enable restoring inventory state, including full pmdm and num offset
     // slots
     bool m_enable_inventory = false;
+    // enable displaying the speed on every tick
+    bool m_speedometer = false;
 };
 
 class State {

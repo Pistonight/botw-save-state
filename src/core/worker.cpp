@@ -1,4 +1,5 @@
 #include <Game/UI/uiPauseMenuDataMgr.h>
+#include <KingSystem/ActorSystem/actActorSystem.h>
 #include <KingSystem/ActorSystem/actBaseProcMgr.h>
 #include <cstdlib>
 #include <nn/os.h>
@@ -11,6 +12,7 @@
 #include <toolkit/tcp.hpp>
 
 #include "core/reporter.hpp"
+#include "core/time.hpp"
 #include "core/version.hpp"
 #include "core/worker.hpp"
 #include "impl/raw_ptr.hpp"
@@ -54,6 +56,7 @@ void start_worker_thread() {
 
 void Worker::do_work() {
     welcome();
+    tick_update();
     Command command = m_controller.update();
     switch (command) {
     case Command::Save:
@@ -124,7 +127,7 @@ void Worker::load_options() {
     }
 
     StateConfig temp_config;
-    temp_config.read_config(reader);
+    temp_config.read_config(reader, version);
     if (reader.is_successful()) {
         m_config = temp_config;
     }
@@ -238,11 +241,53 @@ void Worker::execute_restore_file() {
 }
 
 bool Worker::show_active_mode_message() const {
-    return msg::widget::printf("\
-Settings exited.\n\
-You can use the save state now\n\
-Hold All Triggers + Dpad Down\n\
-to open Settings again");
+    // clang-format off
+    //                        ----------------------------------MAX
+    return msg::widget::print("Settings exited\n\n"
+                              "You can use the save state now\n"
+                              "Hold All Triggers + Dpad Down\n"
+                              "to open Settings again");
+    // clang-format on
+}
+
+void Worker::tick_update() {
+    if (m_controller.is_in_settings()) {
+        return;
+    }
+    if (!m_showed_welcome) {
+        // only update after showing welcome message
+        // since we are reusing variables
+        return;
+    }
+    if (m_config.m_speedometer) {
+        // for some reason, ActorSystem::getPlayerPos() doesn't work
+        float new_pos[3];
+        if (!raw_ptr::havok_position().get_array(new_pos, 3)) {
+            tcp::sendf("failed to get player pos\n");
+            return;
+        }
+        // we can't use nn::time because the resolution is 1s
+        f32 secs = time::ticks_to_secs_f32(1);
+        f32 dx = new_pos[0] - m_player_pos[0];
+        f32 dy = new_pos[1] - m_player_pos[1];
+        f32 dz = new_pos[2] - m_player_pos[2];
+        m_player_pos[0] = new_pos[0];
+        m_player_pos[1] = new_pos[1];
+        m_player_pos[2] = new_pos[2];
+        bool pos_diff =
+            std::abs(dx) > 0.1 || std::abs(dz) > 0.1 || std::abs(dy) > 0.1;
+        if (!pos_diff) {
+            tcp::sendf("pos diff too small\n");
+            return;
+        }
+        tcp::sendf("pos: %.2f %.2f %.2f, d: %.2f %.2f %.2f\n", new_pos[0],
+                   new_pos[1], new_pos[2], dx, dy, dz);
+        f32 xsq_zsq = dx * dx + dz * dz;
+        f32 horizontal_speed = std::sqrt(xsq_zsq) / secs;
+        f32 true_speed = std::sqrt(dy * dy + xsq_zsq) / secs;
+        msg::info::printf("HS: %.2f m/s | TS: %.2f m/s", horizontal_speed,
+                          true_speed);
+    }
 }
 
 void Worker::welcome() {

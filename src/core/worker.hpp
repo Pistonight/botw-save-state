@@ -48,6 +48,7 @@ private:
     bool m_showed_welcome = false;
     float m_player_pos[3]{0, 0, 0};
     u32 m_pos_diff_ticks = 0;
+    u64 m_last_timestamp = 0;
 
     State m_memory_state;
     State m_last_restored_file;
@@ -56,6 +57,7 @@ private:
 
     StateConfig m_config;
 
+    void tick_update();
     bool show_active_mode_message() const;
     void welcome();
 };

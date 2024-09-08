@@ -23,15 +23,20 @@ void StateConfig::save_config(io::DataWriter& w) const {
     bool unused = false;
     w.write_bool(_named(unused));
     w.write_bool(_named(m_enable_inventory));
+    w.write_bool(_named(m_speedometer));
 }
 
-void StateConfig::read_config(io::DataReader& r) {
+void StateConfig::read_config(io::DataReader& r, u32 version) {
     r.read_bool(&m_show_restore_message);
     r.read_bool(&m_enable_timers);
     // was overworld durability in v5
     bool unused;
     r.read_bool(&unused);
     r.read_bool(&m_enable_inventory);
+
+    if (version >= Version::v7) {
+        r.read_bool(&m_speedometer);
+    }
 }
 
 void State::read_from_game(Reporter& r, const StateConfig& config) {

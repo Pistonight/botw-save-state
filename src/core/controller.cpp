@@ -6,6 +6,7 @@
 #include <toolkit/tcp.hpp>
 
 #include "core/controller.hpp"
+#include "core/time.hpp"
 
 namespace botw::savs {
 
@@ -67,9 +68,7 @@ bool Controller::has_held_keys_for(Key keys, u32 seconds) {
     } else {
         m_hold_counter++;
     }
-    // 1 tick = 3 frames
-    // 1s = 30 frames = 10 ticks
-    u32 ticks = seconds * 10;
+    u32 ticks = time::secs_to_ticks(seconds);
     if (m_hold_counter >= ticks) {
         m_hold_counter = 0;
         return true;
@@ -193,6 +192,10 @@ Command Controller::update_setting_mode() {
                 m_mode = Mode::SettingStateOption;
                 m_menu_current_option = 0;
                 break;
+            default:
+                m_mode = Mode::SettingOtherFunction;
+                m_menu_current_option = 0;
+                break;
             }
             refresh_menu();
             return Command::None;
@@ -302,6 +305,39 @@ Command Controller::update_setting_mode() {
             return Command::SaveOption;
         }
         break;
+    case Mode::SettingOtherFunction:
+        if (is_only_holding(Key::B)) {
+            m_mode = Mode::SettingHome;
+            m_menu_current_option = 2;
+            refresh_menu();
+            return Command::None;
+        }
+        if (is_only_holding(Key::X)) {
+            m_menu_showing_explain_message = true;
+            m_tick_since_last_menu_input = 0;
+            switch (m_menu_current_option) {
+                // clang-format off
+            case 0://              ----------------------------------MAX
+                msg::widget::print("Speedometer\n\n"
+                                   "When enabled, display the speed\n"
+                                   "every tick.");
+                break;
+            }
+            // clang-format on
+        }
+        if (is_only_holding(Key::A)) {
+            bool value;
+            switch (m_menu_current_option) {
+            case 0:
+                value = !m_config->m_speedometer;
+                msg::info::printf("Speedometer: %s", get_enabled_text(value));
+                m_config->m_speedometer = value;
+                break;
+            }
+            refresh_menu();
+            return Command::SaveOption;
+        }
+        break;
     }
 
     return Command::None;
@@ -335,14 +371,13 @@ void Controller::refresh_menu() {
     m_menu_showing_explain_message = false;
     m_tick_since_last_menu_input = 0;
     switch (m_mode) {
-    case Mode::Active:
-        return;
     case Mode::SettingHome:
         m_menu_title.copy("Save State Settings");
         m_menu_subtitle.copy("What do you want to do?");
-        m_menu_options_count = 2;
+        m_menu_options_count = 3;
         m_menu_options[0].copy("Change Key Binding");
         m_menu_options[1].copy("Change State Options");
+        m_menu_options[2].copy("Other Functions");
         break;
     case Mode::SettingKeyBinding:
         if (is_configuring_key()) {
@@ -372,6 +407,16 @@ void Controller::refresh_menu() {
         m_menu_options[2].appendf(
             "[%s] Inventory", get_toggle_text(m_config->m_enable_inventory));
         break;
+    case Mode::SettingOtherFunction:
+        m_menu_title.copy("Other Functions");
+        m_menu_subtitle.copy("[A] Toggle; [X] Explain");
+        m_menu_options_count = 1;
+        m_menu_options[0].clear();
+        m_menu_options[0].appendf("[%s] Speedometer",
+                                  get_toggle_text(m_config->m_speedometer));
+        break;
+    default:
+        return;
     }
     if (m_menu_current_option >= m_menu_options_count) {
         m_menu_current_option = 0;
