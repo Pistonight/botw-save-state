@@ -6,7 +6,8 @@
 A BOTW 1.6.0 Switch save-state mod for speedrun practices
 
 ## Install
-**Migration from 1.x - See [here](./migrate-1.x.md)**
+**Migration from 1.x - See [here](./data/migrate-1.x.md)**
+
 First, download and extract the zip from [latest release](https://github.com/Pistonight/botw-save-state/releases/latest). There should be 2 folders `mods` and `botwsavs`.
 
 I recommend using [Simple Mod Manager](https://github.com/nadrino/SimpleModManager) for installing the mod. It will allow you easily disable/enable it.
