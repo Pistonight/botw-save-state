@@ -5,8 +5,9 @@
 
 A BOTW 1.6.0 Switch save-state mod for speedrun practices
 
+### If your game crashes when saving/restoring, delete `/atmosphere/exefs_patches/botwsavs`
+
 ## Install
-**Migration from 1.x - See [here](./data/migrate-1.x.md)**
 
 First, download and extract the zip from [latest release](https://github.com/Pistonight/botw-save-state/releases/latest). There should be 2 folders `mods` and `botwsavs`.
 
@@ -148,6 +149,7 @@ There is a small chance that when the game boots, the values are not in the usua
 Don't restore in water or on a ladder.
 
 #### Q: Crash
+If you installed the mod before SS2.0 and is upgrading, make sure to delete `/atmosphere/exefs_patches/botwsavs`. Otherwise, 
 Please open an issue and upload the crash report found in `/atmosphere/crash_reports/<timestamp>.log`, where `<timestamp>` is a number.
 The greatest number is the most recent crash.
 
