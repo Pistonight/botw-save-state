@@ -17,7 +17,7 @@ tasks:
     aliases: [b]
     desc: Build the mod
     cmds:
-      - megaton -p debug
+      - megaton build -p debug
 
   check:
     desc: Check code for errors

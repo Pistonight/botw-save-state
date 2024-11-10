@@ -4,10 +4,8 @@ title-id = 0x01007ef00011e000
 
 # make configuration
 [build]
-entry = "exl_module_init"
 sources = [
     "src",
-    "libs/exlaunch/source",
     "libs/botw-symbols/src",
 ]
 includes = [
@@ -15,13 +13,11 @@ includes = [
     "libs/botw/src",
     "libs/botw/lib/agl/include",
     "libs/botw/lib/gsys/include",
-    "libs/botw-symbols/src",
-    "libs/exlaunch/source",
+    "libs/botw-symbols/include",
     "libs/sead/include",
     "libs/nnheaders/include",
 ]
 ldscripts = [
-    "libs/exlaunch/misc/link.ld",
     "libs/botw-symbols/ld/ld160.ld",
     "libs/botw-symbols/ld/toolkit160.ld",
 ]
@@ -32,11 +28,6 @@ c = [
     "-DNNSDK",
     "-DSWITCH",
     "-D__SWITCH__",
-    "-DEXL_DEBUG",
-    "-DEXL_LOAD_KIND_ENUM=2",
-    "-DEXL_LOAD_KIND=Module",
-    "-DEXL_PROGRAM_ID=0x01007ef00011e000",
-    "-DEXL_MODULE_NAME=\"botwsavs\"",
     "-DNN_SDK_MAJOR=7",
     "-DNN_SDK_MINOR=3",
     "-DNN_SDK_PATCH=2",
@@ -57,8 +48,8 @@ c = [
 
 [check]
 ignore = [
-    ".data",
-    ".text",
+    # ".data",
+    # ".text",
 ]
 symbols = [
     "libs/botw-symbols/symbols/160/main.syms",
