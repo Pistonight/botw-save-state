@@ -1,8 +1,8 @@
 #pragma once
+#include <megaton/prelude.h>
 
 #include "core/controller.hpp"
 #include "core/state.hpp"
-#include <exl/types.h>
 
 namespace botw::savs {
 

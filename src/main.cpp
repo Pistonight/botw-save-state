@@ -1,4 +1,4 @@
-#include <exl/lib.hpp>
+#include <megaton/prelude.h>
 #include <nn/fs.h>
 #include <toolkit/equipment.hpp>
 #include <toolkit/msg/info.hpp>
@@ -7,8 +7,7 @@
 
 #include "core/worker.hpp"
 
-extern "C" void exl_main(void* x0, void* x1) {
-    exl::hook::Initialize();
+extern "C" void megaton_main() {
     nn::fs::MountSdCardForDebug("sd");
 
     botw::msg::info::init();
@@ -18,5 +17,3 @@ extern "C" void exl_main(void* x0, void* x1) {
 
     botw::savs::start_worker_thread();
 }
-
-extern "C" NORETURN void exl_exception_entry() { EXL_ABORT(0x420); }

@@ -1,7 +1,7 @@
 #pragma once
+#include <megaton/prelude.h>
 
 #include <algorithm>
-#include <exl/types.h>
 #include <toolkit/mem/string.hpp>
 
 namespace botw::savs {
