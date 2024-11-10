@@ -47,10 +47,6 @@ c = [
 ]
 
 [check]
-ignore = [
-    # ".data",
-    # ".text",
-]
 symbols = [
     "libs/botw-symbols/symbols/160/main.syms",
     "libs/botw-symbols/symbols/160/rtld.syms",
