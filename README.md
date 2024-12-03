@@ -111,6 +111,7 @@ The following will always be enabled, and you cannot turn them off:
 - Current Stamina
 - Position (Havok Position and Main Position Matrix)
 - Camera Matrix
+- Selected Rune
 
 Additionally, the following will happen when you restore, regardless of the setting:
 - Runes will finish cooldown
