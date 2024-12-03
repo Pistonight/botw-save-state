@@ -35,7 +35,7 @@ tasks:
       VERSION: "SS2.3"
       MOD_DIR: "target/package/mods/The Legend of Zelda - Breath of the Wild/Save State/contents/01007EF00011E000"
     cmds:
-      - megaton -p none
+      - megaton build -p none
       - rm -rf target/package/mods
       - mkdir -p "{{.MOD_DIR}}/exefs"
       - mkdir -p "{{.MOD_DIR}}/romfs/System"
