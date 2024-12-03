@@ -13,6 +13,7 @@
 #include "core/state.hpp"
 #include "core/version.hpp"
 #include "impl/raw_ptr.hpp"
+#include "impl/rune.hpp"
 
 namespace botw::savs {
 
@@ -53,6 +54,14 @@ void State::read_from_game(Reporter& r, const StateConfig& config) {
              raw_ptr::camera_pan_matrix().get_array(m_camera_pan_matrix, 12));
     r.report("CamZoom", raw_ptr::camera_zoom().get(&m_camera_zoom));
     r.report("CamTilt", raw_ptr::camera_tilt().get(&m_camera_tilt));
+
+    auto rune_mgr = RuneMgr::get_instance();
+    if (rune_mgr == nullptr) {
+        r.report("RuneMgr", false);
+    } else {
+        m_rune = rune_mgr->get_current();
+    }
+
     if (!r.has_error()) {
         m_stored_essentials = true;
     }
@@ -134,6 +143,14 @@ void State::write_to_game(Reporter& r, const StateConfig& config,
                                      m_camera_pan_matrix, 12));
         r.report("CamZoom", raw_ptr::camera_zoom().set(m_camera_zoom));
         r.report("CamTilt", raw_ptr::camera_tilt().set(m_camera_tilt));
+
+        // selected rune
+        auto rune_mgr = RuneMgr::get_instance();
+        if (rune_mgr == nullptr) {
+            r.report("RuneMgr", false);
+        } else {
+            rune_mgr->set_current(m_rune);
+        }
 
         // extras
         r.report("RdBombCD", raw_ptr::round_bomb_cooldown().set(360.0F));
@@ -271,6 +288,10 @@ StateFileResult State::read_from_file(io::DataReader& r) {
         m_pmdm_state.read_from_file(r);
     }
 
+    if (version >= Version::v8) {
+        r.read_integer(&m_rune);
+    }
+
     if (!r.is_successful()) {
         clear();
         return StateFileResult::IOError;
@@ -324,6 +345,8 @@ StateFileResult State::write_to_file(io::DataWriter& w) const {
     tcp::sendf("-- inventory\n");
     w.write_integer(_named(m_num_inventory_count_offset));
     m_pmdm_state.write_to_file(w);
+
+    w.write_integer(_named(m_rune));
 
     if (!w.is_successful()) {
         return StateFileResult::IOError;

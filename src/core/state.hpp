@@ -62,12 +62,11 @@ private:
     float m_camera_pan_matrix[12];
     float m_camera_zoom;
     float m_camera_tilt;
+    u32 m_rune;
     /* Extra stuff always restored:
      * - Rune cooldown
      * - Delete bombs
      * - TODO: fall damage
-     * - TODO: selected rune
-     *
      */
 
     // timers

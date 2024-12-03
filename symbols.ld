@@ -1,0 +1,1 @@
+PROVIDE_HIDDEN(botw_savs__RuneMgr = 0x02C9A668 - 0x3483000);

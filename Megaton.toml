@@ -18,6 +18,7 @@ includes = [
     "libs/nnheaders/include",
 ]
 ldscripts = [
+    "symbols.ld",
     "libs/botw-symbols/ld/ld160.ld",
     "libs/botw-symbols/ld/toolkit160.ld",
 ]
