@@ -32,7 +32,7 @@ tasks:
   package:
     desc: Package the build for release
     vars:
-      VERSION: "SS2.3"
+      VERSION: "SS2.4"
       MOD_DIR: "target/package/mods/The Legend of Zelda - Breath of the Wild/Save State/contents/01007EF00011E000"
     cmds:
       - megaton build -p none
