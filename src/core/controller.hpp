@@ -154,7 +154,13 @@ private:
     Key m_key_save_file = Key::ZL | Key::L | Key::DpadLeft | Key::RStick;
     Key m_key_restore = Key::ZL | Key::L | Key::Plus | Key::DpadRight;
     Key m_key_restore_file = Key::ZL | Key::L | Key::DpadRight | Key::RStick;
+
+    /**
+     * State to track the last restore fired, and keep firing PostRestoreHold
+     * until the user releases the restore key
+     */
     bool m_restore_fired = false;
+    Key m_restore_fired_key = Key::None;
 
     u32 m_tick_since_last_menu_input = MENU_REFRESH_TICKS + 1;
     mem::StringBuffer<MENU_BUFFER_LEN> m_menu_title;

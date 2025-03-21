@@ -346,8 +346,8 @@ Command Controller::update_setting_mode() {
 Command Controller::update_active_mode() {
     if (m_restore_fired) {
         // after restore, keep firing PostRestoreHold
-        // until all keys are released
-        if (get_hold_keys() != Key::None) {
+        // until all keys in the restore combo are released
+        if ((get_hold_keys() & m_restore_fired_key) != Key::None) {
             return Command::PostRestoreHold;
         }
         m_restore_fired = false;
@@ -359,9 +359,11 @@ Command Controller::update_active_mode() {
         return Command::SaveFile;
     } else if (is_only_holding(m_key_restore)) {
         m_restore_fired = true;
+        m_restore_fired_key = m_key_restore;
         return Command::Restore;
     } else if (is_only_holding(m_key_restore_file)) {
         m_restore_fired = true;
+        m_restore_fired_key = m_key_restore_file;
         return Command::RestoreFile;
     }
     return Command::None;
