@@ -59,6 +59,11 @@ If you see errors, please see trouble shooting below.
 Hold all triggers (`ZL + L + ZR + R`) and the whistle button (`Dpad Down`) for 3 seconds to enter setting mode. You should see the setting menu pop up in the top-right corner.
 Use the dpad to navigate the menu and `A` to select. Use `B` to go back a level or exit the settings.
 
+Since V2.5, you can configure the key used to activate the settings mode by editing the config file on the SD card at `/botwsavs/option.txt`.
+The keys are represented as a bitflag. See [controller.hpp](https://github.com/Pistonight/botw-save-state/tree/main/src/core/controller.hpp).
+
+If you messed up the settings, you can delete the config file, and the settings will be restored to default.
+
 #### Key Binding
 You can change the key bindings for save/restore. Follow these steps:
 1. Open setting menu (see above), then select `Change Key Binding`
@@ -66,6 +71,13 @@ You can change the key bindings for save/restore. Follow these steps:
 3. Hold the new combo for 3 seconds, or hold `ZL` to cancel.
    - If you combo includes dpad or plus/minus, open the menu (plus) or map (minus) first, then hold the dpad direction, and then press and hold plus/minus to unpause and hold the other keys.
 4. You should see a confirmation message when the new binding is set
+
+The key bindings will only work if you are holding exactly the configured keys. For example, if your key binding is `A+B`, then holding `A+B+Y` will not
+count. Since V2.5, you can configure a bypass key mask to allow additional keys not part of a key binding to be held. For example, if your key binding
+is `L3+A`, and the bypass key mask is `X`, then you can still trigger the key binding if `X` is held (i.e. `L3+A+X`). Note that you should avoid
+binding conflicting keys - in the same example, if `L3+A+X` is another key binding, then it's up to the implementation for what key binding gets triggered.
+
+You need to edit the config file directly to config bypass keys, see the "Settings" section above.
 
 #### State Options
 
@@ -140,7 +152,7 @@ Please check the following:
 - When you load a save, after walking around for a few seconds, there will be a welcome message displayed on the top-right corner.
 
 If you have these working, then the mod is active, and you likely are not pressing the key combos correctly. Make sure to only
-press the keys set. For example, if your binding is `A+B`, then pressing `A+B+Y` will not work.
+press the keys set. For example, if your binding is `A+B`, then pressing `A+B+Y` will not work unless you configure `Y` as a [bypass key](#key-binding)
 
 #### Q: Restore is showing error
 Try restarting the game. The mod uses raw memory access to save/restore the state and has protection against invalid memory access.
@@ -170,7 +182,7 @@ Install these tools:
 - `clang-format` for code formatting
 
 These tools are (very strongly) recommended but optional:
-- This project has out-of-the-box support for `clangd`. Make sure `/usr/bin/g++` is available or you can change the compiler manually in `.clangd`
+- This project has out-of-the-box support for `clangd`.
 - [`magoo`](https://github.com/Pistonite/magoo) for git submodule management
 - `lftp` for FTP transfer - install it with your package manager
 - [`task`](https://taskfile.dev/) for running scripts

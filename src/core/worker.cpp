@@ -122,7 +122,7 @@ void Worker::load_options() {
 
     u32 version = 0;
     reader.read_integer(&version);
-    if (version <= vLegacy || version > Version::vLatest) {
+    if (version <= Version::vLegacy || version > Version::vLatest) {
         return;
     }
 
@@ -131,7 +131,7 @@ void Worker::load_options() {
     if (reader.is_successful()) {
         m_config = temp_config;
     }
-    m_controller.load_key_bindings(reader);
+    m_controller.load_key_bindings(reader, version);
 }
 
 static void report_fail_read(Reporter& reporter) {
