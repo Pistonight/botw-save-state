@@ -122,6 +122,10 @@ void Worker::load_options() {
 
     u32 version = 0;
     reader.read_integer(&version);
+    if (!reader.is_successful()) {
+        save_options();
+        return;
+    }
     if (version <= Version::vLegacy || version > Version::vLatest) {
         return;
     }
@@ -132,6 +136,11 @@ void Worker::load_options() {
         m_config = temp_config;
     }
     m_controller.load_key_bindings(reader, version);
+
+    // write the latest config version if the current config file is old
+    if (version != Version::vLatest) {
+        save_options();
+    }
 }
 
 static void report_fail_read(Reporter& reporter) {

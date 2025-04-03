@@ -60,7 +60,8 @@ Hold all triggers (`ZL + L + ZR + R`) and the whistle button (`Dpad Down`) for 3
 Use the dpad to navigate the menu and `A` to select. Use `B` to go back a level or exit the settings.
 
 Since V2.5, you can configure the key used to activate the settings mode by editing the config file on the SD card at `/botwsavs/option.txt`.
-The keys are represented as a bitflag. See [controller.hpp](https://github.com/Pistonight/botw-save-state/tree/main/src/core/controller.hpp).
+The keys are represented as a bitflag, and stored in the config file as hexdecimal.
+See [controller.hpp](https://github.com/Pistonight/botw-save-state/tree/main/src/core/controller.hpp).
 
 If you messed up the settings, you can delete the config file, and the settings will be restored to default.
 
@@ -165,6 +166,10 @@ Don't restore in water or on a ladder.
 If you installed the mod before SS2.0 and is upgrading, make sure to delete `/atmosphere/exefs_patches/botwsavs`. Otherwise, 
 Please open an issue and upload the crash report found in `/atmosphere/crash_reports/<timestamp>.log`, where `<timestamp>` is a number.
 The greatest number is the most recent crash.
+
+#### Q: IO Error when saving/restoring to file, or config not working
+Make sure the root of the SD card has a `/botwsavs/` folder. The folder can be empty
+but must exist.
 
 #### Q: Will there be support for TOTK?
 Making a mod like this requires an insane amount of research, and I was lucky to have Bloom do most of it
