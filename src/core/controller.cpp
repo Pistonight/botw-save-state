@@ -7,6 +7,7 @@
 
 #include "core/controller.hpp"
 #include "core/time.hpp"
+#include "core/version.hpp"
 
 namespace botw::savs {
 
@@ -33,9 +34,11 @@ void Controller::save_key_bindings(io::DataWriter& w) const {
     w.write_integer(_named(m_key_save_file));
     w.write_integer(_named(m_key_restore));
     w.write_integer(_named(m_key_restore_file));
+    w.write_integer(_named(m_key_settings));
+    w.write_integer(_named(m_key_bypass));
 }
 
-void Controller::load_key_bindings(io::DataReader& r) {
+void Controller::load_key_bindings(io::DataReader& r, u32 version) {
     u32 key_save = 0;
     u32 key_save_file = 0;
     u32 key_restore = 0;
@@ -51,10 +54,31 @@ void Controller::load_key_bindings(io::DataReader& r) {
         m_key_restore = static_cast<Key>(key_restore);
         m_key_restore_file = static_cast<Key>(key_restore_file);
     }
+
+    if (version < Version::v9) {
+        return;
+    }
+
+    u32 key_settings = 0;
+    r.read_integer(&key_settings);
+    if (r.is_successful()) {
+        m_key_settings = static_cast<Key>(key_settings);
+    }
+
+    u32 key_bypass = 0;
+    r.read_integer(&key_bypass);
+    if (r.is_successful()) {
+        m_key_bypass = static_cast<Key>(key_bypass);
+    }
 }
 
 bool Controller::is_only_holding(Key keys) const {
     return m_controller->isHoldAll(keys) && !m_controller->isHold(~keys);
+}
+
+bool Controller::is_holding_combo(Key keys) const {
+    return m_controller->isHoldAll(keys) &&
+           !m_controller->isHold(~(keys | m_key_bypass));
 }
 
 Key Controller::get_hold_keys() const {
@@ -113,7 +137,7 @@ bool Controller::finish_configure_key(Key new_key) {
 
 Command Controller::update() {
     // handle mode switch input
-    if (is_only_holding(KEY_SETTINGS)) {
+    if (is_holding_combo(KEY_SETTINGS)) {
         if (has_held_keys_for(KEY_SETTINGS, 2)) {
             m_mode = Mode::SettingHome;
             m_menu_current_option = 0;
@@ -353,15 +377,15 @@ Command Controller::update_active_mode() {
         m_restore_fired = false;
         return Command::RestoreDone;
     }
-    if (is_only_holding(m_key_save)) {
+    if (is_holding_combo(m_key_save)) {
         return Command::Save;
-    } else if (is_only_holding(m_key_save_file)) {
+    } else if (is_holding_combo(m_key_save_file)) {
         return Command::SaveFile;
-    } else if (is_only_holding(m_key_restore)) {
+    } else if (is_holding_combo(m_key_restore)) {
         m_restore_fired = true;
         m_restore_fired_key = m_key_restore;
         return Command::Restore;
-    } else if (is_only_holding(m_key_restore_file)) {
+    } else if (is_holding_combo(m_key_restore_file)) {
         m_restore_fired = true;
         m_restore_fired_key = m_key_restore_file;
         return Command::RestoreFile;

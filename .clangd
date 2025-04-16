@@ -1,7 +1,6 @@
 CompileFlags:
-  Compiler: /usr/bin/g++
   CompilationDatabase: ./target/megaton/debug/
-  Remove: [ -march=*, -mtune=*, -mtp=* ]
+  Remove: [ -m* ]
 Diagnostics:
   Suppress: 
     - mismatched_exception_spec

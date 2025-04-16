@@ -2,8 +2,8 @@ version: '3'
 
 env:
   # can be overriden in .env
-  CONSOLE_ADDR: 192.168.0.161:5000
-  DEBUG_ADDR: 192.168.0.161:5001
+  # CONSOLE_ADDR: 192.168.0.161:5000
+  # DEBUG_ADDR: 192.168.0.161:5001
 dotenv: [".env"]
 
 includes:
@@ -32,7 +32,7 @@ tasks:
   package:
     desc: Package the build for release
     vars:
-      VERSION: "SS2.4"
+      VERSION: "SS2.5"
       MOD_DIR: "target/package/mods/The Legend of Zelda - Breath of the Wild/Save State/contents/01007EF00011E000"
     cmds:
       - megaton build -p none

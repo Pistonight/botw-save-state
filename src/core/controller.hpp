@@ -42,8 +42,6 @@ inline constexpr Key operator|(Key a, Key b) {
 
 constexpr Key KEY_SETTINGS =
     Key::DpadDown | Key::ZL | Key::ZR | Key::L | Key::R;
-constexpr Key KEY_INCREASE_LEVEL = Key::R;
-constexpr Key KEY_DECREASE_LEVEL = Key::L;
 
 template <u32 L>
 void get_key_string(u32 keys, mem::StringBuffer<L>& out_buffer) {
@@ -134,7 +132,7 @@ public:
     Command update();
 
     void save_key_bindings(io::DataWriter& writer) const;
-    void load_key_bindings(io::DataReader& reader);
+    void load_key_bindings(io::DataReader& reader, u32 version);
 
     Mode get_mode() const { return m_mode; }
     bool is_in_settings() const { return m_mode != Mode::Active; }
@@ -154,6 +152,8 @@ private:
     Key m_key_save_file = Key::ZL | Key::L | Key::DpadLeft | Key::RStick;
     Key m_key_restore = Key::ZL | Key::L | Key::Plus | Key::DpadRight;
     Key m_key_restore_file = Key::ZL | Key::L | Key::DpadRight | Key::RStick;
+    Key m_key_settings = Key::DpadDown | Key::ZL | Key::ZR | Key::L | Key::R;
+    Key m_key_bypass = Key::None;
 
     /**
      * State to track the last restore fired, and keep firing PostRestoreHold
@@ -171,6 +171,8 @@ private:
     bool m_menu_showing_explain_message = false;
 
     bool is_only_holding(Key keys) const;
+    /** Like is_only_holding, but also considers the bypass key */
+    bool is_holding_combo(Key keys) const;
     Key get_hold_keys() const;
     bool has_held_keys_for(Key keys, u32 seconds);
     void clear_hold() {
