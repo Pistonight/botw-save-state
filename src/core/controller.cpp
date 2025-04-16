@@ -77,7 +77,8 @@ bool Controller::is_only_holding(Key keys) const {
 }
 
 bool Controller::is_holding_combo(Key keys) const {
-    return m_controller->isHoldAll(keys) && !m_controller->isHold(~(keys | m_key_bypass));
+    return m_controller->isHoldAll(keys) &&
+           !m_controller->isHold(~(keys | m_key_bypass));
 }
 
 Key Controller::get_hold_keys() const {
